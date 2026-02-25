@@ -93,6 +93,8 @@ class Admin
 	{
 		$plugin_data = $this->get_plugin_data();
 
+		
+
 		// Define menu items
 		$menu_items = array(
 			array(
@@ -103,11 +105,6 @@ class Admin
 				'position' => $plugin_data['position'],
 				'callback' => array($this, 'add_setting_root_div'),
 				'submenu' => array(
-					array(
-						'menu_title' => esc_html__('Dashboard', 'tubebay'),
-						'menu_slug' => TUBEBAY_PLUGIN_NAME, // Same as parent slug makes it the first item
-						'callback' => array($this, 'add_setting_root_div')
-					),
 					array(
 						'menu_title' => esc_html__('Settings', 'tubebay'),
 						'menu_slug' => TUBEBAY_PLUGIN_NAME . '#/settings',

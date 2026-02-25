@@ -15,10 +15,6 @@ const Navbar: FC = () => {
 
   const menus: MenuLink[] = [
     {
-      label: __("Dashboard", "tubebay"),
-      path: "/",
-    },
-    {
       label: __("Channel Library", "tubebay"),
       path: "/library",
     },

@@ -1,4 +1,4 @@
-import Dashboard from "./pages/Dashboard";
+import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
 import ChannelLibrary from "./pages/ChannelLibrary";
 import { HashRouter, Route, Routes } from "react-router-dom";
@@ -14,7 +14,8 @@ function App() {
         <HashRouter>
           <Routes>
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<ChannelLibrary />} />
+              <Route path="onboarding" element={<Onboarding />} />
               <Route path="logs" element={<Logs />} />
               <Route path="settings" element={<Settings />} />
               <Route path="library" element={<ChannelLibrary />} />
