@@ -1,0 +1,77 @@
+<?php
+
+namespace TubeBay\Api;
+
+// Exit if accessed directly.
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+use WP_REST_Server;
+use WP_REST_Request;
+use WP_REST_Response;
+use TubeBay\Helper\Settings;
+
+class SettingsController extends ApiController
+{
+    private static $instance = null;
+
+    public static function get_instance()
+    {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function register_routes()
+    {
+        $namespace = $this->namespace . $this->version;
+
+        register_rest_route($namespace, '/settings', array(
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => array($this, 'get_settings'),
+                'permission_callback' => array($this, 'get_item_permissions_check'),
+            ),
+            array(
+                'methods' => WP_REST_Server::CREATABLE,
+                'callback' => array($this, 'update_settings'),
+                'permission_callback' => array($this, 'update_item_permissions_check'),
+            ),
+        ));
+    }
+
+    public function get_settings($request)
+    {
+        $data = array(
+            'api_key' => Settings::get_api_key(),
+            'channel_id' => Settings::get_channel_id(),
+            'cache_duration' => Settings::get('cache_duration', 12),
+        );
+
+        return new WP_REST_Response($data, 200);
+    }
+
+    public function update_settings($request)
+    {
+        $body = $request->get_json_params();
+
+        if (isset($body['api_key'])) {
+            Settings::set('api_key', sanitize_text_field($body['api_key']));
+        }
+
+        if (isset($body['channel_id'])) {
+            Settings::set('channel_id', sanitize_text_field($body['channel_id']));
+        }
+
+        if (isset($body['cache_duration'])) {
+            Settings::set('cache_duration', absint($body['cache_duration']));
+        }
+
+        return new WP_REST_Response(array(
+            'success' => true,
+            'message' => __('Settings saved successfully.', 'tubebay'),
+        ), 200);
+    }
+}

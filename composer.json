@@ -1,0 +1,13 @@
+{
+    "name": "dipta-sdd/tubebay",
+    "description": "TubeBay for WooCommerce",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TubeBay\\": "app/"
+        }
+    }
+}
