@@ -16,8 +16,8 @@ use WP_REST_Response;
  * The parent class of all API controllers for this plugin.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Api
+ * @package    TubeBay
+ * @subpackage TubeBay/Api
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class ApiController extends WP_REST_Controller
@@ -58,7 +58,9 @@ class ApiController extends WP_REST_Controller
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {}
+	public function __construct()
+	{
+	}
 
 	/**
 	 * Initialize the class — registers REST routes.

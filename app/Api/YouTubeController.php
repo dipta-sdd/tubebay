@@ -68,12 +68,25 @@ class YouTubeController extends ApiController
         $videos = $channel->get_latest_videos(true);
 
         if (is_wp_error($videos)) {
+            \TubeBay\Helper\Settings::set('connection_status', 'failed');
             return new \WP_Error('connection_failed', $videos->get_error_message(), array('status' => 400));
         }
+
+        // Fetch channel details to get the name
+        $channel_details = $channel->get_channel_details();
+        $channel_name = '';
+        if (!is_wp_error($channel_details) && isset($channel_details['title'])) {
+            $channel_name = $channel_details['title'];
+            \TubeBay\Helper\Settings::set('channel_name', $channel_name);
+        }
+
+        \TubeBay\Helper\Settings::set('connection_status', 'connected');
 
         return new WP_REST_Response(array(
             'success' => true,
             'message' => __('Connection successful! Found ' . count($videos) . ' videos.', 'tubebay'),
+            'channel_name' => $channel_name,
+            'connection_status' => 'connected'
         ), 200);
     }
 
@@ -89,8 +102,11 @@ class YouTubeController extends ApiController
         $videos = $channel->get_latest_videos(true);
 
         if (is_wp_error($videos)) {
+            \TubeBay\Helper\Settings::set('connection_status', 'failed');
             return new \WP_Error('sync_failed', $videos->get_error_message(), array('status' => 400));
         }
+
+        \TubeBay\Helper\Settings::set('connection_status', 'connected');
 
         // Send back an array of the newly fetched videos
         $response_videos = [];

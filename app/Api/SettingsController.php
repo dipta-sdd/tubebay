@@ -47,6 +47,8 @@ class SettingsController extends ApiController
         $data = array(
             'api_key' => Settings::get_api_key(),
             'channel_id' => Settings::get_channel_id(),
+            'channel_name' => Settings::get_channel_name(),
+            'connection_status' => Settings::get_connection_status(),
             'cache_duration' => Settings::get('cache_duration', 12),
         );
 
@@ -63,6 +65,14 @@ class SettingsController extends ApiController
 
         if (isset($body['channel_id'])) {
             Settings::set('channel_id', sanitize_text_field($body['channel_id']));
+        }
+
+        if (isset($body['channel_name'])) {
+            Settings::set('channel_name', sanitize_text_field($body['channel_name']));
+        }
+
+        if (isset($body['connection_status'])) {
+            Settings::set('connection_status', sanitize_text_field($body['connection_status']));
         }
 
         if (isset($body['cache_duration'])) {

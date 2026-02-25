@@ -17,8 +17,8 @@ use TubeBay\Helper\Loader;
  * public-facing site hooks.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Core
+ * @package    TubeBay
+ * @subpackage TubeBay/Core
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class Plugin

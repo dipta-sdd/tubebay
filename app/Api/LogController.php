@@ -15,8 +15,8 @@ use WP_Error;
  * LogController class.
  *
  * @since 1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Api
+ * @package    TubeBay
+ * @subpackage TubeBay/Api
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class LogController extends ApiController
@@ -61,8 +61,8 @@ class LogController extends ApiController
         // GET endpoint: Retrieve sample data
         register_rest_route($namespace, '/logs', array(
             array(
-                'methods'             => \WP_REST_Server::READABLE,
-                'callback'            => array($this, 'get_items'),
+                'methods' => \WP_REST_Server::READABLE,
+                'callback' => array($this, 'get_items'),
                 'permission_callback' => array($this, 'get_items_permissions_check'),
             ),
         ));
@@ -70,8 +70,8 @@ class LogController extends ApiController
         // POST endpoint: Create/update sample data
         register_rest_route($namespace, '/logs', array(
             array(
-                'methods'             => \WP_REST_Server::DELETABLE,
-                'callback'            => array($this, 'delete_items'),
+                'methods' => \WP_REST_Server::DELETABLE,
+                'callback' => array($this, 'delete_items'),
                 'permission_callback' => array($this, 'update_items_permissions_check'),
             ),
         ));

@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) {
  * Provides a central point for logging events to a custom database table.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Helper
+ * @package    TubeBay
+ * @subpackage TubeBay/Helper
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class Logger
@@ -49,7 +49,9 @@ class Logger
 	 * @since 1.0.0
 	 * @access private
 	 */
-	private function __construct() {}
+	private function __construct()
+	{
+	}
 
 	/**
 	 * Central logging function for the entire plugin.

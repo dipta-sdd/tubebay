@@ -6,8 +6,8 @@
  * Handles the creation and management of the plugin's custom database tables.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Data
+ * @package    TubeBay
+ * @subpackage TubeBay/Data
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 
@@ -52,7 +52,9 @@ class DbManager
      * @since 1.0.0
      * @access private
      */
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * Create all custom tables.

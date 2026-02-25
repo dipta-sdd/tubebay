@@ -31,6 +31,11 @@ export interface PluginSettings {
     global_exampleText: string;
     advanced_deleteAllOnUninstall: boolean;
     debug_enableMode: boolean;
+    api_key: string;
+    channel_id: string;
+    channel_name: string;
+    connection_status: string;
+    cache_duration: number;
 }
 
 /**

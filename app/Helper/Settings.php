@@ -2,38 +2,127 @@
 
 namespace TubeBay\Helper;
 
+// Exit if accessed directly.
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * The single Settings class for TubeBay.
+ *
+ * All settings are stored as individual wp_options with a "tubebay_" prefix.
+ * No serialized arrays — each key is its own row.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Helper
+ */
 class Settings
 {
     /**
-     * Get a plugin option.
+     * The single instance of the class.
      *
-     * @param string $key
-     * @param mixed $default
+     * @var Settings|null
+     */
+    private static $instance = null;
+
+    /**
+     * Option key prefix.
+     */
+    const PREFIX = 'tubebay_';
+
+    /**
+     * Default values for every setting.
+     * Every key here maps to wp_option "tubebay_{key}".
+     *
+     * @var array
+     */
+    private static $defaults = array(
+        /*==================================================
+         * YouTube / Connection Settings
+         ==================================================*/
+        'api_key' => '',
+        'channel_id' => '',
+        'channel_name' => '',
+        'connection_status' => 'disconnected',
+        'cache_duration' => 12,
+
+        /*==================================================
+         * Global Settings
+         ==================================================*/
+        'global_enableFeature' => true,
+        'global_exampleText' => 'Hello from TubeBay!',
+
+        /*==================================================
+         * Advanced Settings
+         ==================================================*/
+        'advanced_deleteAllOnUninstall' => false,
+        'debug_enableMode' => false,
+    );
+
+    /**
+     * Get singleton instance.
+     *
+     * @return Settings
+     */
+    public static function get_instance()
+    {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    // ─── Core get / set ─────────────────────────────────────────────
+
+    /**
+     * Get a plugin option value.
+     * Falls back to the default defined in $defaults.
+     *
+     * @param string $key     Setting key (without prefix).
+     * @param mixed  $default Override default (optional).
      * @return mixed
      */
-    public static function get($key, $default = false)
+    public static function get($key, $default = null)
     {
-        return get_option('tubebay_' . $key, $default);
+        // Use the class default when no explicit default is passed
+        if ($default === null) {
+            $default = isset(self::$defaults[$key]) ? self::$defaults[$key] : null;
+        }
+        return get_option(self::PREFIX . $key, $default);
     }
 
     /**
-     * Set a plugin option.
+     * Set a plugin option value.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      * @return bool
      */
     public static function set($key, $value)
     {
-        return update_option('tubebay_' . $key, $value);
+        return update_option(self::PREFIX . $key, $value);
     }
+
+    /**
+     * Delete a plugin option.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public static function delete($key)
+    {
+        return delete_option(self::PREFIX . $key);
+    }
+
+    // ─── Convenience getters ────────────────────────────────────────
 
     /**
      * Get the configured API Key.
      */
     public static function get_api_key()
     {
-        return self::get('api_key', '');
+        return self::get('api_key');
     }
 
     /**
@@ -41,21 +130,45 @@ class Settings
      */
     public static function get_channel_id()
     {
-        return self::get('channel_id', '');
+        return self::get('channel_id');
+    }
+
+    /**
+     * Get the Channel Name.
+     */
+    public static function get_channel_name()
+    {
+        return self::get('channel_name');
+    }
+
+    /**
+     * Get the Connection Status.
+     */
+    public static function get_connection_status()
+    {
+        return self::get('connection_status');
     }
 
     /**
      * Get the cache duration in seconds.
-     * Defaults to 12 hours (43200 seconds).
+     * The stored value is in hours; this converts to seconds.
      */
     public static function get_cache_duration()
     {
-        $duration = self::get('cache_duration', 12); // Default to 12 hours
-        return (int) $duration * HOUR_IN_SECONDS;
+        $hours = (int) self::get('cache_duration');
+        return $hours * HOUR_IN_SECONDS;
     }
 
     /**
-     * Get the OAuth Access Token (Phase 2).
+     * Get the cache duration in hours (raw stored value).
+     */
+    public static function get_cache_duration_hours()
+    {
+        return (int) self::get('cache_duration');
+    }
+
+    /**
+     * Get the OAuth Access Token.
      */
     public static function get_access_token()
     {
@@ -63,7 +176,7 @@ class Settings
     }
 
     /**
-     * Get the OAuth Refresh Token (Phase 2).
+     * Get the OAuth Refresh Token.
      */
     public static function get_refresh_token()
     {
@@ -71,10 +184,65 @@ class Settings
     }
 
     /**
-     * Get the OAuth Token Expiration time (Phase 2).
+     * Get the OAuth Token Expiration time.
      */
     public static function get_token_expires()
     {
         return self::get('token_expires', 0);
+    }
+
+    // ─── Bulk access ────────────────────────────────────────────────
+
+    /**
+     * Get the default settings map.
+     *
+     * @return array
+     */
+    public static function get_defaults()
+    {
+        return self::$defaults;
+    }
+
+    /**
+     * Get all settings as an associative array.
+     * Reads each key from wp_options individually.
+     *
+     * @return array
+     */
+    public static function get_all()
+    {
+        $settings = array();
+        foreach (self::$defaults as $key => $default) {
+            $settings[$key] = get_option(self::PREFIX . $key, $default);
+        }
+        return $settings;
+    }
+
+    /**
+     * Backward-compat: get_settings() works like get_all(),
+     * or returns a single value when a key is provided.
+     *
+     * @param string $key Optional key.
+     * @return mixed
+     */
+    public function get_settings($key = '')
+    {
+        if (!empty($key)) {
+            return self::get($key);
+        }
+        return self::get_all();
+    }
+
+    // ─── Hook registration (called from Plugin via config/core.php) ─
+
+    /**
+     * Register hooks.
+     *
+     * @param \TubeBay\Core\Plugin $plugin
+     */
+    public function run($plugin)
+    {
+        // Nothing to register for individual options.
+        // Schema/sanitization is handled in the REST controllers.
     }
 }

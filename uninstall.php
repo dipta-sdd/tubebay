@@ -4,11 +4,11 @@
  * Fired when the user clicks "Delete" for the plugin.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
+ * @package    TubeBay
  */
 
 // If uninstall not called from WordPress, then exit.
-if (! defined('WP_UNINSTALL_PLUGIN')) {
+if (!defined('WP_UNINSTALL_PLUGIN')) {
 	exit;
 }
 
@@ -27,7 +27,7 @@ function tubebay_run_uninstall()
 	$options = get_option(TUBEBAY_OPTION_NAME);
 
 	// Only proceed if user opted in to delete all data.
-	if (! empty($options['advanced_deleteAllOnUninstall']) && true === $options['advanced_deleteAllOnUninstall']) {
+	if (!empty($options['advanced_deleteAllOnUninstall']) && true === $options['advanced_deleteAllOnUninstall']) {
 		tubebay_drop_custom_tables();
 		tubebay_delete_plugin_options();
 		tubebay_remove_capabilities();

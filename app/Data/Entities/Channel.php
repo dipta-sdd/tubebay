@@ -155,4 +155,56 @@ class Channel
 
         return $videos;
     }
+
+    /**
+     * Fetch channel details (like title) from the API.
+     * 
+     * @return array|\WP_Error
+     */
+    public function get_channel_details()
+    {
+        if (!$this->is_configured()) {
+            return new \WP_Error('not_configured', __('TubeBay API Key or Channel ID is missing.', 'tubebay'));
+        }
+
+        $transient_key = 'tubebay_channel_details_' . $this->channel_id;
+        $cached = get_transient($transient_key);
+
+        if ($cached !== false && is_array($cached)) {
+            return $cached;
+        }
+
+        $channel_url = add_query_arg([
+            'id' => $this->channel_id,
+            'part' => 'snippet',
+            'key' => $this->api_key,
+        ], 'https://www.googleapis.com/youtube/v3/channels');
+
+        $channel_response = wp_remote_get($channel_url);
+
+        if (is_wp_error($channel_response)) {
+            return $channel_response;
+        }
+
+        $channel_body = json_decode(wp_remote_retrieve_body($channel_response), true);
+
+        if (isset($channel_body['error'])) {
+            return new \WP_Error('api_error', $channel_body['error']['message'] ?? 'Unknown API Error');
+        }
+
+        if (empty($channel_body['items'][0]['snippet'])) {
+            return new \WP_Error('api_error', __('Could not fetch channel details.', 'tubebay'));
+        }
+
+        $snippet = $channel_body['items'][0]['snippet'];
+
+        $details = [
+            'title' => $snippet['title'] ?? '',
+            'description' => $snippet['description'] ?? '',
+        ];
+
+        set_transient($transient_key, $details, Settings::get_cache_duration());
+
+        return $details;
+    }
 }

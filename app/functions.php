@@ -3,7 +3,7 @@
 /**
  * Reusable functions.
  *
- * @package    WPAB_Boilerplate
+ * @package    TubeBay
  * @since 1.0.0
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
@@ -26,7 +26,7 @@ if (!function_exists('tubebay_log')) {
 	 */
 	function tubebay_log($message, $level = 'INFO')
 	{
-		$enable_logging = TubeBay\Core\Settings::get_instance()->get_settings('debug_enableMode');
+		$enable_logging = TubeBay\Helper\Settings::get('debug_enableMode');
 		if (!$enable_logging && ($level !== 'ERROR' && $level !== 'error')) {
 			return;
 		}

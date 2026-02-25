@@ -18,8 +18,8 @@ use WP_REST_Server;
  * It demonstrates a GET and POST endpoint with proper permission checks.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Api
+ * @package    TubeBay
+ * @subpackage TubeBay/Api
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class SampleController extends ApiController
@@ -62,8 +62,8 @@ class SampleController extends ApiController
         // GET endpoint: Retrieve sample data
         register_rest_route($namespace, '/sample', array(
             array(
-                'methods'             => WP_REST_Server::READABLE,
-                'callback'            => array($this, 'get_sample_data'),
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => array($this, 'get_sample_data'),
                 'permission_callback' => array($this, 'get_item_permissions_check'),
             ),
         ));
@@ -71,8 +71,8 @@ class SampleController extends ApiController
         // POST endpoint: Create/update sample data
         register_rest_route($namespace, '/sample', array(
             array(
-                'methods'             => WP_REST_Server::CREATABLE,
-                'callback'            => array($this, 'update_sample_data'),
+                'methods' => WP_REST_Server::CREATABLE,
+                'callback' => array($this, 'update_sample_data'),
                 'permission_callback' => array($this, 'update_item_permissions_check'),
             ),
         ));
@@ -90,7 +90,7 @@ class SampleController extends ApiController
         $data = array(
             'message' => __('Hello from TubeBay!', 'tubebay'),
             'version' => TUBEBAY_VERSION,
-            'time'    => current_time('mysql'),
+            'time' => current_time('mysql'),
         );
 
         return new WP_REST_Response($data, 200);

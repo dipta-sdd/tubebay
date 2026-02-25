@@ -9,8 +9,8 @@ namespace TubeBay\Core;
  * for child classes to register their actions and filters.
  *
  * @since      1.0.0
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Core
+ * @package    TubeBay
+ * @subpackage TubeBay/Core
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 
@@ -61,7 +61,9 @@ abstract class Base
 	 *
 	 * @since    1.0.0
 	 */
-	protected function __construct() {}
+	protected function __construct()
+	{
+	}
 
 	/**
 	 * Adds a new action to the hooks array.
@@ -120,12 +122,16 @@ abstract class Base
 	 *
 	 * @since 1.0.0
 	 */
-	private function __clone() {}
+	private function __clone()
+	{
+	}
 
 	/**
 	 * Prevents the instance from being unserialized.
 	 *
 	 * @since 1.0.0
 	 */
-	public function __wakeup() {}
+	public function __wakeup()
+	{
+	}
 }

@@ -2,7 +2,7 @@
 
 namespace TubeBay\Admin;
 
-use TubeBay\Core\Settings;
+use TubeBay\Helper\Settings;
 
 // Exit if accessed directly.
 if (!defined('ABSPATH')) {
@@ -12,8 +12,8 @@ if (!defined('ABSPATH')) {
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Admin
+ * @package    TubeBay
+ * @subpackage TubeBay/Admin
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class Admin
@@ -261,7 +261,7 @@ class Admin
 					'dateFormat' => get_option('date_format'),
 					'timeFormat' => get_option('time_format'),
 				),
-				'plugin_settings' => \TubeBay\Core\Settings::get_instance()->get_settings()
+				'plugin_settings' => Settings::get_all()
 			)
 		);
 

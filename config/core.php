@@ -10,5 +10,5 @@
 
 return array(
     \TubeBay\Admin\Admin::class,
-    \TubeBay\Core\Settings::class,
+    \TubeBay\Helper\Settings::class,
 );

@@ -10,8 +10,8 @@ if (!defined('ABSPATH')) {
 /**
  * Register all actions and filters for the plugin.
  *
- * @package    WPAB_Boilerplate
- * @subpackage WPAB_Boilerplate/Helper
+ * @package    TubeBay
+ * @subpackage TubeBay/Helper
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
 class Loader

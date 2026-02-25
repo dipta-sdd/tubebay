@@ -8,6 +8,8 @@ import { NumberInput } from "../components/common/NumberInput";
 interface SettingsData {
   api_key: string;
   channel_id: string;
+  channel_name: string;
+  connection_status: string;
   cache_duration: number;
 }
 
@@ -21,6 +23,8 @@ export default function Settings() {
   const [settings, setSettings] = useState<SettingsData>({
     api_key: "",
     channel_id: "",
+    channel_name: "",
+    connection_status: "",
     cache_duration: 12,
   });
 
@@ -33,7 +37,13 @@ export default function Settings() {
       const response = await apiFetch<SettingsData>({
         path: "/tubebay/v1/settings",
       });
-      setSettings(response);
+      setSettings({
+        api_key: response.api_key || "",
+        channel_id: response.channel_id || "",
+        channel_name: response.channel_name || "",
+        connection_status: response.connection_status || "",
+        cache_duration: response.cache_duration || 12,
+      });
     } catch (error) {
       addToast(`Error fetching settings: ${(error as Error).message}`, "error");
     } finally {
@@ -41,13 +51,13 @@ export default function Settings() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (settingsToSave = settings) => {
     setSaving(true);
     try {
       const response = await apiFetch<{ success: boolean; message: string }>({
         path: "/tubebay/v1/settings",
         method: "POST",
-        data: settings,
+        data: settingsToSave,
       });
 
       if (response.success) {
@@ -62,16 +72,48 @@ export default function Settings() {
 
   const handleTestConnection = async () => {
     setTesting(true);
+
+    // Optimistically save current API key and Channel ID before testing
+    await apiFetch({
+      path: "/tubebay/v1/settings",
+      method: "POST",
+      data: {
+        api_key: settings.api_key,
+        channel_id: settings.channel_id,
+      },
+    });
+
     try {
-      const response = await apiFetch<{ success: boolean; message: string }>({
+      const response = await apiFetch<{
+        success: boolean;
+        message: string;
+        channel_name?: string;
+        connection_status?: string;
+      }>({
         path: "/tubebay/v1/youtube/test-connection",
       });
 
       if (response.success) {
         addToast(response.message, "success");
+
+        const updatedSettings = {
+          ...settings,
+          channel_name: response.channel_name || "",
+          connection_status: response.connection_status || "connected",
+        };
+        setSettings(updatedSettings);
+
+        // Auto-save the new status and name
+        await handleSave(updatedSettings);
       }
     } catch (error) {
       addToast(`Connection Failed: ${(error as any).message}`, "error");
+      const updatedSettings = {
+        ...settings,
+        connection_status: "failed",
+      };
+      setSettings(updatedSettings);
+      await handleSave(updatedSettings);
     } finally {
       setTesting(false);
     }
@@ -119,24 +161,46 @@ export default function Settings() {
       <div className="wpab-flex wpab-flex-col wpab-gap-[24px]">
         {/* Connect Account Card */}
         <div className="wpab-bg-white wpab-rounded-[12px] wpab-border wpab-border-gray-200 wpab-p-[24px] wpab-shadow-sm">
-          <div className="wpab-flex wpab-items-center wpab-gap-[8px] wpab-mb-[24px]">
-            <svg
-              className="wpab-text-blue-600"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            <h2 className="wpab-text-[18px] wpab-font-bold wpab-text-gray-900">
-              Connect Account
-            </h2>
+          <div className="wpab-flex wpab-items-center wpab-justify-between wpab-mb-[24px]">
+            <div className="wpab-flex wpab-items-center wpab-gap-[8px]">
+              <svg
+                className="wpab-text-blue-600"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <h2 className="wpab-text-[18px] wpab-font-bold wpab-text-gray-900">
+                Connect Account
+              </h2>
+            </div>
+            {settings.connection_status && (
+              <div
+                className={`wpab-flex wpab-items-center wpab-gap-[6px] wpab-px-[10px] wpab-py-[4px] wpab-rounded-full wpab-text-[12px] wpab-font-medium ${
+                  settings.connection_status === "connected"
+                    ? "wpab-bg-green-100 wpab-text-green-700 wpab-border wpab-border-green-200"
+                    : "wpab-bg-red-100 wpab-text-red-700 wpab-border wpab-border-red-200"
+                }`}
+              >
+                <span
+                  className={`wpab-w-[6px] wpab-h-[6px] wpab-rounded-full ${
+                    settings.connection_status === "connected"
+                      ? "wpab-bg-green-500"
+                      : "wpab-bg-red-500"
+                  }`}
+                ></span>
+                {settings.connection_status === "connected"
+                  ? "Connected"
+                  : "Connection Failed"}
+              </div>
+            )}
           </div>
 
           <div className="wpab-flex wpab-flex-col wpab-gap-[20px]">
@@ -164,8 +228,41 @@ export default function Settings() {
               placeholder="UCxxxxxxxxxxxxxxx"
             />
 
+            {settings.channel_name &&
+              settings.connection_status === "connected" && (
+                <div className="wpab-bg-gray-50 wpab-border wpab-border-gray-200 wpab-rounded-[8px] wpab-p-[12px] wpab-flex wpab-items-center wpab-gap-[12px]">
+                  <div className="wpab-w-[40px] wpab-h-[40px] wpab-bg-red-100 wpab-rounded-full wpab-flex wpab-items-center wpab-justify-center wpab-text-red-600">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path>
+                      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="wpab-text-[12px] wpab-text-gray-500 wpab-font-medium wpab-mb-[2px]">
+                      Connected Channel
+                    </p>
+                    <p className="wpab-text-[14px] wpab-font-bold wpab-text-gray-900">
+                      {settings.channel_name}
+                    </p>
+                  </div>
+                </div>
+              )}
+
             <div className="wpab-flex wpab-gap-[12px] wpab-mt-[8px]">
-              <Button onClick={handleSave} disabled={saving} color="primary">
+              <Button
+                onClick={() => handleSave(settings)}
+                disabled={saving}
+                color="primary"
+              >
                 {saving ? "Saving..." : "Save Settings"}
               </Button>
               <Button
