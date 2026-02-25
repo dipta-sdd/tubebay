@@ -3,7 +3,7 @@ import { Spinner } from "@wordpress/components";
 
 const Loader: FC = () => {
   return (
-    <div className="wpab-loader-container">
+    <div className="tubebay-loader-container">
       <Spinner />
     </div>
   );

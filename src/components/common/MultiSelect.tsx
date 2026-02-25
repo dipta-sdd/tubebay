@@ -85,7 +85,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   enableSearch = true,
   isError = false,
-  errorClassName = "wpab-border-danger",
+  errorClassName = "tubebay-border-danger",
   classNames = {},
   isCompact = false,
 }) => {
@@ -245,14 +245,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div
-      className={`wpab-relative wpab-w-full ${className} ${
+      className={`tubebay-relative tubebay-w-full ${className} ${
         classNames.wrapper || ""
       }`}
       ref={containerRef}
     >
       {label && (
         <label
-          className={`wpab-block wpab-text-sm wpab-font-bold wpab-text-gray-900 wpab-mb-2 ${
+          className={`tubebay-block tubebay-text-sm tubebay-font-bold tubebay-text-gray-900 tubebay-mb-2 ${
             classNames.label || ""
           }`}
         >
@@ -266,14 +266,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         ref={ref}
         onClick={handleTriggerClick}
         className={`
-          wpab-relative wpab-flex wpab-flex-wrap wpab-items-center wpab-gap-2 wpab-w-full wpab-px-4 wpab-text-left !wpab-cursor-text
-          wpab-transition-all wpab-duration-200 wpab-ease-in-out wpab-border wpab-rounded-[8px] wpab-bg-white
+          tubebay-relative tubebay-flex tubebay-flex-wrap tubebay-items-center tubebay-gap-2 tubebay-w-full tubebay-px-4 tubebay-text-left !tubebay-cursor-text
+          tubebay-transition-all tubebay-duration-200 tubebay-ease-in-out tubebay-border tubebay-rounded-[8px] tubebay-bg-white
           ${borderClasses}
-          ${isCompact ? "wpab-py-[4px]" : "wpab-py-[7px]"}
+          ${isCompact ? "tubebay-py-[4px]" : "tubebay-py-[7px]"}
           ${
             disabled
-              ? "wpab-bg-gray-50 wpab-cursor-not-allowed wpab-text-gray-400 wpab-border-gray-200"
-              : `hover:!wpab-border-primary`
+              ? "tubebay-bg-gray-50 tubebay-cursor-not-allowed tubebay-text-gray-400 tubebay-border-gray-200"
+              : `hover:!tubebay-border-primary`
           }
           ${isOpen ? hoverBorderClasses : ""}
           ${isError ? errorClassName : ""}
@@ -285,7 +285,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           <span
             key={option.value}
             className={`
-                wpab-inline-flex wpab-items-center wpab-gap-1 wpab-bg-gray-100 wpab-text-gray-800 wpab-px-2 wpab-py-[2px] wpab-rounded-none wpab-text-[13px] wpab-leading-[20px] wpab-font-[400]
+                tubebay-inline-flex tubebay-items-center tubebay-gap-1 tubebay-bg-gray-100 tubebay-text-gray-800 tubebay-px-2 tubebay-py-[2px] tubebay-rounded-none tubebay-text-[13px] tubebay-leading-[20px] tubebay-font-[400]
                 ${classNames.tag || ""}
             `}
           >
@@ -293,10 +293,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             <button
               type="button"
               onClick={(e) => handleRemove(option.value, e)}
-              className="wpab-flex wpab-items-center wpab-justify-center wpab-w-4 wpab-h-4 wpab-rounded-full hover:wpab-bg-gray-200 wpab-transition-colors wpab-text-gray-500"
+              className="tubebay-flex tubebay-items-center tubebay-justify-center tubebay-w-4 tubebay-h-4 tubebay-rounded-full hover:tubebay-bg-gray-200 tubebay-transition-colors tubebay-text-gray-500"
               aria-label={`Remove ${option.label}`}
             >
-              <X className="wpab-w-3 wpab-h-3" />
+              <X className="tubebay-w-3 tubebay-h-3" />
             </button>
           </span>
         ))}
@@ -306,7 +306,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           ref={searchInputRef}
           type="text"
           className={`
-            wpab-flex-1 wpab-min-w-[80px] wpab-bg-transparent !wpab-border-none !wpab-shadow-none wpab-outline-none wpab-px-1 wpab-py-[2px]  !wpab-text-[13px] !wpab-leading-[20px] wpab-font-[400] wpab-text-gray-900 wpab-placeholder-gray-400 !wpab-min-h-[24px]
+            tubebay-flex-1 tubebay-min-w-[80px] tubebay-bg-transparent !tubebay-border-none !tubebay-shadow-none tubebay-outline-none tubebay-px-1 tubebay-py-[2px]  !tubebay-text-[13px] !tubebay-leading-[20px] tubebay-font-[400] tubebay-text-gray-900 tubebay-placeholder-gray-400 !tubebay-min-h-[24px]
             ${classNames.search || ""}
           `}
           value={searchQuery}
@@ -322,10 +322,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         />
 
         {/* Chevron Icon */}
-        <span className="wpab-flex-shrink-0 wpab-ml-auto wpab-flex wpab-items-center">
+        <span className="tubebay-flex-shrink-0 tubebay-ml-auto tubebay-flex tubebay-items-center">
           <ChevronDown
-            className={`wpab-h-4 wpab-w-4 wpab-text-gray-500 wpab-transition-transform wpab-duration-200 ${
-              isOpen ? "wpab-transform wpab-rotate-180" : ""
+            className={`tubebay-h-4 tubebay-w-4 tubebay-text-gray-500 tubebay-transition-transform tubebay-duration-200 ${
+              isOpen ? "tubebay-transform tubebay-rotate-180" : ""
             }`}
           />
         </span>
@@ -336,7 +336,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         <div
           ref={dropdownRef}
           className={`
-                wpab-absolute wpab-z-[50000] wpab-w-full wpab-bg-white wpab-border wpab-border-gray-200 wpab-rounded-[12px] wpab-p-[4px] wpab-shadow-xl
+                tubebay-absolute tubebay-z-[50000] tubebay-w-full tubebay-bg-white tubebay-border tubebay-border-gray-200 tubebay-rounded-[12px] tubebay-p-[4px] tubebay-shadow-xl
                 ${classNames.dropdown || ""}
             `}
           style={{
@@ -350,11 +350,11 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             ref={listRef}
             role="listbox"
             tabIndex={-1}
-            className="wpab-max-h-[204px] wpab-overflow-auto focus:wpab-outline-none"
+            className="tubebay-max-h-[204px] tubebay-overflow-auto focus:tubebay-outline-none"
             style={{ scrollbarWidth: "none" }}
           >
             {filteredOptions.length === 0 ? (
-              <li className="wpab-px-3 wpab-py-2 wpab-text-gray-500 wpab-text-sm wpab-text-center wpab-italic !wpab-mb-0 wpab-rounded-[8px]">
+              <li className="tubebay-px-3 tubebay-py-2 tubebay-text-gray-500 tubebay-text-sm tubebay-text-center tubebay-italic !tubebay-mb-0 tubebay-rounded-[8px]">
                 {searchQuery ? "No results found" : "No more options"}
               </li>
             ) : (
@@ -376,16 +376,16 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       handleSelect(option);
                     }}
                     className={`
-                        wpab-px-4 wpab-py-2.5 wpab-cursor-pointer wpab-text-sm wpab-transition-colors wpab-border-b wpab-border-gray-50 last:wpab-border-0 !wpab-mb-0  wpab-rounded-[8px]
+                        tubebay-px-4 tubebay-py-2.5 tubebay-cursor-pointer tubebay-text-sm tubebay-transition-colors tubebay-border-b tubebay-border-gray-50 last:tubebay-border-0 !tubebay-mb-0  tubebay-rounded-[8px]
                         ${
                           isDisabled
-                            ? "wpab-opacity-50 !wpab-cursor-not-allowed wpab-text-gray-400"
+                            ? "tubebay-opacity-50 !tubebay-cursor-not-allowed tubebay-text-gray-400"
                             : ""
                         }
                         ${
                           isHighlighted && !isDisabled
-                            ? "wpab-bg-blue-600 wpab-text-white"
-                            : "wpab-text-gray-700"
+                            ? "tubebay-bg-blue-600 tubebay-text-white"
+                            : "tubebay-text-gray-700"
                         }
                         ${option.className || ""}
                         ${classNames.option || ""}

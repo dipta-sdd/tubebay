@@ -8,7 +8,7 @@ set -e
 
 # Current values (Do not change these unless the boilerplate itself changes)
 CURRENT_NAME="WPAB Boilerplate"
-CURRENT_SLUG="wpab-boilerplate"
+CURRENT_SLUG="tubebay-boilerplate"
 CURRENT_NAMESPACE="WpabBoilerplate"
 CURRENT_PREFIX_FUNC="wpab_boilerplate"
 CURRENT_PREFIX_CONST="WPAB_BOILERPLATE"

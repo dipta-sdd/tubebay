@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  prefix: "wpab-",
+  prefix: "tubebay-",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
 
   plugins: [

@@ -9,10 +9,10 @@ const Dashboard: FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="wpab-p-[32px] wpab-max-w-[760px] wpab-mx-auto wpab-w-full">
+    <div className="tubebay-p-[32px] tubebay-max-w-[760px] tubebay-mx-auto tubebay-w-full">
       {/* Header Section */}
-      <div className="wpab-text-center wpab-mb-[48px] wpab-mt-[16px]">
-        <div className="wpab-inline-flex wpab-items-center wpab-justify-center wpab-w-[72px] wpab-h-[72px] wpab-rounded-[16px] wpab-bg-[#ff0000] wpab-mb-[24px] wpab-shadow-[0_8px_16px_rgba(255,0,0,0.2)]">
+      <div className="tubebay-text-center tubebay-mb-[48px] tubebay-mt-[16px]">
+        <div className="tubebay-inline-flex tubebay-items-center tubebay-justify-center tubebay-w-[72px] tubebay-h-[72px] tubebay-rounded-[16px] tubebay-bg-[#ff0000] tubebay-mb-[24px] tubebay-shadow-[0_8px_16px_rgba(255,0,0,0.2)]">
           <svg
             width="40"
             height="40"
@@ -23,20 +23,20 @@ const Dashboard: FC = () => {
             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
           </svg>
         </div>
-        <h1 className="wpab-text-[32px] wpab-font-bold wpab-text-gray-900 wpab-mb-[12px] wpab-tracking-tight">
+        <h1 className="tubebay-text-[32px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[12px] tubebay-tracking-tight">
           Welcome to {store.pluginData?.plugin_name || "TubeBay"}
         </h1>
-        <p className="wpab-text-[16px] wpab-text-gray-600 wpab-max-w-[600px] wpab-mx-auto wpab-leading-relaxed">
+        <p className="tubebay-text-[16px] tubebay-text-gray-600 tubebay-max-w-[600px] tubebay-mx-auto tubebay-leading-relaxed">
           Connect your YouTube channel once, and seamlessly sync product videos
           across your entire WooCommerce store.
         </p>
       </div>
 
       {/* Features Grid */}
-      <div className="wpab-grid wpab-grid-cols-1 md:wpab-grid-cols-3 wpab-gap-[20px] wpab-mb-[32px]">
+      <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-3 tubebay-gap-[20px] tubebay-mb-[32px]">
         {/* Card 1 */}
-        <div className="wpab-bg-white wpab-rounded-[12px] wpab-p-[24px] wpab-border wpab-border-gray-200 wpab-shadow-sm">
-          <div className="wpab-w-[40px] wpab-h-[40px] wpab-bg-blue-50 wpab-rounded-[10px] wpab-flex wpab-items-center wpab-justify-center wpab-mb-[16px] wpab-text-blue-600">
+        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm">
+          <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-blue-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[16px] tubebay-text-blue-600">
             <svg
               width="20"
               height="20"
@@ -51,18 +51,18 @@ const Dashboard: FC = () => {
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
             </svg>
           </div>
-          <h3 className="wpab-text-[16px] wpab-font-bold wpab-text-gray-900 wpab-mb-[8px]">
+          <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
             One-Time Connection
           </h3>
-          <p className="wpab-text-[13px] wpab-text-gray-600 wpab-leading-relaxed">
+          <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-leading-relaxed">
             Connect your YouTube account once and access all your videos
             instantly across products.
           </p>
         </div>
 
         {/* Card 2 */}
-        <div className="wpab-bg-white wpab-rounded-[12px] wpab-p-[24px] wpab-border wpab-border-gray-200 wpab-shadow-sm">
-          <div className="wpab-w-[40px] wpab-h-[40px] wpab-bg-green-50 wpab-rounded-[10px] wpab-flex wpab-items-center wpab-justify-center wpab-mb-[16px] wpab-text-green-600">
+        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm">
+          <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-green-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[16px] tubebay-text-green-600">
             <svg
               width="20"
               height="20"
@@ -77,18 +77,18 @@ const Dashboard: FC = () => {
               <path d="M3 3v5h5"></path>
             </svg>
           </div>
-          <h3 className="wpab-text-[16px] wpab-font-bold wpab-text-gray-900 wpab-mb-[8px]">
+          <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
             Automatic Sync
           </h3>
-          <p className="wpab-text-[13px] wpab-text-gray-600 wpab-leading-relaxed">
+          <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-leading-relaxed">
             Keep your product videos up-to-date with automatic daily
             synchronization from YouTube.
           </p>
         </div>
 
         {/* Card 3 */}
-        <div className="wpab-bg-white wpab-rounded-[12px] wpab-p-[24px] wpab-border wpab-border-gray-200 wpab-shadow-sm">
-          <div className="wpab-w-[40px] wpab-h-[40px] wpab-bg-purple-50 wpab-rounded-[10px] wpab-flex wpab-items-center wpab-justify-center wpab-mb-[16px] wpab-text-purple-600">
+        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm">
+          <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-purple-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[16px] tubebay-text-purple-600">
             <svg
               width="20"
               height="20"
@@ -110,10 +110,10 @@ const Dashboard: FC = () => {
               <line x1="17" y1="16" x2="23" y2="16"></line>
             </svg>
           </div>
-          <h3 className="wpab-text-[16px] wpab-font-bold wpab-text-gray-900 wpab-mb-[8px]">
+          <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
             Flexible Placement
           </h3>
-          <p className="wpab-text-[13px] wpab-text-gray-600 wpab-leading-relaxed">
+          <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-leading-relaxed">
             Choose where videos appear on your product pages with customizable
             placement options.
           </p>
@@ -121,8 +121,8 @@ const Dashboard: FC = () => {
       </div>
 
       {/* System Requirements */}
-      <div className="wpab-bg-[#f5f8ff] wpab-rounded-[12px] wpab-border wpab-border-blue-100 wpab-p-[24px] wpab-mb-[32px] wpab-flex wpab-gap-[16px]">
-        <div className="wpab-w-[32px] wpab-h-[32px] wpab-bg-blue-600 wpab-rounded-full wpab-flex wpab-items-center wpab-justify-center wpab-text-white wpab-shrink-0">
+      <div className="tubebay-bg-[#f5f8ff] tubebay-rounded-[12px] tubebay-border tubebay-border-blue-100 tubebay-p-[24px] tubebay-mb-[32px] tubebay-flex tubebay-gap-[16px]">
+        <div className="tubebay-w-[32px] tubebay-h-[32px] tubebay-bg-blue-600 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-white tubebay-shrink-0">
           <svg
             width="18"
             height="18"
@@ -139,17 +139,17 @@ const Dashboard: FC = () => {
           </svg>
         </div>
         <div>
-          <h4 className="wpab-text-[15px] wpab-font-bold wpab-text-gray-900 wpab-mb-[4px]">
+          <h4 className="tubebay-text-[15px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[4px]">
             System Requirements
           </h4>
-          <p className="wpab-text-[13px] wpab-text-gray-600 wpab-mb-[16px]">
+          <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-mb-[16px]">
             TubeBay requires WooCommerce to be installed and activated on your
             WordPress site.
           </p>
-          <div className="wpab-flex wpab-flex-wrap wpab-gap-[8px]">
-            <span className="wpab-inline-flex wpab-items-center wpab-gap-[6px] wpab-bg-white wpab-px-[10px] wpab-py-[4px] wpab-rounded-[6px] wpab-text-[12px] wpab-font-medium wpab-text-gray-700 wpab-border wpab-border-gray-200">
+          <div className="tubebay-flex tubebay-flex-wrap tubebay-gap-[8px]">
+            <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[6px] tubebay-bg-white tubebay-px-[10px] tubebay-py-[4px] tubebay-rounded-[6px] tubebay-text-[12px] tubebay-font-medium tubebay-text-gray-700 tubebay-border tubebay-border-gray-200">
               <svg
-                className="wpab-text-blue-500"
+                className="tubebay-text-blue-500"
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
@@ -164,9 +164,9 @@ const Dashboard: FC = () => {
               </svg>
               WordPress 5.8+
             </span>
-            <span className="wpab-inline-flex wpab-items-center wpab-gap-[6px] wpab-bg-white wpab-px-[10px] wpab-py-[4px] wpab-rounded-[6px] wpab-text-[12px] wpab-font-medium wpab-text-gray-700 wpab-border wpab-border-gray-200">
+            <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[6px] tubebay-bg-white tubebay-px-[10px] tubebay-py-[4px] tubebay-rounded-[6px] tubebay-text-[12px] tubebay-font-medium tubebay-text-gray-700 tubebay-border tubebay-border-gray-200">
               <svg
-                className="wpab-text-purple-500"
+                className="tubebay-text-purple-500"
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
@@ -182,8 +182,8 @@ const Dashboard: FC = () => {
               </svg>
               WooCommerce 6.0+
             </span>
-            <span className="wpab-inline-flex wpab-items-center wpab-gap-[6px] wpab-bg-white wpab-px-[10px] wpab-py-[4px] wpab-rounded-[6px] wpab-text-[12px] wpab-font-medium wpab-text-gray-700 wpab-border wpab-border-gray-200">
-              <span className="wpab-text-indigo-500 wpab-font-bold wpab-text-[10px] wpab-tracking-tighter wpab-bg-indigo-50 wpab-px-[4px] wpab-rounded wpab-border wpab-border-indigo-100">
+            <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[6px] tubebay-bg-white tubebay-px-[10px] tubebay-py-[4px] tubebay-rounded-[6px] tubebay-text-[12px] tubebay-font-medium tubebay-text-gray-700 tubebay-border tubebay-border-gray-200">
+              <span className="tubebay-text-indigo-500 tubebay-font-bold tubebay-text-[10px] tubebay-tracking-tighter tubebay-bg-indigo-50 tubebay-px-[4px] tubebay-rounded tubebay-border tubebay-border-indigo-100">
                 PHP
               </span>
               PHP 7.4+
@@ -193,21 +193,21 @@ const Dashboard: FC = () => {
       </div>
 
       {/* Call to Action */}
-      <div className="wpab-bg-white wpab-rounded-[12px] wpab-p-[40px] wpab-border wpab-border-gray-200 wpab-shadow-sm wpab-text-center wpab-mb-[32px]">
-        <h2 className="wpab-text-[22px] wpab-font-bold wpab-text-gray-900 wpab-mb-[8px]">
+      <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[40px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-text-center tubebay-mb-[32px]">
+        <h2 className="tubebay-text-[22px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
           Ready to Get Started?
         </h2>
-        <p className="wpab-text-[15px] wpab-text-gray-500 wpab-mb-[24px]">
+        <p className="tubebay-text-[15px] tubebay-text-gray-500 tubebay-mb-[24px]">
           Set up your YouTube connection in just a few simple steps.
         </p>
-        <div className="wpab-flex wpab-flex-col wpab-items-center wpab-gap-[16px] wpab-w-full wpab-max-w-[360px] wpab-mx-auto">
+        <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] tubebay-w-full tubebay-max-w-[360px] tubebay-mx-auto">
           <Button
-            className="wpab-w-full wpab-h-[48px] wpab-text-[15px] wpab-font-bold wpab-bg-blue-600 hover:wpab-bg-blue-700 wpab-shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:wpab-shadow-[0_6px_16px_rgba(37,99,235,0.3)]"
+            className="tubebay-w-full tubebay-h-[48px] tubebay-text-[15px] tubebay-font-bold tubebay-bg-blue-600 hover:tubebay-bg-blue-700 tubebay-shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:tubebay-shadow-[0_6px_16px_rgba(37,99,235,0.3)]"
             color="primary"
             onClick={() => navigate("/settings")}
           >
             <svg
-              className="wpab-mr-[8px]"
+              className="tubebay-mr-[8px]"
               width="18"
               height="18"
               viewBox="0 0 24 24"
@@ -224,21 +224,21 @@ const Dashboard: FC = () => {
             Start Setup Wizard
           </Button>
 
-          <div className="wpab-flex wpab-items-center wpab-w-full">
-            <div className="wpab-flex-1 wpab-h-[1px] wpab-bg-gray-200"></div>
-            <span className="wpab-px-[16px] wpab-text-[12px] wpab-font-bold wpab-text-gray-400 wpab-tracking-wider">
+          <div className="tubebay-flex tubebay-items-center tubebay-w-full">
+            <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
+            <span className="tubebay-px-[16px] tubebay-text-[12px] tubebay-font-bold tubebay-text-gray-400 tubebay-tracking-wider">
               OR
             </span>
-            <div className="wpab-flex-1 wpab-h-[1px] wpab-bg-gray-200"></div>
+            <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
           </div>
 
           <Button
             variant="outline"
-            className="wpab-w-full wpab-h-[48px] wpab-text-[14px] wpab-font-bold wpab-text-gray-700 wpab-border-gray-300 hover:wpab-bg-gray-50"
+            className="tubebay-w-full tubebay-h-[48px] tubebay-text-[14px] tubebay-font-bold tubebay-text-gray-700 tubebay-border-gray-300 hover:tubebay-bg-gray-50"
             onClick={() => navigate("/settings")}
           >
             <svg
-              className="wpab-mr-[8px] wpab-text-gray-500"
+              className="tubebay-mr-[8px] tubebay-text-gray-500"
               width="18"
               height="18"
               viewBox="0 0 24 24"
@@ -257,9 +257,9 @@ const Dashboard: FC = () => {
       </div>
 
       {/* Footer Links */}
-      <div className="wpab-grid wpab-grid-cols-1 md:wpab-grid-cols-2 wpab-gap-[16px]">
-        <button className="wpab-bg-white wpab-rounded-[12px] wpab-p-[20px] wpab-border wpab-border-gray-200 wpab-shadow-sm hover:wpab-shadow-md wpab-transition-all wpab-flex wpab-items-center wpab-gap-[16px] wpab-text-left group">
-          <div className="wpab-w-[40px] wpab-h-[40px] wpab-bg-blue-50 wpab-rounded-[10px] wpab-flex wpab-items-center wpab-justify-center wpab-text-blue-600">
+      <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 tubebay-gap-[16px]">
+        <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[20px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-center tubebay-gap-[16px] tubebay-text-left group">
+          <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-blue-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-blue-600">
             <svg
               width="20"
               height="20"
@@ -274,16 +274,16 @@ const Dashboard: FC = () => {
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
           </div>
-          <div className="wpab-flex-1">
-            <h4 className="wpab-text-[14px] wpab-font-bold wpab-text-gray-900 wpab-mb-[2px]">
+          <div className="tubebay-flex-1">
+            <h4 className="tubebay-text-[14px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[2px]">
               View Documentation
             </h4>
-            <p className="wpab-text-[12px] wpab-text-gray-500">
+            <p className="tubebay-text-[12px] tubebay-text-gray-500">
               Learn how to use TubeBay with our comprehensive guides
             </p>
           </div>
           <svg
-            className="wpab-text-gray-400 wpab-transition-transform group-hover:wpab-translate-x-1"
+            className="tubebay-text-gray-400 tubebay-transition-transform group-hover:tubebay-translate-x-1"
             width="20"
             height="20"
             viewBox="0 0 24 24"
@@ -298,8 +298,8 @@ const Dashboard: FC = () => {
           </svg>
         </button>
 
-        <button className="wpab-bg-white wpab-rounded-[12px] wpab-p-[20px] wpab-border wpab-border-gray-200 wpab-shadow-sm hover:wpab-shadow-md wpab-transition-all wpab-flex wpab-items-center wpab-gap-[16px] wpab-text-left group">
-          <div className="wpab-w-[40px] wpab-h-[40px] wpab-bg-green-50 wpab-rounded-[10px] wpab-flex wpab-items-center wpab-justify-center wpab-text-green-600">
+        <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[20px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-center tubebay-gap-[16px] tubebay-text-left group">
+          <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-green-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-green-600">
             <svg
               width="20"
               height="20"
@@ -316,16 +316,16 @@ const Dashboard: FC = () => {
               <path d="M22 12c0-5.52-4.48-10-10-10"></path>
             </svg>
           </div>
-          <div className="wpab-flex-1">
-            <h4 className="wpab-text-[14px] wpab-font-bold wpab-text-gray-900 wpab-mb-[2px]">
+          <div className="tubebay-flex-1">
+            <h4 className="tubebay-text-[14px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[2px]">
               Contact Support
             </h4>
-            <p className="wpab-text-[12px] wpab-text-gray-500">
+            <p className="tubebay-text-[12px] tubebay-text-gray-500">
               Need help? Our support team is here to assist you
             </p>
           </div>
           <svg
-            className="wpab-text-gray-400 wpab-transition-transform group-hover:wpab-translate-x-1"
+            className="tubebay-text-gray-400 tubebay-transition-transform group-hover:tubebay-translate-x-1"
             width="20"
             height="20"
             viewBox="0 0 24 24"

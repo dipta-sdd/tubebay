@@ -3,6 +3,7 @@ import apiFetch from "@wordpress/api-fetch";
 import { useToast } from "../store/toast/use-toast";
 import { Input } from "../components/common/Input";
 import Button from "../components/common/Button";
+import Page from "../components/common/Page";
 
 interface VideoData {
   id: string;
@@ -79,14 +80,14 @@ export default function ChannelLibrary() {
   };
 
   return (
-    <div className="wpab-p-[32px] wpab-max-w-[1200px] wpab-mx-auto wpab-w-full">
+    <Page>
       {/* Header */}
-      <div className="wpab-flex wpab-flex-col md:wpab-flex-row md:wpab-justify-between md:wpab-items-end wpab-mb-[32px] wpab-gap-[16px]">
+      <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-justify-between md:tubebay-items-end tubebay-mb-[32px] tubebay-gap-[16px]">
         <div>
-          <h1 className="wpab-text-[28px] wpab-font-bold wpab-text-gray-900 wpab-mb-[8px]">
+          <h1 className="tubebay-text-[28px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
             Channel Library
           </h1>
-          <p className="wpab-text-[15px] wpab-text-gray-500">
+          <p className="tubebay-text-[15px] tubebay-text-gray-500">
             Manage and preview your synced YouTube videos
           </p>
         </div>
@@ -94,14 +95,14 @@ export default function ChannelLibrary() {
           onClick={handleSyncNow}
           disabled={syncing}
           color="primary"
-          className="wpab-whitespace-nowrap wpab-px-[24px]"
+          className="tubebay-whitespace-nowrap tubebay-px-[24px]"
         >
           {syncing ? (
             "Syncing..."
           ) : (
             <>
               <svg
-                className="wpab-mr-[8px]"
+                className="tubebay-mr-[8px]"
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
@@ -123,9 +124,9 @@ export default function ChannelLibrary() {
       </div>
 
       {/* Status Banner */}
-      <div className="wpab-bg-green-50 wpab-border wpab-border-green-200 wpab-rounded-[12px] wpab-p-[24px] wpab-mb-[32px] wpab-flex wpab-flex-col md:wpab-flex-row md:wpab-items-center md:wpab-justify-between">
-        <div className="wpab-flex wpab-items-center wpab-gap-[16px]">
-          <div className="wpab-bg-green-500 wpab-text-white wpab-rounded-full wpab-p-[8px] wpab-flex wpab-items-center wpab-justify-center">
+      <div className="tubebay-bg-green-50 tubebay-border tubebay-border-green-200 tubebay-rounded-[12px] tubebay-p-[24px] tubebay-mb-[32px] tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-items-center md:tubebay-justify-between">
+        <div className="tubebay-flex tubebay-items-center tubebay-gap-[16px]">
+          <div className="tubebay-bg-green-500 tubebay-text-white tubebay-rounded-full tubebay-p-[8px] tubebay-flex tubebay-items-center tubebay-justify-center">
             <svg
               width="24"
               height="24"
@@ -140,42 +141,44 @@ export default function ChannelLibrary() {
             </svg>
           </div>
           <div>
-            <h3 className="wpab-text-[16px] wpab-font-bold wpab-text-gray-900">
+            <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900">
               {videos.length > 0 ? "All Videos Synced" : "No Videos YET"}
             </h3>
-            <p className="wpab-text-[14px] wpab-text-gray-600">
+            <p className="tubebay-text-[14px] tubebay-text-gray-600">
               {videos.length} videos from your YouTube channel are available
             </p>
           </div>
         </div>
-        <div className="wpab-text-right wpab-mt-[16px] md:wpab-mt-0">
-          <p className="wpab-text-[14px] wpab-font-medium wpab-text-gray-900">
+        <div className="tubebay-text-right tubebay-mt-[16px] md:tubebay-mt-0">
+          <p className="tubebay-text-[14px] tubebay-font-medium tubebay-text-gray-900">
             Last sync: Recently
           </p>
-          <p className="wpab-text-[12px] wpab-text-gray-500">Cache is active</p>
+          <p className="tubebay-text-[12px] tubebay-text-gray-500">
+            Cache is active
+          </p>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="wpab-flex wpab-flex-col md:wpab-flex-row wpab-gap-[16px] wpab-mb-[32px]">
-        <div className="wpab-flex-1">
+      <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-[16px] tubebay-mb-[32px]">
+        <div className="tubebay-flex-1">
           <Input
             type="text"
             placeholder="Search videos by title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            classNames={{ input: "wpab-bg-white" }}
+            classNames={{ input: "tubebay-bg-white" }}
           />
         </div>
-        <div className="wpab-w-full md:wpab-w-[200px]">
+        <div className="tubebay-w-full md:tubebay-w-[200px]">
           {/* Simple select for UI mockup */}
-          <select className="wpab-w-full wpab-p-[9px] wpab-border wpab-border-gray-300 wpab-rounded-[8px] wpab-bg-white wpab-text-[13px] wpab-outline-none focus:wpab-ring-2 focus:wpab-ring-blue-500">
+          <select className="tubebay-w-full tubebay-p-[9px] tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] tubebay-bg-white tubebay-text-[13px] tubebay-outline-none focus:tubebay-ring-2 focus:tubebay-ring-blue-500">
             <option>Recently Added</option>
             <option>Oldest First</option>
           </select>
         </div>
-        <div className="wpab-flex wpab-items-center wpab-gap-[8px]">
-          <button className="wpab-p-[10px] wpab-bg-white wpab-border wpab-border-gray-300 wpab-rounded-[8px] hover:wpab-bg-gray-50">
+        <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">
+          <button className="tubebay-p-[10px] tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] hover:tubebay-bg-gray-50">
             <svg
               width="18"
               height="18"
@@ -191,7 +194,7 @@ export default function ChannelLibrary() {
               <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
           </button>
-          <button className="wpab-p-[10px] wpab-bg-white wpab-border wpab-border-gray-300 wpab-rounded-[8px] hover:wpab-bg-gray-50">
+          <button className="tubebay-p-[10px] tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] hover:tubebay-bg-gray-50">
             <svg
               width="18"
               height="18"
@@ -214,43 +217,43 @@ export default function ChannelLibrary() {
       </div>
 
       {loading ? (
-        <div className="wpab-text-center wpab-py-[48px] wpab-text-gray-500">
+        <div className="tubebay-text-center tubebay-py-[48px] tubebay-text-gray-500">
           Loading library...
         </div>
       ) : filteredVideos.length === 0 ? (
-        <div className="wpab-text-center wpab-py-[48px] wpab-text-gray-500">
+        <div className="tubebay-text-center tubebay-py-[48px] tubebay-text-gray-500">
           No videos found. Try syncing or adjusting your search.
         </div>
       ) : (
-        <div className="wpab-grid wpab-grid-cols-1 md:wpab-grid-cols-2 lg:wpab-grid-cols-3 xl:wpab-grid-cols-4 wpab-gap-[24px]">
+        <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 lg:tubebay-grid-cols-3 xl:tubebay-grid-cols-4 tubebay-gap-[24px]">
           {filteredVideos.map((video) => (
             <div
               key={video.id}
-              className="wpab-bg-white wpab-border wpab-border-gray-200 wpab-rounded-[12px] wpab-overflow-hidden wpab-shadow-sm hover:wpab-shadow-md wpab-transition-shadow"
+              className="tubebay-bg-white tubebay-border tubebay-border-gray-200 tubebay-rounded-[12px] tubebay-overflow-hidden tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-shadow"
             >
               {/* Thumbnail */}
-              <div className="wpab-relative wpab-aspect-video wpab-bg-gray-100">
+              <div className="tubebay-relative tubebay-aspect-video tubebay-bg-gray-100">
                 <img
                   src={video.thumbnail_url}
                   alt={video.title}
-                  className="wpab-w-full wpab-h-full wpab-object-cover"
+                  className="tubebay-w-full tubebay-h-full tubebay-object-cover"
                 />
-                <div className="wpab-absolute wpab-bottom-[8px] wpab-right-[8px] wpab-bg-black/80 wpab-text-white wpab-text-[11px] wpab-font-medium wpab-px-[6px] wpab-py-[2px] wpab-rounded-[4px]">
+                <div className="tubebay-absolute tubebay-bottom-[8px] tubebay-right-[8px] tubebay-bg-black/80 tubebay-text-white tubebay-text-[11px] tubebay-font-medium tubebay-px-[6px] tubebay-py-[2px] tubebay-rounded-[4px]">
                   Video
                 </div>
               </div>
 
               {/* Content */}
-              <div className="wpab-p-[16px] wpab-flex wpab-flex-col wpab-justify-between">
+              <div className="tubebay-p-[16px] tubebay-flex tubebay-flex-col tubebay-justify-between">
                 <div>
                   <h4
-                    className="wpab-text-[15px] wpab-font-bold wpab-text-gray-900 wpab-tracking-tight wpab-line-clamp-2 wpab-mb-[8px] wpab-leading-tight"
+                    className="tubebay-text-[15px] tubebay-font-bold tubebay-text-gray-900 tubebay-tracking-tight tubebay-line-clamp-2 tubebay-mb-[8px] tubebay-leading-tight"
                     title={video.title}
                   >
                     {video.title}
                   </h4>
-                  <div className="wpab-flex wpab-items-center wpab-text-[13px] wpab-text-gray-500 wpab-mb-[16px] wpab-gap-[8px]">
-                    <span className="wpab-flex wpab-items-center wpab-gap-[4px]">
+                  <div className="tubebay-flex tubebay-items-center tubebay-text-[13px] tubebay-text-gray-500 tubebay-mb-[16px] tubebay-gap-[8px]">
+                    <span className="tubebay-flex tubebay-items-center tubebay-gap-[4px]">
                       <svg
                         width="14"
                         height="14"
@@ -267,7 +270,7 @@ export default function ChannelLibrary() {
                       YT Video
                     </span>
                     <span>•</span>
-                    <span className="wpab-flex wpab-items-center wpab-gap-[4px]">
+                    <span className="tubebay-flex tubebay-items-center tubebay-gap-[4px]">
                       <svg
                         width="14"
                         height="14"
@@ -296,9 +299,9 @@ export default function ChannelLibrary() {
                 </div>
 
                 {/* Actions */}
-                <div className="wpab-flex wpab-gap-[8px]">
+                <div className="tubebay-flex tubebay-gap-[8px]">
                   <Button
-                    className="wpab-flex-1"
+                    className="tubebay-flex-1"
                     color="primary"
                     onClick={() =>
                       window.open(
@@ -308,7 +311,7 @@ export default function ChannelLibrary() {
                     }
                   >
                     <svg
-                      className="wpab-mr-[6px]"
+                      className="tubebay-mr-[6px]"
                       width="16"
                       height="16"
                       viewBox="0 0 24 24"
@@ -325,7 +328,7 @@ export default function ChannelLibrary() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="!wpab-px-[12px] wpab-text-gray-700 wpab-border-gray-300 hover:wpab-bg-gray-50"
+                    className="!tubebay-px-[12px] tubebay-text-gray-700 tubebay-border-gray-300 hover:tubebay-bg-gray-50"
                     title="Copy Shortcode"
                     onClick={() => {
                       navigator.clipboard.writeText(
@@ -356,15 +359,15 @@ export default function ChannelLibrary() {
       )}
 
       {!loading && filteredVideos.length > 0 && (
-        <div className="wpab-mt-[32px] wpab-text-center">
+        <div className="tubebay-mt-[32px] tubebay-text-center">
           <Button
             variant="outline"
-            className="wpab-w-full md:wpab-w-[200px] wpab-py-[12px] wpab-font-bold wpab-text-gray-700"
+            className="tubebay-w-full md:tubebay-w-[200px] tubebay-py-[12px] tubebay-font-bold tubebay-text-gray-700"
           >
             Load More Videos
           </Button>
         </div>
       )}
-    </div>
+    </Page>
   );
 }

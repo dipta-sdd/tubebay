@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import apiFetch from "@wordpress/api-fetch";
+import Page from "../components/common/Page";
 
 const Logs = () => {
   const [logs, setLogs] = useState<string>("");
@@ -37,27 +38,26 @@ const Logs = () => {
   }, []);
 
   return (
-    <div className="wpab-p-6">
-      <div className="wpab-flex wpab-justify-between wpab-items-center wpab-mb-6">
+    <Page>
+      <div className="tubebay-flex tubebay-justify-between tubebay-items-center tubebay-mb-6">
         <div>
-          <h1 className="wpab-text-2xl wpab-font-bold wpab-text-gray-900">
+          <h1 className="tubebay-text-2xl tubebay-font-bold tubebay-text-gray-900">
             Debug Logs
           </h1>
-          <p className="wpab-text-sm wpab-text-gray-500 wpab-mt-1">
-            View logs stored in
-            /wp-content/uploads/tubebay-logs/debug.log
+          <p className="tubebay-text-sm tubebay-text-gray-500 tubebay-mt-1">
+            View logs stored in /wp-content/uploads/tubebay-logs/debug.log
           </p>
         </div>
-        <div className="wpab-flex wpab-gap-2">
+        <div className="tubebay-flex tubebay-gap-2">
           <button
             onClick={fetchLogs}
-            className="wpab-px-4 wpab-py-2 wpab-bg-white wpab-border wpab-border-gray-300 wpab-rounded-md wpab-text-sm wpab-font-medium wpab-text-gray-700 hover:wpab-bg-gray-50"
+            className="tubebay-px-4 tubebay-py-2 tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-md tubebay-text-sm tubebay-font-medium tubebay-text-gray-700 hover:tubebay-bg-gray-50"
           >
             Refresh
           </button>
           <button
             onClick={clearLogs}
-            className="wpab-px-4 wpab-py-2 wpab-bg-red-600 wpab-text-white wpab-rounded-md wpab-text-sm wpab-font-medium hover:wpab-bg-red-700"
+            className="tubebay-px-4 tubebay-py-2 tubebay-bg-red-600 tubebay-text-white tubebay-rounded-md tubebay-text-sm tubebay-font-medium hover:tubebay-bg-red-700"
           >
             Clear Logs
           </button>
@@ -65,28 +65,28 @@ const Logs = () => {
       </div>
 
       {error && (
-        <div className="wpab-bg-red-50 wpab-border wpab-border-red-200 wpab-text-red-700 wpab-px-4 wpab-py-3 wpab-rounded wpab-mb-6">
+        <div className="tubebay-bg-red-50 tubebay-border tubebay-border-red-200 tubebay-text-red-700 tubebay-px-4 tubebay-py-3 tubebay-rounded tubebay-mb-6">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="wpab-flex wpab-justify-center wpab-py-12">
-          <span className="wpab-loading-spinner"></span>
+        <div className="tubebay-flex tubebay-justify-center tubebay-py-12">
+          <span className="tubebay-loading-spinner"></span>
         </div>
       ) : (
-        <div className="wpab-bg-gray-900 wpab-rounded-lg wpab-overflow-hidden wpab-shadow-sm">
-          <div className="wpab-p-4 wpab-bg-gray-800 wpab-border-b wpab-border-gray-700 wpab-flex wpab-justify-between wpab-items-center">
-            <span className="wpab-text-xs wpab-text-gray-400 wpab-font-mono">
+        <div className="tubebay-bg-gray-900 tubebay-rounded-lg tubebay-overflow-hidden tubebay-shadow-sm">
+          <div className="tubebay-p-4 tubebay-bg-gray-800 tubebay-border-b tubebay-border-gray-700 tubebay-flex tubebay-justify-between tubebay-items-center">
+            <span className="tubebay-text-xs tubebay-text-gray-400 tubebay-font-mono">
               debug.log
             </span>
           </div>
-          <pre className="wpab-p-4 wpab-text-gray-300 wpab-font-mono wpab-text-xs wpab-overflow-x-auto wpab-max-h-[600px] wpab-whitespace-pre-wrap">
+          <pre className="tubebay-p-4 tubebay-text-gray-300 tubebay-font-mono tubebay-text-xs tubebay-overflow-x-auto tubebay-max-h-[600px] tubebay-whitespace-pre-wrap">
             {logs}
           </pre>
         </div>
       )}
-    </div>
+    </Page>
   );
 };
 

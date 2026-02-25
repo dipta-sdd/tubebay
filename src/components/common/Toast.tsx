@@ -31,11 +31,11 @@ export const Toast: FC<ToastProps> = ({ toast, onDismiss }) => {
 
   return (
     <div className={toastClasses}>
-      <p className="wpab-margin-0 wpab-text[14px] wpab-leading-1.5 wpab-flex-1 ">
+      <p className="tubebay-margin-0 tubebay-text[14px] tubebay-leading-1.5 tubebay-flex-1 ">
         {toast.message}
       </p>
       <button
-        className="wpab-bg-none wpab-border-none wpab-text-inherit wpab-opacity-60 hover:wpab-opacity-100 wpab-cursor-pointer wpab-text[20px] wpab-leading-1 wpab-px[5px] wpab-self-start wpab-mt[-5px] wpab-mr[-5px] wpab-mb[-5px] wpab-ml-0"
+        className="tubebay-bg-none tubebay-border-none tubebay-text-inherit tubebay-opacity-60 hover:tubebay-opacity-100 tubebay-cursor-pointer tubebay-text[20px] tubebay-leading-1 tubebay-px[5px] tubebay-self-start tubebay-mt[-5px] tubebay-mr[-5px] tubebay-mb[-5px] tubebay-ml-0"
         onClick={handleDismiss}
         aria-label="Dismiss"
       >

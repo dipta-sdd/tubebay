@@ -93,7 +93,7 @@ class Admin
 	{
 		$plugin_data = $this->get_plugin_data();
 
-		
+
 
 		// Define menu items
 		$menu_items = array(
@@ -188,7 +188,7 @@ class Admin
 	public function add_setting_root_div()
 	{
 		echo '<div id="' . esc_attr(TUBEBAY_PLUGIN_NAME) . '">
-			<div class="wpab-loader-container">
+			<div class="tubebay-loader-container">
 				<p>' . esc_html__('Loading...', 'tubebay') . '</p>
 			</div>
 		</div>';
