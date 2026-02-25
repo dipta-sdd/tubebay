@@ -1,5 +1,6 @@
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import ChannelLibrary from "./pages/ChannelLibrary";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/common/AppLayout";
 import { WpabProvider } from "./store/wpabStore";
@@ -16,6 +17,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="logs" element={<Logs />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="library" element={<ChannelLibrary />} />
               {/* Add your routes here */}
             </Route>
           </Routes>

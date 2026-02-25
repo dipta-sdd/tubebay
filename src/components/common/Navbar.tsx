@@ -18,14 +18,17 @@ const Navbar: FC = () => {
       label: __("Dashboard", "tubebay"),
       path: "/",
     },
-    // Add your menu items here
     {
-      label: __("Logs", "tubebay"),
-      path: "/logs",
+      label: __("Channel Library", "tubebay"),
+      path: "/library",
     },
     {
       label: __("Settings", "tubebay"),
       path: "/settings",
+    },
+    {
+      label: __("Logs", "tubebay"),
+      path: "/logs",
     },
   ];
 

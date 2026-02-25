@@ -45,6 +45,15 @@ class YouTubeController extends ApiController
                 'permission_callback' => array($this, 'get_item_permissions_check'),
             ),
         ));
+
+        // Route to get cached videos
+        register_rest_route($namespace, '/youtube/videos', array(
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => array($this, 'get_videos'),
+                'permission_callback' => array($this, 'get_item_permissions_check'),
+            ),
+        ));
     }
 
     public function test_connection($request)
@@ -92,6 +101,31 @@ class YouTubeController extends ApiController
         return new WP_REST_Response(array(
             'success' => true,
             'message' => __('Library synced successfully.', 'tubebay'),
+            'videos' => $response_videos,
+        ), 200);
+    }
+
+    public function get_videos($request)
+    {
+        $channel = new Channel();
+
+        if (!$channel->is_configured()) {
+            return new WP_REST_Response(array('success' => true, 'videos' => []), 200);
+        }
+
+        $videos = $channel->get_latest_videos(false);
+
+        if (is_wp_error($videos)) {
+            return new \WP_Error('fetch_failed', $videos->get_error_message(), array('status' => 400));
+        }
+
+        $response_videos = [];
+        foreach ($videos as $video) {
+            $response_videos[] = $video->to_array();
+        }
+
+        return new WP_REST_Response(array(
+            'success' => true,
             'videos' => $response_videos,
         ), 200);
     }
