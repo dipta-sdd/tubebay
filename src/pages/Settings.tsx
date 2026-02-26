@@ -87,6 +87,7 @@ export default function Settings() {
       if (response.success) {
         addToast(response.message, "success");
         setSettings(response.data);
+        setTmpSettings(response.data);
       }
     } catch (error) {
       addToast(`Error saving settings: ${(error as Error).message}`, "error");
@@ -97,16 +98,6 @@ export default function Settings() {
 
   const handleTestConnection = async () => {
     setTesting(true);
-
-    // Optimistically save current API key and Channel ID before testing
-    // await apiFetch({
-    //   path: "/tubebay/v1/settings",
-    //   method: "POST",
-    //   data: {
-    //     api_key: settings.api_key,
-    //     channel_id: settings.channel_id,
-    //   },
-    // });
 
     try {
       const response = await apiFetch<{
@@ -127,15 +118,10 @@ export default function Settings() {
         addToast(
           `${response.message} Channel: ${
             response.channel_name || "Unknown"
-          }. Click "Save Settings" to keep these changes.`,
+          }. Click "Connect" to save this connection.`,
           "success",
         );
 
-        setTmpSettings({
-          ...tmpSettings,
-          channel_name: response.channel_name || "",
-          connection_status: "connected",
-        });
       }
     } catch (error) {
       addToast(`Connection Failed: ${(error as any).message}`, "error");
@@ -277,7 +263,7 @@ export default function Settings() {
                 disabled={saving || !settingsChanged()}
                 color="primary"
               >
-                {saving ? "Saving..." : "Save Settings"}
+                {saving ? "Connecting..." : "Connect"}
               </Button>
               <Button
                 onClick={handleTestConnection}
