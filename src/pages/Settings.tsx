@@ -18,16 +18,9 @@ import {
 import Card from "../components/common/Card";
 import { Switch } from "../components/common/Switch";
 import Select from "../components/common/Select";
-
-interface SettingsData {
-  api_key: string;
-  channel_id: string;
-  channel_name: string;
-  connection_status: string;
-  cache_duration: number;
-  auto_sync: boolean;
-  video_placement: string;
-}
+import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
+import { PluginSettings } from "../utils/types";
+type SettingsData = Partial<PluginSettings>;
 
 export default function Settings() {
   const { addToast } = useToast();
@@ -36,14 +29,18 @@ export default function Settings() {
   const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
 
-  const [settings, setSettings] = useState<SettingsData>({
-    api_key: "",
-    channel_id: "",
-    channel_name: "",
-    connection_status: "",
-    cache_duration: 12,
-    auto_sync: true,
-    video_placement: "below_gallery",
+  const { plugin_settings: settings } = useWpabStore();
+  const { updateStore } = useWpabStoreActions();
+
+  const setSettings = (data: SettingsData) => {
+    updateStore("plugin_settings", {
+      ...settings,
+      ...data,
+    });
+  };
+
+  const [tmpSettings, setTmpSettings] = useState<SettingsData>({
+    ...settings,
   });
 
   useEffect(() => {
@@ -55,7 +52,8 @@ export default function Settings() {
       const response = await apiFetch<SettingsData>({
         path: "/tubebay/v1/settings",
       });
-      setSettings({
+      const data = {
+        ...tmpSettings,
         api_key: response.api_key || "",
         channel_id: response.channel_id || "",
         channel_name: response.channel_name || "",
@@ -63,7 +61,9 @@ export default function Settings() {
         cache_duration: response.cache_duration || 12,
         auto_sync: response.auto_sync !== undefined ? response.auto_sync : true,
         video_placement: response.video_placement || "below_gallery",
-      });
+      };
+      setTmpSettings(data);
+      setSettings(data);
     } catch (error) {
       addToast(`Error fetching settings: ${(error as Error).message}`, "error");
     } finally {
@@ -71,7 +71,7 @@ export default function Settings() {
     }
   };
 
-  const handleSave = async (settingsToSave = settings) => {
+  const handleSave = async (settingsToSave = tmpSettings) => {
     setSaving(true);
     try {
       const response = await apiFetch<{ success: boolean; message: string }>({
@@ -82,6 +82,7 @@ export default function Settings() {
 
       if (response.success) {
         addToast(response.message, "success");
+        setSettings(settingsToSave);
       }
     } catch (error) {
       addToast(`Error saving settings: ${(error as Error).message}`, "error");
@@ -113,8 +114,8 @@ export default function Settings() {
         path: "/tubebay/v1/youtube/test-connection",
         method: "POST",
         data: {
-          api_key: settings.api_key,
-          channel_id: settings.channel_id,
+          api_key: tmpSettings.api_key,
+          channel_id: tmpSettings.channel_id,
         },
       });
 
@@ -122,18 +123,17 @@ export default function Settings() {
         addToast(response.message, "success");
 
         const updatedSettings = {
-          ...settings,
+          ...tmpSettings,
           channel_name: response.channel_name || "",
           connection_status: response.connection_status || "connected",
         };
-        setSettings(updatedSettings);
+        setTmpSettings(updatedSettings);
 
         // Auto-save the new status and name
         // await handleSave(updatedSettings);
       }
     } catch (error) {
       addToast(`Connection Failed: ${(error as any).message}`, "error");
-      
     } finally {
       setTesting(false);
     }
@@ -163,6 +163,9 @@ export default function Settings() {
     }
   };
 
+  const settingsChanged = () => {
+    return JSON.stringify(tmpSettings) !== JSON.stringify(settings);
+  };
   if (loading) {
     return <div className="p-8">Loading settings...</div>;
   }
@@ -185,7 +188,8 @@ export default function Settings() {
           </h2>
         </div>
 
-        {settings.connection_status === "connected" && settings.channel_name ? (
+        {tmpSettings.connection_status === "connected" &&
+        tmpSettings.channel_name ? (
           <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[24px]">
             {/* Connected Confirmation Box */}
             <div className="tubebay-w-full tubebay-max-w-[480px] tubebay-bg-[#f0fdf4] tubebay-border tubebay-border-[#dcfce7] tubebay-rounded-[16px] tubebay-p-[32px] tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px]">
@@ -204,7 +208,7 @@ export default function Settings() {
                 </h3>
                 <div className="tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[8px]">
                   <span className="tubebay-text-[14px] tubebay-text-gray-600">
-                    {settings.channel_name}
+                    {tmpSettings.channel_name}
                   </span>
                   <span className="tubebay-bg-[#dcfce7] tubebay-text-[#15803d] tubebay-text-[12px] tubebay-font-bold tubebay-px-[8px] tubebay-py-[2px] tubebay-rounded-full">
                     Connected
@@ -216,7 +220,7 @@ export default function Settings() {
             {/* Change Account Button */}
             <Button
               onClick={() =>
-                setSettings({ ...settings, connection_status: "" })
+                setTmpSettings({ ...tmpSettings, connection_status: "" })
               }
               className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
             >
@@ -232,10 +236,10 @@ export default function Settings() {
               <Input
                 label="Google Cloud API Key"
                 type="password"
-                value={settings.api_key}
+                value={tmpSettings.api_key}
                 onChange={(e) =>
-                  setSettings({
-                    ...settings,
+                  setTmpSettings({
+                    ...tmpSettings,
                     api_key: (e.target as HTMLInputElement).value,
                   })
                 }
@@ -248,10 +252,10 @@ export default function Settings() {
 
             <Input
               label="YouTube Channel ID"
-              value={settings.channel_id}
+              value={tmpSettings.channel_id}
               onChange={(e) =>
-                setSettings({
-                  ...settings,
+                setTmpSettings({
+                  ...tmpSettings,
                   channel_id: (e.target as HTMLInputElement).value,
                 })
               }
@@ -260,15 +264,17 @@ export default function Settings() {
 
             <div className="tubebay-flex tubebay-gap-[12px] tubebay-mt-[8px]">
               <Button
-                onClick={() => handleSave(settings)}
-                disabled={saving}
+                onClick={() => handleSave(tmpSettings)}
+                disabled={saving || !settingsChanged()}
                 color="primary"
               >
                 {saving ? "Saving..." : "Save Settings"}
               </Button>
               <Button
                 onClick={handleTestConnection}
-                disabled={testing || !settings.api_key || !settings.channel_id}
+                disabled={
+                  testing || !tmpSettings.api_key || !tmpSettings.channel_id
+                }
                 color="secondary"
                 variant="outline"
               >
@@ -300,8 +306,8 @@ export default function Settings() {
             <h2 className="tubebay-t-3">Sync & Placement Settings</h2>
           </div>
           <Button
-            onClick={() => handleSave(settings)}
-            disabled={saving}
+            onClick={() => handleSave(tmpSettings)}
+            disabled={saving || !settingsChanged()}
             color="primary"
           >
             {saving ? "Saving..." : "Save Settings"}
@@ -329,12 +335,12 @@ export default function Settings() {
             </div>
           </div>
           <Switch
-            checked={settings.auto_sync}
+            checked={!!tmpSettings?.auto_sync}
             onChange={(checked) =>
-              setSettings({ ...settings, auto_sync: checked })
+              setTmpSettings({ ...tmpSettings, auto_sync: checked })
             }
             className={
-              settings.auto_sync
+              tmpSettings.auto_sync
                 ? "tubebay-bg-[#3858e9]"
                 : "tubebay-bg-gray-200"
             }
@@ -356,9 +362,9 @@ export default function Settings() {
               </p>
               <div className="tubebay-mt-[8px] tubebay-w-[120px]">
                 <NumberInput
-                  value={settings.cache_duration}
+                  value={tmpSettings.cache_duration}
                   onChange={(val) =>
-                    setSettings({ ...settings, cache_duration: val || 12 })
+                    setTmpSettings({ ...tmpSettings, cache_duration: val || 12 })
                   }
                   min={1}
                   max={168}
@@ -389,7 +395,9 @@ export default function Settings() {
           </div>
           <Button
             onClick={handleSyncLibrary}
-            disabled={syncing || !settings.api_key || !settings.channel_id}
+            disabled={
+              syncing || !tmpSettings.api_key || !tmpSettings.channel_id
+            }
             color="secondary"
             variant="outline"
             className="tubebay-h-[38px] tubebay-px-[16px] tubebay-text-[13px] tubebay-font-bold"
@@ -415,9 +423,12 @@ export default function Settings() {
           </div>
           <div className="tubebay-w-full">
             <Select
-              value={settings.video_placement}
+              value={tmpSettings?.video_placement || ""}
               onChange={(val) =>
-                setSettings({ ...settings, video_placement: val as string })
+                setTmpSettings({
+                  ...tmpSettings,
+                  video_placement: val as string,
+                })
               }
               options={[
                 { value: "below_gallery", label: "Below Gallery" },
