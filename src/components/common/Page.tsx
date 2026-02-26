@@ -1,6 +1,6 @@
 const Page = ({
   children,
-  className,
+  className = "tubebay-flex tubebay-flex-col tubebay-gap-[32px]",
 }: {
   children: React.ReactNode;
   className?: string;

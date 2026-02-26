@@ -50,6 +50,8 @@ class SettingsController extends ApiController
             'channel_name' => Settings::get_channel_name(),
             'connection_status' => Settings::get_connection_status(),
             'cache_duration' => Settings::get('cache_duration', 12),
+            'auto_sync' => Settings::get('auto_sync', true),
+            'video_placement' => Settings::get('video_placement', 'below_gallery'),
         );
 
         return new WP_REST_Response($data, 200);
@@ -77,6 +79,15 @@ class SettingsController extends ApiController
 
         if (isset($body['cache_duration'])) {
             Settings::set('cache_duration', absint($body['cache_duration']));
+        }
+
+        if (isset($body['auto_sync'])) {
+            Settings::set('auto_sync', (bool) $body['auto_sync']);
+            \TubeBay\Core\Cron::get_instance()->check_and_schedule();
+        }
+
+        if (isset($body['video_placement'])) {
+            Settings::set('video_placement', sanitize_text_field($body['video_placement']));
         }
 
         return new WP_REST_Response(array(

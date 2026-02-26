@@ -4,6 +4,15 @@ import { useToast } from "../store/toast/use-toast";
 import { Input } from "../components/common/Input";
 import Button from "../components/common/Button";
 import Page from "../components/common/Page";
+import {
+  RefreshIcon,
+  CheckIcon,
+  InfoIcon,
+  ListIcon,
+  EyeIcon,
+  CalendarIcon,
+  CodeIcon,
+} from "../components/common/Icons";
 
 interface VideoData {
   id: string;
@@ -101,22 +110,7 @@ export default function ChannelLibrary() {
             "Syncing..."
           ) : (
             <>
-              <svg
-                className="tubebay-mr-[8px]"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                <path d="M3 3v5h5"></path>
-                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
-                <path d="M16 21v-5h5"></path>
-              </svg>
+              <RefreshIcon size={16} className="tubebay-mr-[8px]" />
               Sync Now
             </>
           )}
@@ -127,18 +121,7 @@ export default function ChannelLibrary() {
       <div className="tubebay-bg-green-50 tubebay-border tubebay-border-green-200 tubebay-rounded-[12px] tubebay-p-[24px] tubebay-mb-[32px] tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-items-center md:tubebay-justify-between">
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[16px]">
           <div className="tubebay-bg-green-500 tubebay-text-white tubebay-rounded-full tubebay-p-[8px] tubebay-flex tubebay-items-center tubebay-justify-center">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+            <CheckIcon size={24} />
           </div>
           <div>
             <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900">
@@ -179,39 +162,10 @@ export default function ChannelLibrary() {
         </div>
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">
           <button className="tubebay-p-[10px] tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] hover:tubebay-bg-gray-50">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
+            <InfoIcon size={18} />
           </button>
           <button className="tubebay-p-[10px] tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] hover:tubebay-bg-gray-50">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
+            <ListIcon size={18} />
           </button>
         </div>
       </div>
@@ -254,45 +208,12 @@ export default function ChannelLibrary() {
                   </h4>
                   <div className="tubebay-flex tubebay-items-center tubebay-text-[13px] tubebay-text-gray-500 tubebay-mb-[16px] tubebay-gap-[8px]">
                     <span className="tubebay-flex tubebay-items-center tubebay-gap-[4px]">
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
+                      <EyeIcon size={14} />
                       YT Video
                     </span>
                     <span>•</span>
                     <span className="tubebay-flex tubebay-items-center tubebay-gap-[4px]">
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <rect
-                          x="3"
-                          y="4"
-                          width="18"
-                          height="18"
-                          rx="2"
-                          ry="2"
-                        ></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                      </svg>
+                      <CalendarIcon size={14} />
                       {formatDate(video.published_at)}
                     </span>
                   </div>
@@ -310,20 +231,7 @@ export default function ChannelLibrary() {
                       )
                     }
                   >
-                    <svg
-                      className="tubebay-mr-[6px]"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
+                    <EyeIcon size={16} className="tubebay-mr-[6px]" />
                     Preview
                   </Button>
                   <Button
@@ -337,19 +245,7 @@ export default function ChannelLibrary() {
                       addToast("Shortcode copied to clipboard", "success");
                     }}
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="16 18 22 12 16 6"></polyline>
-                      <polyline points="8 6 2 12 8 18"></polyline>
-                    </svg>
+                    <CodeIcon size={18} />
                   </Button>
                 </div>
               </div>

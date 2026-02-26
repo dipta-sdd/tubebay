@@ -2,6 +2,7 @@ import { useState, useEffect, FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
 import { useWpabStore } from "../../store/wpabStore";
+import { MenuIcon, CloseIcon } from "./Icons";
 
 interface MenuLink {
   label: string;
@@ -79,58 +80,11 @@ const Navbar: FC = () => {
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="tubebay-transition-all tubebay-duration-300 tubebay-ease-in-out"
-              aria-hidden="true"
-            >
-              {isMobileMenuOpen ? (
-                <>
-                  <path
-                    d="M6 6L18 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M6 18L18 6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </>
-              ) : (
-                <>
-                  <path
-                    d="M3 12H21"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M3 6H21"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M3 18H21"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </>
-              )}
-            </svg>
+            {isMobileMenuOpen ? (
+              <CloseIcon className="tubebay-transition-all tubebay-duration-300 tubebay-ease-in-out" />
+            ) : (
+              <MenuIcon className="tubebay-transition-all tubebay-duration-300 tubebay-ease-in-out" />
+            )}
           </button>
         </div>
       </div>

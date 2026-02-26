@@ -46,6 +46,8 @@ class Settings
         'channel_name' => '',
         'connection_status' => 'disconnected',
         'cache_duration' => 12,
+        'auto_sync' => true,
+        'video_placement' => 'below_gallery',
 
         /*==================================================
          * Global Settings
@@ -165,6 +167,22 @@ class Settings
     public static function get_cache_duration_hours()
     {
         return (int) self::get('cache_duration');
+    }
+
+    /**
+     * Get the Auto Sync setting.
+     */
+    public static function get_auto_sync()
+    {
+        return (bool) self::get('auto_sync', true);
+    }
+
+    /**
+     * Get the Global Video Placement setting.
+     */
+    public static function get_video_placement()
+    {
+        return self::get('video_placement', 'below_gallery');
     }
 
     /**
