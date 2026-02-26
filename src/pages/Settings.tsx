@@ -94,14 +94,14 @@ export default function Settings() {
     setTesting(true);
 
     // Optimistically save current API key and Channel ID before testing
-    await apiFetch({
-      path: "/tubebay/v1/settings",
-      method: "POST",
-      data: {
-        api_key: settings.api_key,
-        channel_id: settings.channel_id,
-      },
-    });
+    // await apiFetch({
+    //   path: "/tubebay/v1/settings",
+    //   method: "POST",
+    //   data: {
+    //     api_key: settings.api_key,
+    //     channel_id: settings.channel_id,
+    //   },
+    // });
 
     try {
       const response = await apiFetch<{
@@ -129,16 +129,11 @@ export default function Settings() {
         setSettings(updatedSettings);
 
         // Auto-save the new status and name
-        await handleSave(updatedSettings);
+        // await handleSave(updatedSettings);
       }
     } catch (error) {
       addToast(`Connection Failed: ${(error as any).message}`, "error");
-      const updatedSettings = {
-        ...settings,
-        connection_status: "failed",
-      };
-      setSettings(updatedSettings);
-      await handleSave(updatedSettings);
+      
     } finally {
       setTesting(false);
     }

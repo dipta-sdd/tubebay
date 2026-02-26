@@ -10,10 +10,10 @@ class Channel
     private $api_key;
     private $channel_id;
 
-    public function __construct()
+    public function __construct($data = [])
     {
-        $this->api_key = Settings::get_api_key();
-        $this->channel_id = Settings::get_channel_id();
+        $this->api_key = !empty($data['api_key']) ? $data['api_key'] : Settings::get_api_key();
+        $this->channel_id = !empty($data['channel_id']) ? $data['channel_id'] : Settings::get_channel_id();
     }
 
     /**

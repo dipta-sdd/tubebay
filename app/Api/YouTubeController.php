@@ -31,7 +31,7 @@ class YouTubeController extends ApiController
         // Route to test YouTube Connection
         register_rest_route($namespace, '/youtube/test-connection', array(
             array(
-                'methods' => WP_REST_Server::READABLE,
+                'methods' => WP_REST_Server::CREATABLE,
                 'callback' => array($this, 'test_connection'),
                 'permission_callback' => array($this, 'get_item_permissions_check'),
             ),
@@ -58,7 +58,13 @@ class YouTubeController extends ApiController
 
     public function test_connection($request)
     {
-        $channel = new Channel();
+        $params = $request->get_params();
+        $api_key = $params['api_key'];
+        $channel_id = $params['channel_id'];
+        $channel = new Channel(array(
+            'api_key' => $api_key ? $api_key : '--', // passed '--' because it will prevent using default settings
+            'channel_id' => $channel_id ? $channel_id : '--' // passed '--' because it will prevent using default settings
+        ));
 
         if (!$channel->is_configured()) {
             return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
