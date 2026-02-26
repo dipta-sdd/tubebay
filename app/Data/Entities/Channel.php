@@ -207,4 +207,49 @@ class Channel
 
         return $details;
     }
+
+    /**
+     * Test the connection to YouTube using current credentials.
+     * Does NOT modify any stored settings — purely a read-only check.
+     *
+     * @return array|\WP_Error  Channel details array on success, WP_Error on failure.
+     */
+    public function test_connection()
+    {
+        if (!$this->is_configured()) {
+            return new \WP_Error('not_configured', __('API Key or Channel ID is missing.', 'tubebay'));
+        }
+
+        $details = $this->get_channel_details();
+
+        if (is_wp_error($details)) {
+            return $details;
+        }
+
+        return $details;
+    }
+
+    /**
+     * Reconnect: save the current credentials to Settings and re-test.
+     *
+     * @return true|\WP_Error
+     */
+    public function reconnect()
+    {
+        Settings::set('api_key', $this->api_key);
+        Settings::set('channel_id', $this->channel_id);
+
+        return $this->test_connection();
+    }
+
+    /**
+     * Disconnect: clear connection state in Settings.
+     *
+     * @return void
+     */
+    public function disconnect()
+    {
+        Settings::set('connection_status', 'disconnected');
+        Settings::set('channel_name', '');
+    }
 }

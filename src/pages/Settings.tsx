@@ -74,7 +74,11 @@ export default function Settings() {
   const handleSave = async (settingsToSave = tmpSettings) => {
     setSaving(true);
     try {
-      const response = await apiFetch<{ success: boolean; message: string }>({
+      const response = await apiFetch<{
+        success: boolean;
+        message: string;
+        data: SettingsData;
+      }>({
         path: "/tubebay/v1/settings",
         method: "POST",
         data: settingsToSave,
@@ -82,7 +86,7 @@ export default function Settings() {
 
       if (response.success) {
         addToast(response.message, "success");
-        setSettings(settingsToSave);
+        setSettings(response.data);
       }
     } catch (error) {
       addToast(`Error saving settings: ${(error as Error).message}`, "error");
@@ -109,7 +113,7 @@ export default function Settings() {
         success: boolean;
         message: string;
         channel_name?: string;
-        connection_status?: string;
+        channel_description?: string;
       }>({
         path: "/tubebay/v1/youtube/test-connection",
         method: "POST",
@@ -120,20 +124,25 @@ export default function Settings() {
       });
 
       if (response.success) {
-        addToast(response.message, "success");
+        addToast(
+          `${response.message} Channel: ${
+            response.channel_name || "Unknown"
+          }. Click "Save Settings" to keep these changes.`,
+          "success",
+        );
 
-        const updatedSettings = {
+        setTmpSettings({
           ...tmpSettings,
           channel_name: response.channel_name || "",
-          connection_status: response.connection_status || "connected",
-        };
-        setTmpSettings(updatedSettings);
-
-        // Auto-save the new status and name
-        // await handleSave(updatedSettings);
+          connection_status: "connected",
+        });
       }
     } catch (error) {
       addToast(`Connection Failed: ${(error as any).message}`, "error");
+      setTmpSettings({
+        ...tmpSettings,
+        connection_status: "failed",
+      });
     } finally {
       setTesting(false);
     }

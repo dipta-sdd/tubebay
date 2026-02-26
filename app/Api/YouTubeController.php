@@ -62,39 +62,28 @@ class YouTubeController extends ApiController
         $api_key = $params['api_key'];
         $channel_id = $params['channel_id'];
         $channel = new Channel(array(
-            'api_key' => $api_key ? $api_key : '--', // passed '--' because it will prevent using default settings
-            'channel_id' => $channel_id ? $channel_id : '--' // passed '--' because it will prevent using default settings
+            'api_key' => $api_key ? $api_key : '--',
+            'channel_id' => $channel_id ? $channel_id : '--'
         ));
 
         if (!$channel->is_configured()) {
             return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
         }
 
-        // Force a false cache flag to prove the connection works live
-        $videos = $channel->get_latest_videos(true);
+        $result = $channel->test_connection();
 
-        if (is_wp_error($videos)) {
-            \TubeBay\Helper\Settings::set('connection_status', 'failed');
-            return new \WP_Error('connection_failed', $videos->get_error_message(), array('status' => 400));
+        if (is_wp_error($result)) {
+            return new \WP_Error('connection_failed', $result->get_error_message(), array('status' => 400));
         }
-
-        // Fetch channel details to get the name
-        $channel_details = $channel->get_channel_details();
-        $channel_name = '';
-        if (!is_wp_error($channel_details) && isset($channel_details['title'])) {
-            $channel_name = $channel_details['title'];
-            \TubeBay\Helper\Settings::set('channel_name', $channel_name);
-        }
-
-        \TubeBay\Helper\Settings::set('connection_status', 'connected');
 
         return new WP_REST_Response(array(
             'success' => true,
-            'message' => __('Connection successful! Found ' . count($videos) . ' videos.', 'tubebay'),
-            'channel_name' => $channel_name,
-            'connection_status' => 'connected'
+            'message' => __('Connection successful!', 'tubebay'),
+            'channel_name' => $result['title'] ?? '',
+            'channel_description' => $result['description'] ?? '',
         ), 200);
     }
+
 
     public function sync_library($request)
     {

@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use TubeBay\Core\Cron;
+use TubeBay\Data\Entities\Channel;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -44,37 +46,50 @@ class SettingsController extends ApiController
 
     public function get_settings($request)
     {
-        $data = array(
-            'api_key' => Settings::get_api_key(),
-            'channel_id' => Settings::get_channel_id(),
-            'channel_name' => Settings::get_channel_name(),
-            'connection_status' => Settings::get_connection_status(),
-            'cache_duration' => Settings::get('cache_duration', 12),
-            'auto_sync' => Settings::get('auto_sync', true),
-            'video_placement' => Settings::get('video_placement', 'below_gallery'),
-        );
-
-        return new WP_REST_Response($data, 200);
+        return new WP_REST_Response(Settings::get_all_settings(), 200);
     }
 
     public function update_settings($request)
     {
         $body = $request->get_json_params();
+        $creds_changed = false;
 
         if (isset($body['api_key'])) {
-            Settings::set('api_key', sanitize_text_field($body['api_key']));
+            $old = Settings::get('api_key');
+            $new = sanitize_text_field($body['api_key']);
+            if ($old !== $new) {
+                Settings::set('api_key', $new);
+                $creds_changed = true;
+            }
         }
 
         if (isset($body['channel_id'])) {
-            Settings::set('channel_id', sanitize_text_field($body['channel_id']));
+            $old = Settings::get('channel_id');
+            $new = sanitize_text_field($body['channel_id']);
+            if ($old !== $new) {
+                Settings::set('channel_id', $new);
+                $creds_changed = true;
+            }
         }
 
-        if (isset($body['channel_name'])) {
-            Settings::set('channel_name', sanitize_text_field($body['channel_name']));
-        }
+        if ($creds_changed) {
+            // Credentials changed — verify the new connection
+            $channel = new Channel();
 
-        if (isset($body['connection_status'])) {
-            Settings::set('connection_status', sanitize_text_field($body['connection_status']));
+            if ($channel->is_configured()) {
+                $result = $channel->test_connection();
+
+                if (!is_wp_error($result)) {
+                    Settings::set('channel_name', $result['title'] ?? '');
+                    Settings::set('connection_status', 'connected');
+                } else {
+                    Settings::set('channel_name', '');
+                    Settings::set('connection_status', 'failed');
+                }
+            } else {
+                Settings::set('channel_name', '');
+                Settings::set('connection_status', 'disconnected');
+            }
         }
 
         if (isset($body['cache_duration'])) {
@@ -83,15 +98,18 @@ class SettingsController extends ApiController
 
         if (isset($body['auto_sync'])) {
             Settings::set('auto_sync', (bool) $body['auto_sync']);
-            \TubeBay\Core\Cron::get_instance()->check_and_schedule();
+            Cron::get_instance()->check_and_schedule();
         }
 
         if (isset($body['video_placement'])) {
             Settings::set('video_placement', sanitize_text_field($body['video_placement']));
         }
 
+        
+
         return new WP_REST_Response(array(
             'success' => true,
+            'data' => Settings::get_all_settings(),
             'message' => __('Settings saved successfully.', 'tubebay'),
         ), 200);
     }

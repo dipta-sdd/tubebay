@@ -56,6 +56,13 @@ class Settings
         'global_exampleText' => 'Hello from TubeBay!',
 
         /*==================================================
+         * OAuth / Token Settings
+         ==================================================*/
+        'access_token' => '',
+        'refresh_token' => '',
+        'token_expires' => 0,
+
+        /*==================================================
          * Advanced Settings
          ==================================================*/
         'advanced_deleteAllOnUninstall' => false,
@@ -234,6 +241,16 @@ class Settings
             $settings[$key] = get_option(self::PREFIX . $key, $default);
         }
         return $settings;
+    }
+
+    /**
+     * Get all plugin settings as an associative array.
+     *
+     * @return array
+     */
+    public static function get_all_settings()
+    {
+        return self::get_all();
     }
 
     /**
