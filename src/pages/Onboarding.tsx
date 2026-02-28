@@ -18,7 +18,7 @@ import {
   HeadphonesIcon,
 } from "../components/common/Icons";
 
-const Dashboard: FC = () => {
+const Onboarding: FC = () => {
   const store = useWpabStore();
   const navigate = useNavigate();
 
@@ -191,4 +191,4 @@ const Dashboard: FC = () => {
   );
 };
 
-export default Dashboard;
+export default Onboarding;
