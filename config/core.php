@@ -10,6 +10,7 @@
 
 return array(
     \TubeBay\Admin\Admin::class,
+    \TubeBay\Admin\ProductMetabox::class,
     \TubeBay\Helper\Settings::class,
     \TubeBay\Core\Cron::class,
 );
