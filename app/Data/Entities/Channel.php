@@ -64,6 +64,7 @@ class Channel
         }
 
         set_transient($transient_key, $to_cache, Settings::get_cache_duration());
+        Settings::set_last_sync_time(time());
 
         return $videos;
     }

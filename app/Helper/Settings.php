@@ -48,6 +48,7 @@ class Settings
         'cache_duration' => 12,
         'auto_sync' => true,
         'video_placement' => 'below_gallery',
+        'last_sync_time' => 0,
 
         /*==================================================
          * Global Settings
@@ -190,6 +191,25 @@ class Settings
     public static function get_video_placement()
     {
         return self::get('video_placement', 'below_gallery');
+    }
+
+    /**
+     * Get the last sync time (unix timestamp).
+     */
+    public static function get_last_sync_time()
+    {
+        return (int) self::get('last_sync_time', 0);
+    }
+
+    /**
+     * Set the last sync time (unix timestamp).
+     *
+     * @param int $timestamp
+     * @return bool
+     */
+    public static function set_last_sync_time($timestamp)
+    {
+        return self::set('last_sync_time', (int) $timestamp);
     }
 
     /**
