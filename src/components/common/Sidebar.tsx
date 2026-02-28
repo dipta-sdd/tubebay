@@ -1,6 +1,8 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useWpabStore } from "../../store/wpabStore";
+import { useWpabStore, useWpabStoreActions } from "../../store/wpabStore";
+import apiFetch from "@wordpress/api-fetch";
+import { useToast } from "../../store/toast/use-toast";
 import {
   SettingsIcon,
   ChannelLibraryIcon,
@@ -19,6 +21,8 @@ interface SidebarMenuItem {
 
 const Sidebar: FC = () => {
   const { plugin_settings } = useWpabStore();
+  const { updateStore } = useWpabStoreActions();
+  const { addToast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = "/" + (location.pathname.split("/")[1] || "");
@@ -62,6 +66,74 @@ const Sidebar: FC = () => {
     }
   };
 
+  const handleDisconnect = async () => {
+    try {
+      const response = await apiFetch<{
+        success: boolean;
+        message: string;
+        data: any;
+      }>({
+        path: "/tubebay/v1/settings",
+        method: "POST",
+        data: {
+          connection_status: "disconnected",
+        },
+      });
+
+      if (response.success) {
+        updateStore("plugin_settings", response.data);
+        addToast("YouTube account disconnected.", "success");
+      }
+    } catch (error) {
+      addToast(`Failed to disconnect: ${(error as Error).message}`, "error");
+    }
+  };
+
+  const handleConnect = async () => {
+    try {
+      const response = await apiFetch<{
+        success: boolean;
+        message: string;
+        data: any;
+      }>({
+        path: "/tubebay/v1/settings",
+        method: "POST",
+        data: {
+          connection_status: "connected",
+        },
+      });
+
+      if (response.success) {
+        updateStore("plugin_settings", response.data);
+        addToast("YouTube account connected.", "success");
+      }
+    } catch (error) {
+      addToast(`Failed to connect: ${(error as Error).message}`, "error");
+    }
+  };
+
+  const handleSync = async () => {
+    try {
+      addToast("Syncing library...", "info");
+      const response = await apiFetch<{
+        success: boolean;
+        message: string;
+        videos: any[];
+      }>({
+        path: "/tubebay/v1/youtube/sync-library",
+      });
+
+      if (response.success) {
+        addToast(
+          `Synced ${response.videos.length} videos successfully.`,
+          "success",
+        );
+      }
+    } catch (error) {
+      addToast(`Sync failed: ${(error as Error).message}`, "error");
+    }
+  };
+
   return (
     <aside className="tubebay-w-[clamp(260px,10%,300px)] tubebay-hidden lg:tubebay-flex tubebay-flex-col tubebay-gap-[16px] ">
       {/* Navigation Card */}
@@ -79,15 +151,17 @@ const Sidebar: FC = () => {
                   tubebay-px-[16px] tubebay-py-[12px] tubebay-rounded-[12px] 
                   tubebay-t-6-bold
                   tubebay-w-full tubebay-text-left tubebay-border-0 tubebay-cursor-pointer tubebay-transition-all tubebay-duration-150 ${
-                  isActive
-                    ? "tubebay-bg-primary tubebay-text-white tubebay-shadow-sm"
-                    : "tubebay-bg-transparent tubebay-text-color-default hover:tubebay-bg-gray-100"
-                }`}
+                    isActive
+                      ? "tubebay-bg-primary tubebay-text-white tubebay-shadow-sm"
+                      : "tubebay-bg-transparent tubebay-text-color-default hover:tubebay-bg-gray-100"
+                  }`}
                 style={{ outline: "none" }}
               >
                 <span
                   className={
-                    isActive ? "tubebay-text-white" : "tubebay-text-color-default"
+                    isActive
+                      ? "tubebay-text-white"
+                      : "tubebay-text-color-default"
                   }
                 >
                   {item.icon}
@@ -104,10 +178,13 @@ const Sidebar: FC = () => {
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">
           <WifiIcon
             className={` tubebay-w-[18px] tubebay-h-[18px]
-              ${isConnected ? "tubebay-text-green-500" : "tubebay-text-gray-400"}`
-            }
+              ${
+                isConnected ? "tubebay-text-green-500" : "tubebay-text-gray-400"
+              }`}
           />
-          <span className="tubebay-t-6-bold tubebay-text-color-default">Connection Status</span>
+          <span className="tubebay-t-6-bold tubebay-text-color-default">
+            Connection Status
+          </span>
         </div>
 
         {/* Status Indicator */}
@@ -118,17 +195,19 @@ const Sidebar: FC = () => {
             }`}
           ></span>
           <span className="tubebay-t-6-bold tubebay-text-color-default">
-            API Connection: {getConnectionStatusText(plugin_settings.connection_status)}
+            API Connection:{" "}
+            {getConnectionStatusText(plugin_settings.connection_status)}
           </span>
         </div>
 
         {/* Channel Info (only when connected) */}
-        {isConnected && channelName && (
-          <div className="tubebay-flex tubebay-flex-col tubebay-gap-[12px] tubebay-bg-[#f9fafb] tubebay-p-[16px] tubebay-rounded-[12px]">
-            <div className="tubebay-flex tubebay-items-center tubebay-gap-[12px] tubebay-bg-gray-50 tubebay-rounded-[8px] tubebay-w-full">
-              <div className="tubebay-w-[36px] tubebay-h-[36px] tubebay-bg-red-100 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-red-600 tubebay-flex-shrink-0">
-                <YouTubeIcon />
-              </div>
+        { (plugin_settings.connection_status === "connected" || plugin_settings.connection_status === "disconnected")&&
+          plugin_settings.channel_name && (
+            <div className="tubebay-flex tubebay-flex-col tubebay-gap-[12px] tubebay-bg-[#f9fafb] tubebay-p-[16px] tubebay-rounded-[12px]">
+              <div className="tubebay-flex tubebay-items-center tubebay-gap-[12px] tubebay-bg-gray-50 tubebay-rounded-[8px] tubebay-w-full">
+                <div className="tubebay-w-[36px] tubebay-h-[36px] tubebay-bg-red-100 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-red-600 tubebay-flex-shrink-0">
+                  <YouTubeIcon />
+                </div>
               <div className="tubebay-overflow-hidden">
                 <p className="tubebay-text-[13px] tubebay-font-bold tubebay-text-gray-900 tubebay-truncate">
                   {channelName}
@@ -139,17 +218,26 @@ const Sidebar: FC = () => {
               </div>
             </div>
             <div className="tubebay-flex tubebay-gap-[12px] tubebay-justify-between tubebay-w-full">
-              <button
-                className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-red-500 hover:tubebay-text-red-700 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                onClick={() => navigate("/settings")}
-              >
-                Disconnect
-              </button>
+              {isConnected ? (
+                <button
+                  className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-red-500 hover:tubebay-text-red-700 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                  onClick={() => handleDisconnect()}
+                >
+                  Disconnect
+                </button>
+              ) : (
+                <button
+                  className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                  onClick={() => handleConnect()}
+                >
+                  Connect
+                </button>
+              )}
               <button
                 className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                onClick={() => navigate("/settings")}
+                onClick={() => handleSync()}
               >
-                Reconnect
+                Sync
               </button>
             </div>
           </div>

@@ -12,7 +12,7 @@ const AppLayout: FC = () => {
     if (plugin_settings.connection_status === "disconnected") {
       navigate("/onboarding");
     }
-  }, [plugin_settings]);
+  }, []);
 
   return (
     <div className="">

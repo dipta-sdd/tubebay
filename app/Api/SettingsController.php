@@ -105,7 +105,10 @@ class SettingsController extends ApiController
             Settings::set('video_placement', sanitize_text_field($body['video_placement']));
         }
 
-        
+        if (!$creds_changed && isset($body['connection_status'])) {
+            Settings::set('connection_status', sanitize_text_field($body['connection_status']));
+        }
+
 
         return new WP_REST_Response(array(
             'success' => true,
