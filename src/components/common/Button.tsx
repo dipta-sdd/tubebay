@@ -29,7 +29,7 @@ const Button = ({
       outline:
         "tubebay-bg-transparent tubebay-border tubebay-border-primary tubebay-text-primary hover:tubebay-bg-primary hover:tubebay-text-white",
       ghost:
-        "tubebay-bg-transparent tubebay-text-primary hover:tubebay-text-primary-hovered hover:tubebay-bg-primary/10",
+        "tubebay-bg-transparent tubebay-text-primary hover:tubebay-text-primary-hovered hover:tubebay-bg-blue-500/10",
     },
     secondary: {
       solid:

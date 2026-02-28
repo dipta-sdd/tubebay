@@ -15,6 +15,7 @@ import {
 import { timeDiff } from "../../utils/Dates";
 import { useYouTubeActions } from "../../hooks/useYouTubeActions";
 import { getConnectionStatusText } from "../../utils/status_helpers";
+import Button from "./Button";
 
 interface SidebarMenuItem {
   label: string;
@@ -143,36 +144,40 @@ const Sidebar: FC = () => {
                   </div>
                 )}
                 <div className="tubebay-overflow-hidden">
-                  <p className="tubebay-text-[13px] tubebay-font-bold tubebay-text-gray-900 tubebay-truncate">
+                  <p className="tubebay-t-6-bold tubebay-truncate">
                     {channelName}
-                  </p>
-                  <p className="tubebay-text-[11px] tubebay-text-gray-500">
-                    Channel
                   </p>
                 </div>
               </div>
               <div className="tubebay-flex tubebay-gap-[12px] tubebay-justify-between tubebay-w-full">
                 {isConnected ? (
-                  <button
-                    className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-red-500 hover:tubebay-text-red-700 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                  <Button
+                  className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
+                    variant="ghost"
+                    color="danger"
                     onClick={() => disconnectYouTube()}
                   >
                     Disconnect
-                  </button>
+                  </Button>
                 ) : (
-                  <button
-                    className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                  <Button
+                  className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
+                    variant="ghost"
+                    color="primary"
                     onClick={() => connectYouTube()}
                   >
                     Connect
-                  </button>
+                  </Button>
                 )}
-                <button
-                  className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                <Button
+                className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
+                  variant="ghost"
+                  color="primary"
                   onClick={() => syncLibrary()}
+                  disabled={!isConnected}
                 >
                   Sync
-                </button>
+                </Button>
               </div>
             </div>
           )}

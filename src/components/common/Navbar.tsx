@@ -41,7 +41,7 @@ const Navbar: FC = () => {
   return (
     <>
       <div className="tubebay-bg-white tubebay-p-0 !tubebay-border-0 !tubebay-border-b !tubebay-border-gray-300 tubebay-z-50 tubebay-relative">
-        <div className="tubebay-flex tubebay-px-[12px] tubebay-justify-between tubebay-items-center tubebay-flex-wrap md:tubebay-flex-nowrap tubebay-gap-[4px] tubebay-relative">
+        <div className="tubebay-flex tubebay-px-[12px] tubebay-justify-between tubebay-items-center tubebay-flex-wrap md:tubebay-flex-nowrap tubebay-gap-[4px] tubebay-relative tubebay-max-width">
           <div className="tubebay-flex tubebay-items-center tubebay-gap-[4px] tubebay-py-[12px]">
             <span className="tubebay-font-[700] tubebay-text-[16px] tubebay-text-gray-900">
               {store.pluginData?.plugin_name || "TubeBay"}

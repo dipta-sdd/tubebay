@@ -9,7 +9,11 @@ const AppLayout: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (plugin_settings.connection_status === "disconnected") {
+    console.log(plugin_settings.connection_status);
+    if (
+      plugin_settings.connection_status !== "disconnected" &&
+      plugin_settings.connection_status !== "connected"
+    ) {
       navigate("/onboarding");
     }
   }, []);
@@ -17,7 +21,7 @@ const AppLayout: FC = () => {
   return (
     <div className="">
       <Navbar />
-      <div className="tubebay-flex tubebay-px-[24px] tubebay-py-[32px] tubebay-gap-[32px]">
+      <div className="tubebay-flex tubebay-px-[24px] tubebay-py-[32px] tubebay-gap-[32px] tubebay-max-width">
         <Sidebar />
         <main className="tubebay-flex-1 tubebay-min-w-0">
           <Outlet />

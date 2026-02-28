@@ -258,19 +258,22 @@ export default function Settings() {
         settings.channel_name ? (
           <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[24px]">
             {/* Connected Confirmation Box */}
-            <div className="tubebay-w-full tubebay-max-w-[480px] tubebay-bg-[#f0fdf4] tubebay-border tubebay-border-[#dcfce7] tubebay-rounded-[16px] tubebay-p-[32px] tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px]">
+            <div
+              className={`tubebay-w-full tubebay-max-w-[480px] tubebay-border tubebay-rounded-[16px] tubebay-p-[32px] tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] ${
+                settings.connection_status === "connected"
+                  ? "tubebay-bg-[#f0fdf4] tubebay-border-[#dcfce7]"
+                  : "tubebay-bg-red-100 tubebay-border-red-200"
+              }`}
+            >
               <div className="tubebay-flex tubebay-items-center tubebay-gap-[-8px]">
-                <div className="tubebay-bg-[#22c55e] tubebay-text-white tubebay-rounded-full tubebay-p-[2px] tubebay-z-10 tubebay-border-[4px] tubebay-border-[#f0fdf4]">
-                  <CheckCircleIcon size={44} />
-                </div>
                 {settings.thumbnails_medium ? (
                   <img
                     src={settings.thumbnails_medium}
                     alt={settings.channel_name}
-                    className="tubebay-w-[48px] tubebay-h-[48px] tubebay-rounded-full tubebay-ml-[-12px] tubebay-border-[4px] tubebay-border-[#f0fdf4] tubebay-object-cover"
+                    className="tubebay-w-[48px] tubebay-h-[48px] tubebay-rounded-full tubebay-border-[4px] tubebay-border-white tubebay-object-cover"
                   />
                 ) : (
-                  <div className="tubebay-bg-[#d92121] tubebay-text-white tubebay-rounded-[12px] tubebay-p-[12px] tubebay-ml-[-12px]">
+                  <div className="tubebay-bg-[#d92121] tubebay-text-white tubebay-rounded-[12px] tubebay-p-[12px]">
                     <YouTubeIcon size={24} fill="white" stroke="none" />
                   </div>
                 )}
@@ -278,14 +281,22 @@ export default function Settings() {
 
               <div className="tubebay-text-center">
                 <h3 className="tubebay-text-[18px] tubebay-font-bold tubebay-text-[#111827] tubebay-mb-[4px]">
-                  YouTube Account Connected
+                  Youtube Channel
                 </h3>
                 <div className="tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[8px]">
                   <span className="tubebay-text-[14px] tubebay-text-gray-600">
                     {settings.channel_name}
                   </span>
-                  <span className="tubebay-bg-[#dcfce7] tubebay-text-[#15803d] tubebay-text-[12px] tubebay-font-bold tubebay-px-[8px] tubebay-py-[2px] tubebay-rounded-full">
-                    {getConnectionStatusText(settings.connection_status)}
+                  <span
+                    className={`tubebay-text-[12px] tubebay-font-bold tubebay-px-[8px] tubebay-py-[2px] tubebay-rounded-full ${
+                      settings.connection_status === "connected"
+                        ? "tubebay-bg-[#dcfce7] tubebay-text-[#15803d]"
+                        : "tubebay-bg-red-200 tubebay-text-red-900"
+                    }`}
+                  >
+                    {settings.connection_status === "connected"
+                      ? "Connected"
+                      : "Disconnected"}
                   </span>
                 </div>
               </div>
@@ -296,7 +307,7 @@ export default function Settings() {
               {settings.connection_status === "disconnected" ? (
                 <Button
                   onClick={() => connectYouTube()}
-                  className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
+                  className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-blue-600 hover:!tubebay-bg-blue-700 tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
                 >
                   <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">
                     <GoogleIcon size={20} className="tubebay-text-white" />
@@ -306,10 +317,10 @@ export default function Settings() {
               ) : null}
               <Button
                 onClick={() => setEditingConnection(true)}
-                className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
+                className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-gray-100 hover:!tubebay-bg-gray-200 !tubebay-text-gray-900 tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
               >
-                <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">
-                  <GoogleIcon size={20} className="tubebay-text-white" />
+                <div className="tubebay-bg-gray-200 tubebay-rounded-full tubebay-p-[6px]">
+                  <GoogleIcon size={20} className="tubebay-text-gray-600" />
                 </div>
                 Change Credentials
               </Button>
