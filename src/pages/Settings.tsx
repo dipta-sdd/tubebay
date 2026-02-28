@@ -52,6 +52,7 @@ export default function Settings() {
     auto_sync: settings.auto_sync ?? true,
     video_placement: settings.video_placement || "below_gallery",
     cache_duration: settings.cache_duration || 12,
+    debug_enableMode: settings.debug_enableMode ?? false,
   });
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function Settings() {
         auto_sync: response.auto_sync !== undefined ? response.auto_sync : true,
         video_placement: response.video_placement || "below_gallery",
         cache_duration: response.cache_duration || 12,
+        debug_enableMode: response.debug_enableMode ?? false,
       };
 
       setTmpCredentials(creds);
@@ -130,6 +132,7 @@ export default function Settings() {
           auto_sync: tmpOtherSettings.auto_sync,
           video_placement: tmpOtherSettings.video_placement,
           cache_duration: tmpOtherSettings.cache_duration,
+          debug_enableMode: tmpOtherSettings.debug_enableMode,
         },
       });
 
@@ -140,6 +143,7 @@ export default function Settings() {
           auto_sync: response.data.auto_sync ?? true,
           video_placement: response.data.video_placement || "below_gallery",
           cache_duration: response.data.cache_duration || 12,
+          debug_enableMode: response.data.debug_enableMode ?? false,
         });
       }
     } catch (error) {
@@ -218,7 +222,8 @@ export default function Settings() {
       tmpOtherSettings.auto_sync !== (settings.auto_sync ?? true) ||
       tmpOtherSettings.video_placement !==
         (settings.video_placement || "below_gallery") ||
-      tmpOtherSettings.cache_duration !== (settings.cache_duration || 12)
+      tmpOtherSettings.cache_duration !== (settings.cache_duration || 12) ||
+      tmpOtherSettings.debug_enableMode !== (settings.debug_enableMode ?? false)
     );
   };
 
@@ -497,6 +502,45 @@ export default function Settings() {
               fontSize={14}
             />
           </div>
+        </div>
+      </Card>
+
+      {/* Advanced Settings Card */}
+      <Card className="tubebay-flex tubebay-flex-col tubebay-gap-[32px] tubebay-mt-[24px]">
+        <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">
+          <h2 className="tubebay-t-3">Advanced Settings</h2>
+        </div>
+
+        {/* Debug Mode Row */}
+        <div className="tubebay-flex tubebay-items-start tubebay-justify-between ">
+          <div className="tubebay-flex tubebay-gap-[12px]">
+            <div className="tubebay-bg-[#fff1f2] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
+              <CheckCircleIcon size={18} className="tubebay-text-[#e11d48]" />
+            </div>
+            <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
+              <h3 className="tubebay-t-4-bold tubebay-text-color-default">
+                Debug Mode
+              </h3>
+              <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[540px]">
+                Enable detailed logging for troubleshooting purposes. Logs will
+                be saved to the plugin's log directory.
+              </p>
+            </div>
+          </div>
+          <Switch
+            checked={!!tmpOtherSettings.debug_enableMode}
+            onChange={(checked) =>
+              setTmpOtherSettings({
+                ...tmpOtherSettings,
+                debug_enableMode: checked,
+              })
+            }
+            className={
+              tmpOtherSettings.debug_enableMode
+                ? "tubebay-bg-[#e11d48]"
+                : "tubebay-bg-gray-200"
+            }
+          />
         </div>
       </Card>
     </Page>
