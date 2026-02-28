@@ -34,7 +34,11 @@ class Activator
 
 		// Set up the default options if they don't exist.
 		/* Default Settings */
-		Settings::get_instance()->update_settings(Settings::get_instance()->get_default_settings());
+		foreach (Settings::get_defaults() as $key => $value) {
+			if (get_option(Settings::PREFIX . $key) === false) {
+				Settings::set($key, $value);
+			}
+		}
 
 		// Create custom database tables.
 		self::create_custom_tables();

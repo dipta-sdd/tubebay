@@ -13,6 +13,8 @@ import {
   ClockIcon,
 } from "./Icons";
 import { timeDiff } from "../../utils/Dates";
+import { useYouTubeActions } from "../../hooks/useYouTubeActions";
+import { getConnectionStatusText } from "../../utils/status_helpers";
 
 interface SidebarMenuItem {
   label: string;
@@ -54,89 +56,8 @@ const Sidebar: FC = () => {
   const isConnected = plugin_settings?.connection_status === "connected";
   const channelName = plugin_settings?.channel_name || "";
 
-  const getConnectionStatusText = (status: string) => {
-    switch (status) {
-      case "connected":
-        return <span className="tubebay-text-green-500">Connected</span>;
-      case "disconnected":
-        return <span className="tubebay-text-gray-400">Disconnected</span>;
-      case "failed":
-        return <span className="tubebay-text-red-500">Failed</span>;
-      default:
-        return <span className="tubebay-text-gray-400">Inactive</span>;
-    }
-  };
-
-  const handleDisconnect = async () => {
-    try {
-      const response = await apiFetch<{
-        success: boolean;
-        message: string;
-        data: any;
-      }>({
-        path: "/tubebay/v1/settings",
-        method: "POST",
-        data: {
-          connection_status: "disconnected",
-        },
-      });
-
-      if (response.success) {
-        updateStore("plugin_settings", response.data);
-        addToast("YouTube account disconnected.", "success");
-      }
-    } catch (error) {
-      addToast(`Failed to disconnect: ${(error as Error).message}`, "error");
-    }
-  };
-
-  const handleConnect = async () => {
-    try {
-      const response = await apiFetch<{
-        success: boolean;
-        message: string;
-        data: any;
-      }>({
-        path: "/tubebay/v1/settings",
-        method: "POST",
-        data: {
-          connection_status: "connected",
-        },
-      });
-
-      if (response.success) {
-        updateStore("plugin_settings", response.data);
-        addToast("YouTube account connected.", "success");
-      }
-    } catch (error) {
-      addToast(`Failed to connect: ${(error as Error).message}`, "error");
-    }
-  };
-
-  const handleSync = async () => {
-    try {
-      addToast("Syncing library...", "info");
-      const response = await apiFetch<{
-        success: boolean;
-        message: string;
-        last_sync_time?: number;
-      }>({
-        path: "/tubebay/v1/youtube/sync-library-status",
-      });
-
-      if (response.success) {
-        if (response.last_sync_time !== undefined) {
-          updateStore("plugin_settings", {
-            ...plugin_settings,
-            last_sync_time: response.last_sync_time,
-          });
-        }
-        addToast("Library synced successfully.", "success");
-      }
-    } catch (error) {
-      addToast(`Sync failed: ${(error as Error).message}`, "error");
-    }
-  };
+  const { connectYouTube, disconnectYouTube, syncLibrary } =
+    useYouTubeActions();
 
   return (
     <aside className="tubebay-w-[clamp(260px,10%,300px)] tubebay-hidden lg:tubebay-flex tubebay-flex-col tubebay-gap-[16px] ">
@@ -234,21 +155,21 @@ const Sidebar: FC = () => {
                 {isConnected ? (
                   <button
                     className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-red-500 hover:tubebay-text-red-700 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                    onClick={() => handleDisconnect()}
+                    onClick={() => disconnectYouTube()}
                   >
                     Disconnect
                   </button>
                 ) : (
                   <button
                     className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                    onClick={() => handleConnect()}
+                    onClick={() => connectYouTube()}
                   >
                     Connect
                   </button>
                 )}
                 <button
                   className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                  onClick={() => handleSync()}
+                  onClick={() => syncLibrary()}
                 >
                   Sync
                 </button>

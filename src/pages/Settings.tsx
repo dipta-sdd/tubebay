@@ -20,6 +20,8 @@ import { Switch } from "../components/common/Switch";
 import Select from "../components/common/Select";
 import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
 import { PluginSettings } from "../utils/types";
+import { getConnectionStatusText } from "../utils/status_helpers";
+import { useYouTubeActions } from "../hooks/useYouTubeActions";
 type SettingsData = Partial<PluginSettings>;
 
 export default function Settings() {
@@ -33,6 +35,7 @@ export default function Settings() {
 
   const { plugin_settings: settings } = useWpabStore();
   const { updateStore } = useWpabStoreActions();
+  const { connectYouTube } = useYouTubeActions();
 
   const setSettings = (data: SettingsData) => {
     updateStore("plugin_settings", {
@@ -250,7 +253,8 @@ export default function Settings() {
         </div>
 
         {!editingConnection &&
-        settings.connection_status === "connected" &&
+        (settings.connection_status === "connected" ||
+          settings.connection_status === "disconnected") &&
         settings.channel_name ? (
           <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[24px]">
             {/* Connected Confirmation Box */}
@@ -281,22 +285,35 @@ export default function Settings() {
                     {settings.channel_name}
                   </span>
                   <span className="tubebay-bg-[#dcfce7] tubebay-text-[#15803d] tubebay-text-[12px] tubebay-font-bold tubebay-px-[8px] tubebay-py-[2px] tubebay-rounded-full">
-                    Connected
+                    {getConnectionStatusText(settings.connection_status)}
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Change Account Button */}
-            <Button
-              onClick={() => setEditingConnection(true)}
-              className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
-            >
-              <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">
-                <GoogleIcon size={20} className="tubebay-text-white" />
-              </div>
-              Change Google Account
-            </Button>
+            <div className="tubebay-flex tubebay-gap-2">
+              {settings.connection_status === "disconnected" ? (
+                <Button
+                  onClick={() => connectYouTube()}
+                  className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
+                >
+                  <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">
+                    <GoogleIcon size={20} className="tubebay-text-white" />
+                  </div>
+                  Connect
+                </Button>
+              ) : null}
+              <Button
+                onClick={() => setEditingConnection(true)}
+                className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
+              >
+                <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">
+                  <GoogleIcon size={20} className="tubebay-text-white" />
+                </div>
+                Change Credentials
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-[20px]">
