@@ -28,6 +28,7 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [editingConnection, setEditingConnection] = useState(false);
 
   const { plugin_settings: settings } = useWpabStore();
   const { updateStore } = useWpabStoreActions();
@@ -88,6 +89,7 @@ export default function Settings() {
         addToast(response.message, "success");
         setSettings(response.data);
         setTmpSettings(response.data);
+        setEditingConnection(false);
       }
     } catch (error) {
       addToast(`Error saving settings: ${(error as Error).message}`, "error");
@@ -121,7 +123,6 @@ export default function Settings() {
           }. Click "Connect" to save this connection.`,
           "success",
         );
-
       }
     } catch (error) {
       addToast(`Connection Failed: ${(error as any).message}`, "error");
@@ -183,8 +184,9 @@ export default function Settings() {
           </h2>
         </div>
 
-        {tmpSettings.connection_status === "connected" &&
-        tmpSettings.channel_name ? (
+        {!editingConnection &&
+        settings.connection_status === "connected" &&
+        settings.channel_name ? (
           <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[24px]">
             {/* Connected Confirmation Box */}
             <div className="tubebay-w-full tubebay-max-w-[480px] tubebay-bg-[#f0fdf4] tubebay-border tubebay-border-[#dcfce7] tubebay-rounded-[16px] tubebay-p-[32px] tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px]">
@@ -203,7 +205,7 @@ export default function Settings() {
                 </h3>
                 <div className="tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[8px]">
                   <span className="tubebay-text-[14px] tubebay-text-gray-600">
-                    {tmpSettings.channel_name}
+                    {settings.channel_name}
                   </span>
                   <span className="tubebay-bg-[#dcfce7] tubebay-text-[#15803d] tubebay-text-[12px] tubebay-font-bold tubebay-px-[8px] tubebay-py-[2px] tubebay-rounded-full">
                     Connected
@@ -214,9 +216,7 @@ export default function Settings() {
 
             {/* Change Account Button */}
             <Button
-              onClick={() =>
-                setTmpSettings({ ...tmpSettings, connection_status: "" })
-              }
+              onClick={() => setEditingConnection(true)}
               className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-[#d92121] hover:!tubebay-bg-[#b91c1c] tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
             >
               <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">

@@ -6,11 +6,13 @@ import AppLayout from "./components/common/AppLayout";
 import { WpabProvider } from "./store/wpabStore";
 import { ToastProvider } from "./store/toast/use-toast";
 import Logs from "./pages/Logs";
+import { ToastContainer } from "./components/common/ToastContainer";
 
 function App() {
   return (
     <WpabProvider>
       <ToastProvider>
+        <ToastContainer />
         <HashRouter>
           <Routes>
             <Route element={<AppLayout />}>

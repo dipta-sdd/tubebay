@@ -49,6 +49,19 @@ const Sidebar: FC = () => {
   const isConnected = plugin_settings?.connection_status === "connected";
   const channelName = plugin_settings?.channel_name || "";
 
+  const getConnectionStatusText = (status: string) => {
+    switch (status) {
+      case "connected":
+        return <span className="tubebay-text-green-500">Connected</span>;
+      case "disconnected":
+        return <span className="tubebay-text-gray-400">Disconnected</span>;
+      case "failed":
+        return <span className="tubebay-text-red-500">Failed</span>;
+      default:
+        return <span className="tubebay-text-gray-400">Inactive</span>;
+    }
+  };
+
   return (
     <aside className="tubebay-w-[clamp(260px,10%,300px)] tubebay-hidden lg:tubebay-flex tubebay-flex-col tubebay-gap-[16px] ">
       {/* Navigation Card */}
@@ -105,7 +118,7 @@ const Sidebar: FC = () => {
             }`}
           ></span>
           <span className="tubebay-t-6-bold tubebay-text-color-default">
-            API Connection: {isConnected ? "Active" : "Inactive"}
+            API Connection: {getConnectionStatusText(plugin_settings.connection_status)}
           </span>
         </div>
 
