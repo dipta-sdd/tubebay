@@ -8,7 +8,10 @@
  * and implement get_instance() and run().
  */
 
+use TubeBay\Api\LogController;
+
 return array(
     \TubeBay\Api\SettingsController::class,
     \TubeBay\Api\YouTubeController::class,
+    LogController::class
 );

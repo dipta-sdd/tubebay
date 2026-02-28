@@ -455,7 +455,7 @@ export default function Settings() {
             disabled={syncing || !settings.api_key || !settings.channel_id}
             color="secondary"
             variant="outline"
-            className="tubebay-h-[38px] tubebay-px-[16px] tubebay-text-[13px] tubebay-font-bold"
+            className="tubebay-h-[38px] tubebay-px-[16px] tubebay-text-[13px] tubebay-font-bold tubebay-whitespace-nowrap"
           >
             {syncing ? "Syncing..." : "Sync Now"}
           </Button>

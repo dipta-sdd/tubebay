@@ -53,7 +53,7 @@ class LogController extends ApiController
      */
     public function register_routes()
     {
-        tubebay_log('Registering routes for LogController', 'error');
+        tubebay_log('Registering routes for LogController', 'info');
 
 
         $namespace = $this->namespace . $this->version;

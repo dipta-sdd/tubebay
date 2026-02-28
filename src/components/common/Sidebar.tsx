@@ -12,6 +12,7 @@ import {
   YouTubeIcon,
   ClockIcon,
 } from "./Icons";
+import { timeDiff } from "../../utils/Dates";
 
 interface SidebarMenuItem {
   label: string;
@@ -118,16 +119,19 @@ const Sidebar: FC = () => {
       const response = await apiFetch<{
         success: boolean;
         message: string;
-        videos: any[];
+        last_sync_time?: number;
       }>({
-        path: "/tubebay/v1/youtube/sync-library",
+        path: "/tubebay/v1/youtube/sync-library-status",
       });
 
       if (response.success) {
-        addToast(
-          `Synced ${response.videos.length} videos successfully.`,
-          "success",
-        );
+        if (response.last_sync_time !== undefined) {
+          updateStore("plugin_settings", {
+            ...plugin_settings,
+            last_sync_time: response.last_sync_time,
+          });
+        }
+        addToast("Library synced successfully.", "success");
       }
     } catch (error) {
       addToast(`Sync failed: ${(error as Error).message}`, "error");
@@ -201,53 +205,55 @@ const Sidebar: FC = () => {
         </div>
 
         {/* Channel Info (only when connected) */}
-        { (plugin_settings.connection_status === "connected" || plugin_settings.connection_status === "disconnected")&&
+        {(plugin_settings.connection_status === "connected" ||
+          plugin_settings.connection_status === "disconnected") &&
           plugin_settings.channel_name && (
             <div className="tubebay-flex tubebay-flex-col tubebay-gap-[12px] tubebay-bg-[#f9fafb] tubebay-p-[16px] tubebay-rounded-[12px]">
               <div className="tubebay-flex tubebay-items-center tubebay-gap-[12px] tubebay-bg-gray-50 tubebay-rounded-[8px] tubebay-w-full">
                 <div className="tubebay-w-[36px] tubebay-h-[36px] tubebay-bg-red-100 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-red-600 tubebay-flex-shrink-0">
                   <YouTubeIcon />
                 </div>
-              <div className="tubebay-overflow-hidden">
-                <p className="tubebay-text-[13px] tubebay-font-bold tubebay-text-gray-900 tubebay-truncate">
-                  {channelName}
-                </p>
-                <p className="tubebay-text-[11px] tubebay-text-gray-500">
-                  Channel
-                </p>
+                <div className="tubebay-overflow-hidden">
+                  <p className="tubebay-text-[13px] tubebay-font-bold tubebay-text-gray-900 tubebay-truncate">
+                    {channelName}
+                  </p>
+                  <p className="tubebay-text-[11px] tubebay-text-gray-500">
+                    Channel
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="tubebay-flex tubebay-gap-[12px] tubebay-justify-between tubebay-w-full">
-              {isConnected ? (
-                <button
-                  className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-red-500 hover:tubebay-text-red-700 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                  onClick={() => handleDisconnect()}
-                >
-                  Disconnect
-                </button>
-              ) : (
+              <div className="tubebay-flex tubebay-gap-[12px] tubebay-justify-between tubebay-w-full">
+                {isConnected ? (
+                  <button
+                    className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-red-500 hover:tubebay-text-red-700 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                    onClick={() => handleDisconnect()}
+                  >
+                    Disconnect
+                  </button>
+                ) : (
+                  <button
+                    className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
+                    onClick={() => handleConnect()}
+                  >
+                    Connect
+                  </button>
+                )}
                 <button
                   className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                  onClick={() => handleConnect()}
+                  onClick={() => handleSync()}
                 >
-                  Connect
+                  Sync
                 </button>
-              )}
-              <button
-                className="tubebay-text-[12px] tubebay-font-semibold tubebay-text-[#3858e9] hover:tubebay-text-blue-800 tubebay-bg-transparent tubebay-border-0 tubebay-cursor-pointer tubebay-p-0"
-                onClick={() => handleSync()}
-              >
-                Sync
-              </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Last Sync */}
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[6px] tubebay-border-gray-100">
           <ClockIcon className="tubebay-text-gray-400" />
           <span className="tubebay-text-small tubebay-text-secondary">
-            Last sync: {isConnected ? "Recently" : "Never"}
+            Last sync:{" "}
+            {isConnected ? timeDiff(Number(plugin_settings.last_sync_time)) : "Never"}
           </span>
         </div>
       </div>

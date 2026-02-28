@@ -36,6 +36,7 @@ export interface PluginSettings {
     channel_name: string;
     connection_status: string;
     auto_sync: boolean;
+    last_sync_time: number;
     video_placement: string;
     cache_duration: number;
 }

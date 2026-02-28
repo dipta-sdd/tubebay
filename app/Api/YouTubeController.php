@@ -46,6 +46,15 @@ class YouTubeController extends ApiController
             ),
         ));
 
+        // Route to manually sync the library returning only status
+        register_rest_route($namespace, '/youtube/sync-library-status', array(
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => array($this, 'sync_library_status'),
+                'permission_callback' => array($this, 'get_item_permissions_check'),
+            ),
+        ));
+
         // Route to get cached videos
         register_rest_route($namespace, '/youtube/videos', array(
             array(
@@ -113,6 +122,31 @@ class YouTubeController extends ApiController
             'success' => true,
             'message' => __('Library synced successfully.', 'tubebay'),
             'videos' => $response_videos,
+        ), 200);
+    }
+
+    public function sync_library_status($request)
+    {
+        $channel = new Channel();
+
+        if (!$channel->is_configured()) {
+            return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
+        }
+
+        // Force a refresh from the API bypassing transient caches
+        $videos = $channel->get_latest_videos(true);
+
+        if (is_wp_error($videos)) {
+            \TubeBay\Helper\Settings::set('connection_status', 'failed');
+            return new \WP_Error('sync_failed', $videos->get_error_message(), array('status' => 400));
+        }
+
+        \TubeBay\Helper\Settings::set('connection_status', 'connected');
+
+        return new WP_REST_Response(array(
+            'success' => true,
+            'message' => __('Library synced successfully.', 'tubebay'),
+            'last_sync_time' => \TubeBay\Helper\Settings::get_last_sync_time(),
         ), 200);
     }
 
