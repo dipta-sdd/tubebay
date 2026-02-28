@@ -70,20 +70,27 @@ class YouTubeController extends ApiController
         $params = $request->get_params();
         $api_key = $params['api_key'];
         $channel_id = $params['channel_id'];
+
+        tubebay_log("Testing connection for Channel ID: {$channel_id}", 'debug');
+
         $channel = new Channel(array(
             'api_key' => $api_key ? $api_key : '--',
             'channel_id' => $channel_id ? $channel_id : '--'
         ));
 
         if (!$channel->is_configured()) {
+            tubebay_log('Connection test failed: API Key or Channel ID missing', 'error');
             return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
         }
 
         $result = $channel->test_connection();
 
         if (is_wp_error($result)) {
+            tubebay_log('Connection test failed: ' . $result->get_error_message(), 'error');
             return new \WP_Error('connection_failed', $result->get_error_message(), array('status' => 400));
         }
+
+        tubebay_log("Connection test successful for channel: " . ($result['title'] ?? 'Unknown'), 'info');
 
         return new WP_REST_Response(array(
             'success' => true,
@@ -96,9 +103,11 @@ class YouTubeController extends ApiController
 
     public function sync_library($request)
     {
+        tubebay_log('Manual sync_library request received', 'debug');
         $channel = new Channel();
 
         if (!$channel->is_configured()) {
+            tubebay_log('Sync failed: Channel not configured', 'error');
             return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
         }
 
@@ -127,9 +136,11 @@ class YouTubeController extends ApiController
 
     public function sync_library_status($request)
     {
+        tubebay_log('Manual sync_library_status request received', 'debug');
         $channel = new Channel();
 
         if (!$channel->is_configured()) {
+            tubebay_log('Sync status failed: Channel not configured', 'error');
             return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
         }
 
@@ -138,8 +149,12 @@ class YouTubeController extends ApiController
 
         if (is_wp_error($videos)) {
             \TubeBay\Helper\Settings::set('connection_status', 'failed');
+            tubebay_log('Sync status failed during get_latest_videos: ' . $videos->get_error_message(), 'error');
             return new \WP_Error('sync_failed', $videos->get_error_message(), array('status' => 400));
         }
+
+        \TubeBay\Helper\Settings::set('connection_status', 'connected');
+        tubebay_log('Library sync_status successful, fetched ' . count($videos) . ' videos', 'info');
 
         \TubeBay\Helper\Settings::set('connection_status', 'connected');
 

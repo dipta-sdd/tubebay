@@ -63,6 +63,7 @@ class DbManager
      */
     public function create_tables()
     {
+        tubebay_log('Creating TubeBay custom database tables', 'info');
         $this->create_example_table();
     }
 

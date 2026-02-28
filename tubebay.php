@@ -48,6 +48,7 @@ register_deactivation_hook(__FILE__, 'tubebay_deactivate');
 if (!function_exists('tubebay_run')) {
 	function tubebay_run()
 	{
+		tubebay_log('Initializing TubeBay plugin...', 'info');
 		$plugin = \TubeBay\Core\Plugin::get_instance();
 		add_action('plugins_loaded', array($plugin, 'run'));
 	}
@@ -61,6 +62,7 @@ tubebay_run();
  */
 function tubebay_activate()
 {
+	tubebay_log('TubeBay plugin activated', 'info');
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	\TubeBay\Core\Activator::activate();
 }
@@ -72,5 +74,6 @@ function tubebay_activate()
  */
 function tubebay_deactivate()
 {
+	tubebay_log('TubeBay plugin deactivated', 'info');
 	\TubeBay\Core\Deactivator::deactivate();
 }

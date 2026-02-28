@@ -26,6 +26,7 @@ class Deactivator
 	 */
 	public static function deactivate()
 	{
+		tubebay_log('Running Deactivator sequence', 'info');
 		self::remove_custom_capabilities();
 	}
 

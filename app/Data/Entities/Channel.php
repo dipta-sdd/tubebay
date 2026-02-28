@@ -42,6 +42,7 @@ class Channel
         if (!$force_refresh) {
             $cached = get_transient($transient_key);
             if ($cached !== false && is_array($cached)) {
+                tubebay_log('get_latest_videos: Returning cached videos', 'debug');
                 $videos = [];
                 foreach ($cached as $v) {
                     $videos[] = new Video($v);
@@ -50,10 +51,12 @@ class Channel
             }
         }
 
+        tubebay_log('get_latest_videos: Fetching fresh videos from API', 'info');
         // Need to fetch fresh data
         $videos = $this->fetch_videos_from_api();
 
         if (is_wp_error($videos)) {
+            tubebay_log('get_latest_videos: Failed to fetch videos - ' . $videos->get_error_message(), 'error');
             return $videos;
         }
 
@@ -78,6 +81,7 @@ class Channel
     private function fetch_videos_from_api()
     {
         // 1. Get the uploads playlist ID
+        tubebay_log('fetch_videos_from_api: Requesting channel details for uploads playlist', 'debug');
         $channel_url = add_query_arg([
             'id' => $this->channel_id,
             'part' => 'contentDetails',
@@ -87,22 +91,26 @@ class Channel
         $channel_response = wp_remote_get($channel_url);
 
         if (is_wp_error($channel_response)) {
+            tubebay_log('fetch_videos_from_api: Network error fetching channel details - ' . $channel_response->get_error_message(), 'error');
             return $channel_response;
         }
 
         $channel_body = json_decode(wp_remote_retrieve_body($channel_response), true);
 
         if (isset($channel_body['error'])) {
+            tubebay_log('fetch_videos_from_api: API error fetching channel details - ' . ($channel_body['error']['message'] ?? 'Unknown Error'), 'error');
             return new \WP_Error('api_error', $channel_body['error']['message'] ?? 'Unknown API Error');
         }
 
         if (empty($channel_body['items'][0]['contentDetails']['relatedPlaylists']['uploads'])) {
+            tubebay_log('fetch_videos_from_api: No uploads playlist found', 'error');
             return new \WP_Error('no_uploads_playlist', __('Could not find the uploads playlist for this channel.', 'tubebay'));
         }
 
         $uploads_playlist_id = $channel_body['items'][0]['contentDetails']['relatedPlaylists']['uploads'];
 
         // 2. Get up to 50 videos from the uploads playlist
+        tubebay_log("fetch_videos_from_api: Fetching videos from playlist {$uploads_playlist_id}", 'debug');
         $playlist_url = add_query_arg([
             'playlistId' => $uploads_playlist_id,
             'part' => 'snippet',
@@ -113,16 +121,19 @@ class Channel
         $playlist_response = wp_remote_get($playlist_url);
 
         if (is_wp_error($playlist_response)) {
+            tubebay_log('fetch_videos_from_api: Network error fetching playlist items - ' . $playlist_response->get_error_message(), 'error');
             return $playlist_response;
         }
 
         $playlist_body = json_decode(wp_remote_retrieve_body($playlist_response), true);
 
         if (isset($playlist_body['error'])) {
+            tubebay_log('fetch_videos_from_api: API error fetching playlist items - ' . ($playlist_body['error']['message'] ?? 'Unknown Error'), 'error');
             return new \WP_Error('api_error', $playlist_body['error']['message'] ?? 'Unknown API Error');
         }
 
         if (empty($playlist_body['items'])) {
+            tubebay_log('fetch_videos_from_api: Playlist is empty', 'info');
             return [];
         }
 
@@ -172,9 +183,11 @@ class Channel
         $cached = get_transient($transient_key);
 
         if ($cached !== false && is_array($cached)) {
+            tubebay_log('get_channel_details: Returning cached details', 'debug');
             return $cached;
         }
 
+        tubebay_log('get_channel_details: Fetching fresh details from API', 'info');
         $channel_url = add_query_arg([
             'id' => $this->channel_id,
             'part' => 'snippet',
@@ -184,16 +197,19 @@ class Channel
         $channel_response = wp_remote_get($channel_url);
 
         if (is_wp_error($channel_response)) {
+            tubebay_log('get_channel_details: Network error fetching details - ' . $channel_response->get_error_message(), 'error');
             return $channel_response;
         }
 
         $channel_body = json_decode(wp_remote_retrieve_body($channel_response), true);
 
         if (isset($channel_body['error'])) {
+            tubebay_log('get_channel_details: API error - ' . ($channel_body['error']['message'] ?? 'Unknown API Error'), 'error');
             return new \WP_Error('api_error', $channel_body['error']['message'] ?? 'Unknown API Error');
         }
 
         if (empty($channel_body['items'][0]['snippet'])) {
+            tubebay_log('get_channel_details: Could not find channel snippet', 'error');
             return new \WP_Error('api_error', __('Could not fetch channel details.', 'tubebay'));
         }
 
@@ -204,6 +220,7 @@ class Channel
             'description' => $snippet['description'] ?? '',
         ];
 
+        tubebay_log('get_channel_details: Success, setting transient cache', 'debug');
         set_transient($transient_key, $details, Settings::get_cache_duration());
 
         return $details;

@@ -3,6 +3,7 @@
 namespace TubeBay\Core;
 
 use TubeBay\Data\DbManager;
+use TubeBay\Helper\Settings;
 
 /**
  * Fired during plugin activation.
@@ -29,6 +30,8 @@ class Activator
 	 */
 	public static function activate()
 	{
+		tubebay_log('Running Activator sequence', 'info');
+
 		// Set up the default options if they don't exist.
 		/* Default Settings */
 		Settings::get_instance()->update_settings(Settings::get_instance()->get_default_settings());

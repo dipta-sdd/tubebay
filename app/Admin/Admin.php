@@ -91,9 +91,8 @@ class Admin
 	 */
 	public function add_admin_menu()
 	{
+		tubebay_log('Registering TubeBay admin menu', 'info');
 		$plugin_data = $this->get_plugin_data();
-
-
 
 		// Define menu items
 		$menu_items = array(
@@ -194,18 +193,13 @@ class Admin
 		</div>';
 	}
 
-	/**
-	 * Enqueue resources.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return void
-	 */
 	public function enqueue_resources()
 	{
 		if (!$this->is_menu_page()) {
 			return;
 		}
+
+		tubebay_log('Enqueueing admin resources for TubeBay', 'debug');
 
 		$deps_file = TUBEBAY_PATH . 'build/admin.asset.php';
 		$dependency = array('wp-i18n');

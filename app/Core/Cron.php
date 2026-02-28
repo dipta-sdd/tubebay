@@ -53,6 +53,7 @@ class Cron
 
         if ($auto_sync) {
             if (!wp_next_scheduled(self::HOOK_NAME)) {
+                tubebay_log('Scheduling daily sync event', 'debug');
                 // Schedule to start at 3:00 AM local time or soon after
                 $timestamp = strtotime('03:00:00');
 
@@ -67,6 +68,7 @@ class Cron
             // Unschedule if auto_sync is disabled
             $timestamp = wp_next_scheduled(self::HOOK_NAME);
             if ($timestamp) {
+                tubebay_log('Unscheduling daily sync event', 'debug');
                 wp_unschedule_event($timestamp, self::HOOK_NAME);
             }
         }
@@ -77,9 +79,11 @@ class Cron
      */
     public function do_daily_sync()
     {
+        tubebay_log('Running scheduled daily sync', 'info');
         $channel = new Channel();
 
         if (!$channel->is_configured()) {
+            tubebay_log('Scheduled daily sync failed: Channel not configured', 'error');
             return;
         }
 

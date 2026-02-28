@@ -52,6 +52,8 @@ class SettingsController extends ApiController
     public function update_settings($request)
     {
         $body = $request->get_json_params();
+        tubebay_log('Updating settings with payload: ' . json_encode($body), 'debug');
+
         $creds_changed = false;
 
         if (isset($body['api_key'])) {
@@ -109,6 +111,7 @@ class SettingsController extends ApiController
             Settings::set('connection_status', sanitize_text_field($body['connection_status']));
         }
 
+        tubebay_log('Settings updated successfully', 'info');
 
         return new WP_REST_Response(array(
             'success' => true,
