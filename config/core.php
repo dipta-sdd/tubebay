@@ -13,4 +13,5 @@ return array(
     \TubeBay\Admin\ProductMetabox::class,
     \TubeBay\Helper\Settings::class,
     \TubeBay\Core\Cron::class,
+    \TubeBay\Integration\WooCommerce::class,
 );

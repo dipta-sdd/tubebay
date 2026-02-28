@@ -1,23 +1,25 @@
-.campaignbay-discount-table{
+/* TubeBay Responsive Video Wrapper */
+.tubebay-product-video-wrapper {
+    margin: 20px 0;
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
 }
 
-.campaignbay-discount-table th,
-.campaignbay-discount-table td {
-    border: 1px solid #dddddd86;
-    padding: 8px;
-    text-align: left;
+.tubebay-responsive-iframe-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #000;
 }
 
-.campaignbay-discount-table th {
-    font-weight: bold;
-}
-
-.campaignbay-discount-table tr:nth-child(even) {
-}
-
-.campaignbay-discount-table tr:hover {
-
+.tubebay-responsive-iframe-container iframe,
+.tubebay-responsive-iframe-container object,
+.tubebay-responsive-iframe-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
