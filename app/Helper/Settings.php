@@ -50,6 +50,8 @@ class Settings
         'cache_duration' => 12,
         'auto_sync' => true,
         'video_placement' => 'woocommerce_after_single_product_summary',
+        'muted_autoplay' => true,
+        'show_controls' => true,
         'last_sync_time' => 0,
 
         /*==================================================

@@ -56,6 +56,8 @@ export default function Settings() {
     video_placement: settings.video_placement || "below_gallery",
     cache_duration: settings.cache_duration || 12,
     debug_enableMode: settings.debug_enableMode ?? false,
+    muted_autoplay: settings.muted_autoplay ?? true,
+    show_controls: settings.show_controls ?? true,
   });
 
   useEffect(() => {
@@ -77,6 +79,8 @@ export default function Settings() {
         video_placement: response.video_placement || "below_gallery",
         cache_duration: response.cache_duration || 12,
         debug_enableMode: response.debug_enableMode ?? false,
+        muted_autoplay: response.muted_autoplay ?? true,
+        show_controls: response.show_controls ?? true,
       };
 
       setTmpCredentials(creds);
@@ -136,6 +140,8 @@ export default function Settings() {
           video_placement: tmpOtherSettings.video_placement,
           cache_duration: tmpOtherSettings.cache_duration,
           debug_enableMode: tmpOtherSettings.debug_enableMode,
+          muted_autoplay: tmpOtherSettings.muted_autoplay,
+          show_controls: tmpOtherSettings.show_controls,
         },
       });
 
@@ -147,6 +153,8 @@ export default function Settings() {
           video_placement: response.data.video_placement || "below_gallery",
           cache_duration: response.data.cache_duration || 12,
           debug_enableMode: response.data.debug_enableMode ?? false,
+          muted_autoplay: response.data.muted_autoplay ?? true,
+          show_controls: response.data.show_controls ?? true,
         });
       }
     } catch (error) {
@@ -226,7 +234,10 @@ export default function Settings() {
       tmpOtherSettings.video_placement !==
         (settings.video_placement || "below_gallery") ||
       tmpOtherSettings.cache_duration !== (settings.cache_duration || 12) ||
-      tmpOtherSettings.debug_enableMode !== (settings.debug_enableMode ?? false)
+      tmpOtherSettings.debug_enableMode !==
+        (settings.debug_enableMode ?? false) ||
+      tmpOtherSettings.muted_autoplay !== (settings.muted_autoplay ?? true) ||
+      tmpOtherSettings.show_controls !== (settings.show_controls ?? true)
     );
   };
 
@@ -242,7 +253,6 @@ export default function Settings() {
           Connect your YouTube channel once, sync everywhere.
         </p>
       </div>
-
       {/* Connect Account Card */}
       <Card className="tubebay-flex tubebay-flex-col tubebay-items-center">
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-mb-[32px]">
@@ -382,7 +392,6 @@ export default function Settings() {
           </div>
         )}
       </Card>
-
       {/* Sync Settings Card */}
       <Card className="tubebay-flex tubebay-flex-col tubebay-gap-[32px]">
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-justify-between">
@@ -539,8 +548,107 @@ export default function Settings() {
             />
           </div>
         </div>
-      </Card>
-
+        {/* Muted Autoplay Default */}
+        <div className="tubebay-flex tubebay-items-start tubebay-justify-between">
+          <div className="tubebay-flex tubebay-gap-[12px]">
+            <div className="tubebay-bg-[#eff6ff] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                opacity="0.8"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="tubebay-text-[#3b82f6]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+                />
+              </svg>
+            </div>
+            <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
+              <h3 className="tubebay-t-4-bold tubebay-text-color-default">
+                Muted Autoplay
+              </h3>
+              <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[540px]">
+                By default, videos play automatically without sound.
+              </p>
+            </div>
+          </div>
+          <Switch
+            checked={!!tmpOtherSettings.muted_autoplay}
+            onChange={(checked) =>
+              setTmpOtherSettings({
+                ...tmpOtherSettings,
+                muted_autoplay: checked,
+              })
+            }
+            className={
+              tmpOtherSettings.muted_autoplay
+                ? "tubebay-bg-[#3b82f6]"
+                : "tubebay-bg-gray-200"
+            }
+          />
+        </div>
+        {/* Show Controls Default */}
+        <div className="tubebay-flex tubebay-items-start tubebay-justify-between">
+          <div className="tubebay-flex tubebay-gap-[12px]">
+            <div className="tubebay-bg-[#eff6ff] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                opacity="0.8"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="tubebay-text-[#3b82f6]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
+              <h3 className="tubebay-t-4-bold tubebay-text-color-default">
+                Show Player Controls
+              </h3>
+              <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[540px]">
+                By default, display YouTube video playback controls.
+              </p>
+            </div>
+          </div>
+          <Switch
+            checked={!!tmpOtherSettings.show_controls}
+            onChange={(checked) =>
+              setTmpOtherSettings({
+                ...tmpOtherSettings,
+                show_controls: checked,
+              })
+            }
+            className={
+              tmpOtherSettings.show_controls
+                ? "tubebay-bg-[#3b82f6]"
+                : "tubebay-bg-gray-200"
+            }
+          />
+        </div>
+      </Card>{" "}
       {/* Advanced Settings Card */}
       <Card className="tubebay-flex tubebay-flex-col tubebay-gap-[32px] tubebay-mt-[24px]">
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">

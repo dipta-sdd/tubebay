@@ -131,11 +131,9 @@ class ProductMetabox
         $display_location = 'default';
 
         $muted_autoplay = get_post_meta($post->ID, '_tubebay_muted_autoplay', true);
-        $show_controls = get_post_meta($post->ID, '_tubebay_show_controls', true);
 
-        // Default toggles to true if not set yet (or depending on logic)
-        $muted_autoplay = ($muted_autoplay === '') ? '1' : $muted_autoplay;
-        $show_controls = ($show_controls === '') ? '1' : $show_controls;
+        // Fallback to global defaults if not explicitly set yet
+        $muted_autoplay = ($muted_autoplay === '') ? (\TubeBay\Helper\Settings::get('muted_autoplay', true) ? '1' : '0') : $muted_autoplay;
 
         ?>
         <div class="tubebay-metabox-wrapper">
@@ -187,25 +185,7 @@ class ProductMetabox
                 </div>
                 <div class="tubebay-setting-control">
                     <label class="tubebay-switch">
-                        <input type="checkbox" name="tubebay_muted_autoplay" value="1" <?php checked($muted_autoplay, '1'); ?>
-                        />
-                        <span class="tubebay-slider tubebay-round"></span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="tubebay-setting-row">
-                <div class="tubebay-setting-label">
-                    <strong>
-                        <?php esc_html_e('Show Player Controls', 'tubebay'); ?>
-                    </strong>
-                    <p class="description">
-                        <?php esc_html_e('Display video playback controls', 'tubebay'); ?>
-                    </p>
-                </div>
-                <div class="tubebay-setting-control">
-                    <label class="tubebay-switch">
-                        <input type="checkbox" name="tubebay_show_controls" value="1" <?php checked($show_controls, '1'); ?> />
+                        <input type="checkbox" name="tubebay_muted_autoplay" value="1" <?php checked($muted_autoplay, '1'); ?> />
                         <span class="tubebay-slider tubebay-round"></span>
                     </label>
                 </div>
@@ -291,9 +271,5 @@ class ProductMetabox
         // Muted Autoplay Toggle (checkboxes only exist in $_POST if checked)
         $muted_autoplay = isset($_POST['tubebay_muted_autoplay']) ? '1' : '0';
         update_post_meta($post_id, '_tubebay_muted_autoplay', $muted_autoplay);
-
-        // Show Controls Toggle
-        $show_controls = isset($_POST['tubebay_show_controls']) ? '1' : '0';
-        update_post_meta($post_id, '_tubebay_show_controls', $show_controls);
     }
 }

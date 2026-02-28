@@ -77,7 +77,14 @@ class WooCommerce
         }
 
         $muted_autoplay = get_post_meta($product->get_id(), '_tubebay_muted_autoplay', true);
-        $show_controls = get_post_meta($product->get_id(), '_tubebay_show_controls', true);
+
+        // Fallback to global defaults if product meta is missing
+        if ($muted_autoplay === '') {
+            $muted_autoplay = Settings::get('muted_autoplay', true) ? '1' : '0';
+        }
+
+        // Show player controls only uses global setting
+        $show_controls = Settings::get('show_controls', true) ? '1' : '0';
 
         // Build the YouTube embed URL
         $embed_url = 'https://www.youtube.com/embed/' . esc_attr($video_id) . '?rel=0';

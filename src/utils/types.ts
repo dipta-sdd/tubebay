@@ -41,6 +41,8 @@ export interface PluginSettings {
     last_sync_time: number;
     video_placement: string;
     cache_duration: number;
+    muted_autoplay: boolean;
+    show_controls: boolean;
 }
 
 /**

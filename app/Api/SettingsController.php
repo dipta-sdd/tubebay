@@ -119,6 +119,14 @@ class SettingsController extends ApiController
             Settings::set('debug_enableMode', (bool) $body['debug_enableMode']);
         }
 
+        if (isset($body['muted_autoplay'])) {
+            Settings::set('muted_autoplay', (bool) $body['muted_autoplay']);
+        }
+
+        if (isset($body['show_controls'])) {
+            Settings::set('show_controls', (bool) $body['show_controls']);
+        }
+
         if (!$creds_changed && isset($body['connection_status'])) {
             Settings::set('connection_status', sanitize_text_field($body['connection_status']));
         }
