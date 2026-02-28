@@ -259,9 +259,17 @@ export default function Settings() {
                 <div className="tubebay-bg-[#22c55e] tubebay-text-white tubebay-rounded-full tubebay-p-[2px] tubebay-z-10 tubebay-border-[4px] tubebay-border-[#f0fdf4]">
                   <CheckCircleIcon size={44} />
                 </div>
-                <div className="tubebay-bg-[#d92121] tubebay-text-white tubebay-rounded-[12px] tubebay-p-[12px] tubebay-ml-[-12px]">
-                  <YouTubeIcon size={24} fill="white" stroke="none" />
-                </div>
+                {settings.thumbnails_medium ? (
+                  <img
+                    src={settings.thumbnails_medium}
+                    alt={settings.channel_name}
+                    className="tubebay-w-[48px] tubebay-h-[48px] tubebay-rounded-full tubebay-ml-[-12px] tubebay-border-[4px] tubebay-border-[#f0fdf4] tubebay-object-cover"
+                  />
+                ) : (
+                  <div className="tubebay-bg-[#d92121] tubebay-text-white tubebay-rounded-[12px] tubebay-p-[12px] tubebay-ml-[-12px]">
+                    <YouTubeIcon size={24} fill="white" stroke="none" />
+                  </div>
+                )}
               </div>
 
               <div className="tubebay-text-center">

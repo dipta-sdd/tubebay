@@ -179,13 +179,13 @@ class Channel
             return new \WP_Error('not_configured', __('TubeBay API Key or Channel ID is missing.', 'tubebay'));
         }
 
-        $transient_key = 'tubebay_channel_details_' . $this->channel_id;
-        $cached = get_transient($transient_key);
+        // $transient_key = 'tubebay_channel_details_' . $this->channel_id;
+        // $cached = get_transient($transient_key);
 
-        if ($cached !== false && is_array($cached)) {
-            tubebay_log('get_channel_details: Returning cached details', 'debug');
-            return $cached;
-        }
+        // if ($cached !== false && is_array($cached)) {
+        //     tubebay_log('get_channel_details: Returning cached details', 'debug');
+        //     return $cached;
+        // }
 
         tubebay_log('get_channel_details: Fetching fresh details from API', 'info');
         $channel_url = add_query_arg([
@@ -215,13 +215,18 @@ class Channel
 
         $snippet = $channel_body['items'][0]['snippet'];
 
+        tubebay_log('get_channel_details: Channel details fetched successfully', 'debug');
+        tubebay_log('get_channel_details: Channel details - ' . json_encode($snippet), 'debug');
+
         $details = [
             'title' => $snippet['title'] ?? '',
             'description' => $snippet['description'] ?? '',
+            'thumbnails_default' => $snippet['thumbnails']['default']['url'] ?? '',
+            'thumbnails_medium' => $snippet['thumbnails']['medium']['url'] ?? '',
         ];
 
         tubebay_log('get_channel_details: Success, setting transient cache', 'debug');
-        set_transient($transient_key, $details, Settings::get_cache_duration());
+        // set_transient($transient_key, $details, Settings::get_cache_duration());
 
         return $details;
     }

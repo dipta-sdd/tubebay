@@ -82,14 +82,22 @@ class SettingsController extends ApiController
                 $result = $channel->test_connection();
 
                 if (!is_wp_error($result)) {
+                    tubebay_log('Connection successful, updating settings', 'info');
+                    tubebay_log('Connection result: ' . json_encode($result), 'info');
                     Settings::set('channel_name', $result['title'] ?? '');
+                    Settings::set('thumbnails_default', $result['thumbnails_default'] ?? '');
+                    Settings::set('thumbnails_medium', $result['thumbnails_medium'] ?? '');
                     Settings::set('connection_status', 'connected');
                 } else {
                     Settings::set('channel_name', '');
+                    Settings::set('thumbnails_default', '');
+                    Settings::set('thumbnails_medium', '');
                     Settings::set('connection_status', 'failed');
                 }
             } else {
                 Settings::set('channel_name', '');
+                Settings::set('thumbnails_default', '');
+                Settings::set('thumbnails_medium', '');
                 Settings::set('connection_status', 'disconnected');
             }
         }

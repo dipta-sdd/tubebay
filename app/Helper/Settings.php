@@ -44,6 +44,8 @@ class Settings
         'api_key' => '',
         'channel_id' => '',
         'channel_name' => '',
+        'thumbnails_default' => '',
+        'thumbnails_medium' => '',
         'connection_status' => 'disconnected',
         'cache_duration' => 12,
         'auto_sync' => true,

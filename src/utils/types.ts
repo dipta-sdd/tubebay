@@ -34,6 +34,8 @@ export interface PluginSettings {
     api_key: string;
     channel_id: string;
     channel_name: string;
+    thumbnails_default: string;
+    thumbnails_medium: string;
     connection_status: string;
     auto_sync: boolean;
     last_sync_time: number;

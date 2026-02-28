@@ -210,9 +210,17 @@ const Sidebar: FC = () => {
           plugin_settings.channel_name && (
             <div className="tubebay-flex tubebay-flex-col tubebay-gap-[12px] tubebay-bg-[#f9fafb] tubebay-p-[16px] tubebay-rounded-[12px]">
               <div className="tubebay-flex tubebay-items-center tubebay-gap-[12px] tubebay-bg-gray-50 tubebay-rounded-[8px] tubebay-w-full">
-                <div className="tubebay-w-[36px] tubebay-h-[36px] tubebay-bg-red-100 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-red-600 tubebay-flex-shrink-0">
-                  <YouTubeIcon />
-                </div>
+                {plugin_settings.thumbnails_default ? (
+                  <img
+                    src={plugin_settings.thumbnails_default}
+                    alt={channelName}
+                    className="tubebay-w-[36px] tubebay-h-[36px] tubebay-rounded-full tubebay-flex-shrink-0 tubebay-object-cover"
+                  />
+                ) : (
+                  <div className="tubebay-w-[36px] tubebay-h-[36px] tubebay-bg-red-100 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-red-600 tubebay-flex-shrink-0">
+                    <YouTubeIcon />
+                  </div>
+                )}
                 <div className="tubebay-overflow-hidden">
                   <p className="tubebay-text-[13px] tubebay-font-bold tubebay-text-gray-900 tubebay-truncate">
                     {channelName}
@@ -253,7 +261,9 @@ const Sidebar: FC = () => {
           <ClockIcon className="tubebay-text-gray-400" />
           <span className="tubebay-text-small tubebay-text-secondary">
             Last sync:{" "}
-            {isConnected ? timeDiff(Number(plugin_settings.last_sync_time)) : "Never"}
+            {isConnected
+              ? timeDiff(Number(plugin_settings.last_sync_time))
+              : "Never"}
           </span>
         </div>
       </div>
