@@ -60,12 +60,15 @@ jQuery(document).ready(function ($) {
                 xhr.setRequestHeader('X-WP-Nonce', tubebayMetabox.nonce);
             },
             success: function (response) {
+                console.log('api called successfully');
+                console.log(videoGrid);
                 videoGrid.empty();
-                if (response && response.length > 0) {
+                console.log(response);
+                if (response && response.success && response.videos.length > 0) {
                     var html = '';
-                    response.forEach(function (video) {
-                        html += '<div class="tubebay-modal-video-item" data-id="' + video.id + '" data-title="' + video.title + '" data-thumbnail="' + video.thumbnail_medium + '">';
-                        html += '<img src="' + video.thumbnail_medium + '" alt="Thumbnail" />';
+                    response.videos.forEach(function (video) {
+                        html += '<div class="tubebay-modal-video-item" data-id="' + video.id + '" data-title="' + video.title + '" data-thumbnail="' + video.thumbnail_url + '">';
+                        html += '<img src="' + video.thumbnail_url + '" alt="Thumbnail" />';
                         html += '<p>' + video.title + '</p>';
                         html += '</div>';
                     });
@@ -97,6 +100,7 @@ jQuery(document).ready(function ($) {
                 isLoaded = true;
             },
             error: function () {
+                console.log('api called failed');
                 videoGrid.html('<p>' + tubebayMetabox.i18n.error + '</p>');
             }
         });
