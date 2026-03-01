@@ -17,8 +17,8 @@ const AppLayout: FC = () => {
   //     navigate("/onboarding");
   //   }
   // }, []);
-  // const showOnboarding = true;
-  const showOnboarding = plugin_settings.connection_status !== "connected";
+  // const showOnboarding = !plugin_settings.is_onboarding_completed;
+  const showOnboarding = true;
   return (
     <div className="">
       <Navbar />

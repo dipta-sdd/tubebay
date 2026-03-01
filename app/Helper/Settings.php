@@ -52,6 +52,7 @@ class Settings
         'video_placement' => 'woocommerce_after_single_product_summary',
         'muted_autoplay' => true,
         'show_controls' => true,
+        'is_onboarding_completed' => false,
         'last_sync_time' => 0,
 
         /*==================================================

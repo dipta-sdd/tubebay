@@ -16,11 +16,12 @@ import {
   InfoIcon,
   TargetIcon,
   ShoppingBagIcon,
-  FilePlayIcon,
   BookIcon,
   ArrowRightIcon,
   HeadphonesIcon,
   CheckCircleIcon,
+  RefreshIcon,
+  FlightIcon,
 } from "../components/common/Icons";
 
 type SettingsData = Partial<PluginSettings>;
@@ -208,63 +209,74 @@ const Onboarding: FC = () => {
 
   const handleFinish = async () => {
     await handleSaveSettings();
+    // Mark onboarding as completed
+    try {
+      await apiFetch({
+        path: "/tubebay/v1/settings",
+        method: "POST",
+        data: { is_onboarding_completed: true },
+      });
+      setSettings({ is_onboarding_completed: true });
+    } catch (e) {
+      // non-blocking
+    }
     setCurrentStep(3);
   };
 
   // ─── Welcome Screen (before wizard starts) ───
   if (!wizardStarted) {
     return (
-      <div className="tubebay-p-[32px] tubebay-max-w-[760px] tubebay-mx-auto tubebay-w-full">
+      <div className="tubebay-py-[64px] tubebay-px-[24px] tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[48px]">
         {/* Header Section */}
-        <div className="tubebay-text-center tubebay-mb-[48px] tubebay-mt-[16px]">
+        <div className="tubebay-text-center">
           <div className="tubebay-inline-flex tubebay-items-center tubebay-justify-center tubebay-w-[72px] tubebay-h-[72px] tubebay-rounded-[16px] tubebay-bg-[#ff0000] tubebay-mb-[24px] tubebay-shadow-[0_8px_16px_rgba(255,0,0,0.2)]">
             <YouTubeFilledIcon size={40} />
           </div>
-          <h1 className="tubebay-text-[32px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[12px] tubebay-tracking-tight">
-            Welcome to {store.pluginData?.plugin_name || "TubeBay"}
+          <h1 className="tubebay-text-[48px] tubebay-leading-[48px] tubebay-font-bold tubebay-text-[#111827] tubebay-mb-[12px] tubebay-tracking-tight">
+            Welcome to TubeBay
           </h1>
-          <p className="tubebay-text-[16px] tubebay-text-gray-600 tubebay-max-w-[600px] tubebay-mx-auto tubebay-leading-relaxed">
+          <p className="tubebay-text-[20px] tubebay-leading-[32px] tubebay-text-[#4b5563] tubebay-max-w-[600px] tubebay-mx-auto tubebay-leading-relaxed">
             Connect your YouTube channel once, and seamlessly sync product
             videos across your entire WooCommerce store.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-3 tubebay-gap-[20px] tubebay-mb-[32px]">
-          <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm">
-            <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-blue-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[16px] tubebay-text-blue-600">
+        <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-3 tubebay-gap-[24px] ">
+          <div className="tubebay-bg-white tubebay-rounded-[16px] tubebay-p-[32px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-start tubebay-justify-start tubebay-gap-[16px]">
+            <div className="tubebay-w-[56px] tubebay-h-[56px] tubebay-bg-[#eff6ff] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-[#2563eb]">
               <LinkIcon size={20} className="!tubebay-stroke-[2.5px]" />
             </div>
-            <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
+            <h3 className="tubebay-t-4-bold tubebay-text-[#111827]">
               One-Time Connection
             </h3>
-            <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-leading-relaxed">
+            <p className="tubebay-text-[14px] tubebay-leading-[22px] tubebay-text-[#4b5563]">
               Connect your YouTube account once and access all your videos
               instantly across products.
             </p>
           </div>
 
-          <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm">
-            <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-green-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[16px] tubebay-text-green-600">
-              <RefreshHalfIcon size={20} className="!tubebay-stroke-[2.5px]" />
+          <div className="tubebay-bg-white tubebay-rounded-[16px] tubebay-p-[32px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-start tubebay-justify-start tubebay-gap-[16px]">
+            <div className="tubebay-w-[56px] tubebay-h-[56px] tubebay-bg-[#f0fdf4] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-[#16a34a]">
+              <RefreshIcon size={20} className="!tubebay-stroke-[2.5px]" />
             </div>
-            <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
+            <h3 className="tubebay-t-4-bold tubebay-text-[#111827]">
               Automatic Sync
             </h3>
-            <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-leading-relaxed">
+            <p className="tubebay-text-[14px] tubebay-leading-[22px] tubebay-text-[#4b5563]">
               Keep your product videos up-to-date with automatic daily
               synchronization from YouTube.
             </p>
           </div>
 
-          <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm">
-            <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-purple-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[16px] tubebay-text-purple-600">
+          <div className="tubebay-bg-white tubebay-rounded-[16px] tubebay-p-[32px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-start tubebay-justify-start tubebay-gap-[16px]">
+            <div className="tubebay-w-[56px] tubebay-h-[56px] tubebay-bg-[#faf5ff] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-[#9333ea]">
               <SlidersIcon size={20} className="!tubebay-stroke-[2.5px]" />
             </div>
-            <h3 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
+            <h3 className="tubebay-t-4-bold tubebay-text-[#111827]">
               Flexible Placement
             </h3>
-            <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-leading-relaxed">
+            <p className="tubebay-text-[14px] tubebay-leading-[22px] tubebay-text-[#4b5563]">
               Choose where videos appear on your product pages with customizable
               placement options.
             </p>
@@ -272,7 +284,7 @@ const Onboarding: FC = () => {
         </div>
 
         {/* System Requirements */}
-        <div className="tubebay-bg-[#f5f8ff] tubebay-rounded-[12px] tubebay-border tubebay-border-blue-100 tubebay-p-[24px] tubebay-mb-[32px] tubebay-flex tubebay-gap-[16px]">
+        <div className=" tubebay-w-full tubebay-bg-[#f5f8ff] tubebay-rounded-[12px] tubebay-border tubebay-border-blue-100 tubebay-p-[24px] tubebay-flex tubebay-gap-[32px]">
           <div className="tubebay-w-[32px] tubebay-h-[32px] tubebay-bg-blue-600 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-white tubebay-shrink-0">
             <InfoIcon size={18} className="!tubebay-stroke-[2.5px]" />
           </div>
@@ -307,20 +319,20 @@ const Onboarding: FC = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[40px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-text-center tubebay-mb-[32px]">
-          <h2 className="tubebay-text-[22px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
+        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[48px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-gap-[16px]">
+          <h2 className="tubebay-t-1 tubebay-text-[#111827] ">
             Ready to Get Started?
           </h2>
-          <p className="tubebay-text-[15px] tubebay-text-gray-500 tubebay-mb-[24px]">
+          <p className="tubebay-t-4 tubebay-text-[#4b5563]">
             Set up your YouTube connection in just a few simple steps.
           </p>
           <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] tubebay-w-full tubebay-max-w-[360px] tubebay-mx-auto">
             <Button
-              className="tubebay-w-full tubebay-h-[48px] tubebay-text-[15px] tubebay-font-bold tubebay-bg-blue-600 hover:tubebay-bg-blue-700 tubebay-shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:tubebay-shadow-[0_6px_16px_rgba(37,99,235,0.3)]"
+              className="tubebay-w-full tubebay-py-[16px] tubebay-px-[32px] tubebay-text-4 tubebay-font-bold"
               color="primary"
               onClick={() => setWizardStarted(true)}
             >
-              <FilePlayIcon size={18} className="tubebay-mr-[8px]" />
+              <FlightIcon size={18} className="tubebay-mr-[8px]" />
               Start Setup Wizard
             </Button>
           </div>

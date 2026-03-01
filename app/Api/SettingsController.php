@@ -127,6 +127,10 @@ class SettingsController extends ApiController
             Settings::set('show_controls', (bool) $body['show_controls']);
         }
 
+        if (isset($body['is_onboarding_completed'])) {
+            Settings::set('is_onboarding_completed', (bool) $body['is_onboarding_completed']);
+        }
+
         if (!$creds_changed && isset($body['connection_status'])) {
             Settings::set('connection_status', sanitize_text_field($body['connection_status']));
         }

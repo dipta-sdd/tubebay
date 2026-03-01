@@ -43,6 +43,7 @@ export interface PluginSettings {
     cache_duration: number;
     muted_autoplay: boolean;
     show_controls: boolean;
+    is_onboarding_completed: boolean;
 }
 
 /**
