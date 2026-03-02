@@ -261,7 +261,7 @@ export default function PlacementSettingsCard({
               Choose where videos will appear by default on your product pages.
             </p>
 
-            <div className="tubebay-flex tubebay-items-center tubebay-gap-[12px] tubebay-w-full tubebay-mt-[12px]">
+            <div className="tubebay-flex tubebay-items-start tubebay-gap-[12px] tubebay-w-full tubebay-mt-[12px]">
               <div className="tubebay-flex-1">
                 <Select
                   value={tmpOtherSettings.video_placement || ""}
@@ -314,17 +314,20 @@ export default function PlacementSettingsCard({
                 title="Live Placement Preview"
                 maxWidth="tubebay-max-w-[90%] md:tubebay-max-w-[1000px] lg:tubebay-max-w-[1240px]"
                 className="!tubebay-z-[9999]"
+                classNames={{
+                  body: "tubebay-py-0",
+                }}
               >
-                <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-8 tubebay-mb-2">
+                <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-8 tubebay-my-3">
                   <div className="tubebay-w-full md:tubebay-w-[320px] tubebay-flex-shrink-0">
                     <div className="tubebay-mb-4">
                       <label className="tubebay-block tubebay-text-sm tubebay-font-semibold tubebay-text-gray-800 tubebay-mb-1">
                         Experiment with Video Positions
                       </label>
                       <p className="tubebay-text-[13px] tubebay-text-gray-500 tubebay-leading-relaxed">
-                        Note: Changing the field below instantly mutates your
-                        active global setting without needing to save. You will
-                        see a live mock product page layout on the right.
+                        Note: Selecting a position updates the preview
+                        immediately. You will still need to save settings to
+                        apply changes globally.
                       </p>
                     </div>
 
