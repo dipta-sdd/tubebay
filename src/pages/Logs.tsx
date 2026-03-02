@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import apiFetch from "@wordpress/api-fetch";
 import Page from "../components/common/Page";
+import { PageSkeleton } from "../components/loading/PageSkeleton";
 
 const Logs = () => {
   const [logs, setLogs] = useState<string>("");
@@ -71,9 +72,7 @@ const Logs = () => {
       )}
 
       {loading ? (
-        <div className="tubebay-flex tubebay-justify-center tubebay-py-12">
-          <span className="tubebay-loading-spinner"></span>
-        </div>
+        <PageSkeleton type="logs" />
       ) : (
         <div className="tubebay-bg-gray-900 tubebay-rounded-lg tubebay-overflow-hidden tubebay-shadow-sm">
           <div className="tubebay-p-4 tubebay-bg-gray-800 tubebay-border-b tubebay-border-gray-700 tubebay-flex tubebay-justify-between tubebay-items-center">

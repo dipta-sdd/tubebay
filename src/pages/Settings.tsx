@@ -10,6 +10,7 @@ import ConnectAccountCard from "../components/settings/ConnectAccountCard";
 import SyncCard from "../components/settings/SyncCard";
 import PlacementSettingsCard from "../components/settings/PlacementSettingsCard";
 import AdvancedSettingsCard from "../components/settings/AdvancedSettingsCard";
+import { PageSkeleton } from "../components/loading/PageSkeleton";
 
 type SettingsData = Partial<PluginSettings>;
 
@@ -231,7 +232,11 @@ export default function Settings() {
   };
 
   if (loading) {
-    return <div className="p-8">Loading settings...</div>;
+    return (
+      <Page>
+        <PageSkeleton type="settings" />
+      </Page>
+    );
   }
 
   return (

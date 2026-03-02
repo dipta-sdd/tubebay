@@ -15,6 +15,7 @@ import {
   CodeIcon,
 } from "../components/common/Icons";
 import Select from "../components/common/Select";
+import { VideoGridSkeleton } from "../components/loading/VideoGridSkeleton";
 
 interface VideoData {
   id: string;
@@ -228,9 +229,7 @@ export default function ChannelLibrary() {
       </div>
 
       {loading ? (
-        <div className="tubebay-text-center tubebay-py-[48px] tubebay-text-gray-500">
-          Loading library...
-        </div>
+        <VideoGridSkeleton viewMode={viewMode} />
       ) : videos.length === 0 ? (
         <div className="tubebay-text-center tubebay-py-[48px] tubebay-text-gray-500">
           No videos found. Try syncing or adjusting your search.
