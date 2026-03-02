@@ -50,12 +50,11 @@ class WooCommerce
         $loader = $plugin->get_loader();
 
         // Get the chosen display location, defaulting to after product summary
-        $placement_hook = Settings::get('video_placement', 'woocommerce_after_single_product_summary');
+        $placement_hook = Settings::get('video_placement', 'woocommerce_product_thumbnails');
 
         // Only hook if placement is valid (not empty/null)
         if (!empty($placement_hook)) {
-            $loader->add_action('woocommerce_product_thumbnails', $this, 'render_product_video', 20);
-            // $loader->add_action($placement_hook, $this, 'render_product_video', 20);
+            $loader->add_action($placement_hook, $this, 'render_product_video', 20);
         }
     }
 

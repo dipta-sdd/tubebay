@@ -49,7 +49,7 @@ class Settings
         'connection_status' => 'disconnected',
         'cache_duration' => 12,
         'auto_sync' => true,
-        'video_placement' => 'woocommerce_after_single_product_summary',
+        'video_placement' => 'woocommerce_product_thumbnails',
         'muted_autoplay' => true,
         'show_controls' => true,
         'is_onboarding_completed' => false,
