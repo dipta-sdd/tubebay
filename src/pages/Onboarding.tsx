@@ -1,4 +1,6 @@
 import { FC, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import apiFetch from "@wordpress/api-fetch";
 import { useToast } from "../store/toast/use-toast";
 import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
@@ -22,6 +24,7 @@ import {
   CheckCircleIcon,
   RefreshIcon,
   FlightIcon,
+  SettingsIcon,
 } from "../components/common/Icons";
 
 type SettingsData = Partial<PluginSettings>;
@@ -29,6 +32,7 @@ type SettingsData = Partial<PluginSettings>;
 const WIZARD_STEPS = ["Connect YouTube", "Configure Settings", "Done"];
 
 const Onboarding: FC = () => {
+  const navigate = useNavigate();
   const store = useWpabStore();
   const { plugin_settings: settings } = useWpabStore();
   const { updateStore } = useWpabStoreActions();
@@ -244,8 +248,8 @@ const Onboarding: FC = () => {
         {/* Features Grid */}
         <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-3 tubebay-gap-[24px] ">
           <div className="tubebay-bg-white tubebay-rounded-[16px] tubebay-p-[32px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-start tubebay-justify-start tubebay-gap-[16px]">
-            <div className="tubebay-w-[56px] tubebay-h-[56px] tubebay-bg-[#eff6ff] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-[#2563eb]">
-              <LinkIcon size={20} className="!tubebay-stroke-[2.5px]" />
+            <div className="tubebay-w-[56px] tubebay-h-[56px] tubebay-bg-[#eff6ff] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-primary">
+              <LinkIcon size={24} className="!tubebay-stroke-[3.5px]" />
             </div>
             <h3 className="tubebay-t-4-bold tubebay-text-[#111827]">
               One-Time Connection
@@ -258,7 +262,7 @@ const Onboarding: FC = () => {
 
           <div className="tubebay-bg-white tubebay-rounded-[16px] tubebay-p-[32px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-start tubebay-justify-start tubebay-gap-[16px]">
             <div className="tubebay-w-[56px] tubebay-h-[56px] tubebay-bg-[#f0fdf4] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-[#16a34a]">
-              <RefreshIcon size={20} className="!tubebay-stroke-[2.5px]" />
+              <RefreshIcon size={20} className="!tubebay-stroke-[3px]" />
             </div>
             <h3 className="tubebay-t-4-bold tubebay-text-[#111827]">
               Automatic Sync
@@ -284,34 +288,40 @@ const Onboarding: FC = () => {
         </div>
 
         {/* System Requirements */}
-        <div className=" tubebay-w-full tubebay-bg-[#f5f8ff] tubebay-rounded-[12px] tubebay-border tubebay-border-blue-100 tubebay-p-[24px] tubebay-flex tubebay-gap-[32px]">
-          <div className="tubebay-w-[32px] tubebay-h-[32px] tubebay-bg-blue-600 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-white tubebay-shrink-0">
-            <InfoIcon size={18} className="!tubebay-stroke-[2.5px]" />
+        <div className=" tubebay-w-full tubebay-bg-[#eff5ff] tubebay-rounded-[16px] tubebay-border tubebay-border-blue-100 tubebay-p-[24px] tubebay-flex tubebay-gap-[32px]">
+          <div className="tubebay-w-[48px] tubebay-h-[48px] tubebay-bg-blue-600 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-white tubebay-shrink-0">
+            <InfoIcon size={24} className="!tubebay-stroke-[2.5px]" />
           </div>
-          <div>
-            <h4 className="tubebay-text-[15px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[4px]">
+          <div className="tubebay-flex tubebay-flex-col tubebay-gap-[8px]">
+            <h4 className="tubebay-t-4-bold tubebay-text-color-default ">
               System Requirements
             </h4>
-            <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-mb-[16px]">
+            <p className="tubebay-t-6 tubebay-text-[#374151]">
               TubeBay requires WooCommerce to be installed and activated on your
               WordPress site.
             </p>
-            <div className="tubebay-flex tubebay-flex-wrap tubebay-gap-[8px]">
-              <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[6px] tubebay-bg-white tubebay-px-[10px] tubebay-py-[4px] tubebay-rounded-[6px] tubebay-text-[12px] tubebay-font-medium tubebay-text-gray-700 tubebay-border tubebay-border-gray-200">
-                <TargetIcon size={14} className="tubebay-text-blue-500" />
+            <div className="tubebay-flex tubebay-flex-wrap tubebay-gap-[24px] tubebay-mt-[16px]">
+              <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[8px] tubebay-rounded-[6px] tubebay-t-6 tubebay-text-color-default tubebay-font-medium ">
+                <TargetIcon size={14} />
                 WordPress 5.8+
               </span>
-              <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[6px] tubebay-bg-white tubebay-px-[10px] tubebay-py-[4px] tubebay-rounded-[6px] tubebay-text-[12px] tubebay-font-medium tubebay-text-gray-700 tubebay-border tubebay-border-gray-200">
-                <ShoppingBagIcon
-                  size={14}
-                  className="tubebay-text-purple-500"
-                />
+              <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[8px] tubebay-rounded-[6px] tubebay-t-6 tubebay-text-color-default tubebay-font-medium ">
+                <ShoppingBagIcon size={14} />
                 WooCommerce 6.0+
               </span>
-              <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[6px] tubebay-bg-white tubebay-px-[10px] tubebay-py-[4px] tubebay-rounded-[6px] tubebay-text-[12px] tubebay-font-medium tubebay-text-gray-700 tubebay-border tubebay-border-gray-200">
-                <span className="tubebay-text-indigo-500 tubebay-font-bold tubebay-text-[10px] tubebay-tracking-tighter tubebay-bg-indigo-50 tubebay-px-[4px] tubebay-rounded tubebay-border tubebay-border-indigo-100">
-                  PHP
-                </span>
+              <span className="tubebay-inline-flex tubebay-items-center tubebay-gap-[8px] tubebay-t-6 tubebay-text-color-default tubebay-font-medium ">
+                <svg
+                  width="23"
+                  height="18"
+                  viewBox="0 0 23 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11.25 3.67382C17.2758 3.67382 21.9094 6.2121 21.9094 8.99999C21.9094 11.7879 17.2723 14.3262 11.25 14.3262C5.22422 14.3262 0.590625 11.7879 0.590625 8.99999C0.590625 6.2121 5.22773 3.67382 11.25 3.67382ZM11.25 3.08319C5.03789 3.08319 0 5.73046 0 8.99999C0 12.2695 5.03789 14.9168 11.25 14.9168C11.25 14.9168 22.5 12.2695 22.5 8.99999C22.5 8.99999 17.4621 3.08319 11.25 3.08319V3.08319ZM7.67109 8.52538C7.39336 9.94921 6.4125 9.80155 5.20664 9.80155L5.68828 7.31952C7.02422 7.31952 7.93125 7.17538 7.67109 8.52538ZM3.42422 12.3152H4.71445L5.02031 10.7402C6.46523 10.7402 7.36172 10.8457 8.19141 10.0687C9.10898 9.22499 9.34805 7.72382 8.69414 6.97147C8.35312 6.57772 7.80469 6.38436 7.05937 6.38436H4.57383L3.42422 12.3152ZM9.95273 4.80585H11.2359L10.9301 6.38085C12.0375 6.38085 13.0641 6.29999 13.5598 6.75702C14.0801 7.23514 13.8305 7.84686 13.268 10.7332H11.9672C12.5086 7.94178 12.6105 7.70975 12.4137 7.49882C12.2238 7.29491 11.7914 7.3371 10.7473 7.3371L10.0863 10.7332H8.80313L9.95273 4.80585ZM17.7539 8.52538C17.4727 9.9703 16.4637 9.80155 15.2895 9.80155L15.7711 7.31952C17.1141 7.31952 18.0141 7.17538 17.7539 8.52538ZM13.507 12.3152H14.8008L15.1066 10.7402C16.6254 10.7402 17.4656 10.8281 18.2777 10.0687C19.1953 9.22499 19.4344 7.72382 18.7805 6.97147C18.4395 6.57772 17.891 6.38436 17.1457 6.38436H14.6602L13.507 12.3152Z"
+                    fill="#4F46E5"
+                  />
+                </svg>
                 PHP 7.4+
               </span>
             </div>
@@ -319,51 +329,85 @@ const Onboarding: FC = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[48px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-gap-[16px]">
+        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[48px] tubebay-border tubebay-border-gray-200 tubebay-shadow-xl tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-gap-[16px] tubebay-w-full">
           <h2 className="tubebay-t-1 tubebay-text-[#111827] ">
             Ready to Get Started?
           </h2>
           <p className="tubebay-t-4 tubebay-text-[#4b5563]">
             Set up your YouTube connection in just a few simple steps.
           </p>
-          <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] tubebay-w-full tubebay-max-w-[360px] tubebay-mx-auto">
+          <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] tubebay-w-full tubebay-max-w-[448px] tubebay-mx-auto tubebay-mt-[16px]">
             <Button
-              className="tubebay-w-full tubebay-py-[16px] tubebay-px-[32px] tubebay-text-4 tubebay-font-bold"
+              className="tubebay-w-full !tubebay-py-[16px] !tubebay-px-[32px] !tubebay-text-4 !tubebay-font-bold"
               color="primary"
               onClick={() => setWizardStarted(true)}
             >
               <FlightIcon size={18} className="tubebay-mr-[8px]" />
               Start Setup Wizard
             </Button>
+
+            <div className="tubebay-flex tubebay-items-center tubebay-w-full">
+              <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
+              <span className="tubebay-px-[16px] tubebay-text-[12px] tubebay-font-bold tubebay-text-gray-400 tubebay-tracking-wider">
+                OR
+              </span>
+              <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
+            </div>
+
+            <Button
+              variant="outline"
+              color="secondary"
+              className="!tubebay-w-full !tubebay-py-[16px] !tubebay-px-[32px] !tubebay-text-4 !tubebay-font-bold !tubebay-text-[#374151] !tubebay-border-2 !tubebay-border-[#e5e7eb]"
+              onClick={async () => {
+                // Mark onboarding as completed when skipping
+                try {
+                  await apiFetch({
+                    path: "/tubebay/v1/settings",
+                    method: "POST",
+                    data: { is_onboarding_completed: true },
+                  });
+                  updateStore("plugin_settings", {
+                    ...settings,
+                    is_onboarding_completed: true,
+                  });
+                } catch (e) {
+                  // silent
+                }
+                navigate("/settings");
+              }}
+            >
+              <SettingsIcon size={18} className="tubebay-mr-[8px] " />
+              Skip Setup & Go to Settings
+            </Button>
           </div>
         </div>
 
         {/* Footer Links */}
-        <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 tubebay-gap-[16px]">
-          <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[20px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-center tubebay-gap-[16px] tubebay-text-left group">
+        <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 tubebay-gap-[24px] tubebay-w-full">
+          <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-start tubebay-gap-[16px] tubebay-text-left tubebay-group">
             <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-blue-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-blue-600">
               <BookIcon size={20} className="!tubebay-stroke-[2.5px]" />
             </div>
             <div className="tubebay-flex-1">
-              <h4 className="tubebay-text-[14px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[2px]">
+              <h4 className="tubebay-t-5 tubebay-text-[#111827]">
                 View Documentation
               </h4>
-              <p className="tubebay-text-[12px] tubebay-text-gray-500">
+              <p className="tubebay-t-6 tubebay-text-[#4b5563]">
                 Learn how to use TubeBay with our comprehensive guides
               </p>
             </div>
             <ArrowRightIcon className="tubebay-text-gray-400 tubebay-transition-transform group-hover:tubebay-translate-x-1" />
           </button>
 
-          <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[20px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-center tubebay-gap-[16px] tubebay-text-left group">
+          <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[20px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-start tubebay-gap-[16px] tubebay-text-left tubebay-group">
             <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-green-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-green-600">
               <HeadphonesIcon size={20} className="!tubebay-stroke-[2.5px]" />
             </div>
             <div className="tubebay-flex-1">
-              <h4 className="tubebay-text-[14px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[2px]">
+              <h4 className="tubebay-t-5 tubebay-text-[#111827]">
                 Contact Support
               </h4>
-              <p className="tubebay-text-[12px] tubebay-text-gray-500">
+              <p className="tubebay-t-6 tubebay-text-[#4b5563]">
                 Need help? Our support team is here to assist you
               </p>
             </div>
