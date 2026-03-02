@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Card from "../common/Card";
 import { Switch } from "../common/Switch";
 import Select from "../common/Select";
@@ -5,6 +6,9 @@ import { MapPinIcon } from "../common/Icons";
 import { SyncPlacementSettings } from "../../utils/types";
 import { ProductSkeleton } from "./ProductSkeleton";
 import { VideoPosition } from "./types";
+import CustomModal from "../common/CustomModal";
+import Button from "../common/Button";
+import { Eye } from "lucide-react";
 
 interface PlacementSettingsCardProps {
   tmpOtherSettings: SyncPlacementSettings;
@@ -115,6 +119,8 @@ export default function PlacementSettingsCard({
   setTmpOtherSettings,
   hideHeader = false,
 }: PlacementSettingsCardProps) {
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+
   return (
     <Card className="tubebay-flex tubebay-flex-col tubebay-gap-[32px]">
       {!hideHeader && (
@@ -136,63 +142,6 @@ export default function PlacementSettingsCard({
           </div>
         </div>
       )}
-
-      {/* Global Video Placement */}
-      <div className="tubebay-flex tubebay-flex-col tubebay-gap-[16px]">
-        <div className="tubebay-flex tubebay-w-full tubebay-gap-[12px]">
-          <div className=" tubebay-bg-[#fff7ed] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
-            <MapPinIcon size={18} className="tubebay-text-[#ea580c]" />
-          </div>
-          <div className="tubebay-flex tubebay-w-full tubebay-flex-col tubebay-gap-[4px]">
-            <h3 className="tubebay-t-4-bold tubebay-text-color-default">
-              Global Video Placement
-            </h3>
-            <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[700px]">
-              Choose where videos will appear by default on your product pages.
-            </p>
-
-            <div className="tubebay-w-full tubebay-mt-[12px]">
-              <Select
-                value={tmpOtherSettings.video_placement || ""}
-                onChange={(val) =>
-                  setTmpOtherSettings({
-                    ...tmpOtherSettings,
-                    video_placement: val as string,
-                  })
-                }
-                options={PLACEMENT_OPTIONS.map((opt) => ({
-                  value: opt.id,
-                  label: opt.label,
-                  labelNode: (
-                    <div className="tubebay-flex tubebay-flex-col tubebay-py-1">
-                      <span className="tubebay-font-bold tubebay-text-[13px]">
-                        {opt.label}
-                      </span>
-                      <span className="tubebay-text-[11px] tubebay-opacity-60 tubebay-leading-tight">
-                        {opt.description}
-                      </span>
-                    </div>
-                  ),
-                }))}
-                placeholder="Choose placement..."
-                enableSearch={true}
-                border="tubebay-border-gray-200"
-                color="tubebay-text-gray-700"
-                fontSize={14}
-              />
-            </div>
-
-            <div className="tubebay-flex-1">
-              <ProductSkeleton
-                selectedPosition={
-                  tmpOtherSettings.video_placement as VideoPosition
-                }
-                useMotion={false}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Muted Autoplay Default */}
       <div className="tubebay-flex tubebay-items-start tubebay-justify-between">
@@ -294,6 +243,137 @@ export default function PlacementSettingsCard({
               : "tubebay-bg-gray-200"
           }
         />
+      </div>
+
+      <hr className="tubebay-border-gray-200" />
+
+      {/* Global Video Placement */}
+      <div className="tubebay-flex tubebay-flex-col tubebay-gap-[16px]">
+        <div className="tubebay-flex tubebay-w-full tubebay-gap-[12px]">
+          <div className=" tubebay-bg-[#fff7ed] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
+            <MapPinIcon size={18} className="tubebay-text-[#ea580c]" />
+          </div>
+          <div className="tubebay-flex tubebay-w-full tubebay-flex-col tubebay-gap-[4px]">
+            <h3 className="tubebay-t-4-bold tubebay-text-color-default">
+              Global Video Placement
+            </h3>
+            <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[700px]">
+              Choose where videos will appear by default on your product pages.
+            </p>
+
+            <div className="tubebay-flex tubebay-items-center tubebay-gap-[12px] tubebay-w-full tubebay-mt-[12px]">
+              <div className="tubebay-flex-1">
+                <Select
+                  value={tmpOtherSettings.video_placement || ""}
+                  onChange={(val) =>
+                    setTmpOtherSettings({
+                      ...tmpOtherSettings,
+                      video_placement: val as string,
+                    })
+                  }
+                  options={PLACEMENT_OPTIONS.map((opt) => ({
+                    value: opt.id,
+                    label: opt.label,
+                    labelNode: (
+                      <div className="tubebay-flex tubebay-flex-col tubebay-py-1">
+                        <span className="tubebay-font-bold tubebay-text-[13px]">
+                          {opt.label}
+                        </span>
+                        <span className="tubebay-text-[11px] tubebay-opacity-60 tubebay-leading-tight">
+                          {opt.description}
+                        </span>
+                      </div>
+                    ),
+                  }))}
+                  placeholder="Choose placement..."
+                  enableSearch={true}
+                  border="tubebay-border-gray-200"
+                  color="tubebay-text-gray-700"
+                  fontSize={14}
+                />
+              </div>
+
+              <div className="tubebay-flex-shrink-0">
+                <Button
+                  variant="outline"
+                  className="tubebay-flex tubebay-items-center tubebay-gap-2 !tubebay-h-[42px] tubebay-w-[140px]"
+                  onClick={() => setIsPreviewModalOpen(true)}
+                >
+                  <Eye className="w-4 h-4 tubebay-text-gray-500" />
+                  <span className="tubebay-font-medium tubebay-text-[13px]">
+                    Preview
+                  </span>
+                </Button>
+              </div>
+            </div>
+
+            {isPreviewModalOpen && (
+              <CustomModal
+                isOpen={isPreviewModalOpen}
+                onClose={() => setIsPreviewModalOpen(false)}
+                title="Live Placement Preview"
+                maxWidth="tubebay-max-w-[90%] md:tubebay-max-w-[1000px] lg:tubebay-max-w-[1240px]"
+                className="!tubebay-z-[9999]"
+              >
+                <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-8 tubebay-mb-2">
+                  <div className="tubebay-w-full md:tubebay-w-[320px] tubebay-flex-shrink-0">
+                    <div className="tubebay-mb-4">
+                      <label className="tubebay-block tubebay-text-sm tubebay-font-semibold tubebay-text-gray-800 tubebay-mb-1">
+                        Experiment with Video Positions
+                      </label>
+                      <p className="tubebay-text-[13px] tubebay-text-gray-500 tubebay-leading-relaxed">
+                        Note: Changing the field below instantly mutates your
+                        active global setting without needing to save. You will
+                        see a live mock product page layout on the right.
+                      </p>
+                    </div>
+
+                    <Select
+                      value={tmpOtherSettings.video_placement || ""}
+                      onChange={(val) =>
+                        setTmpOtherSettings({
+                          ...tmpOtherSettings,
+                          video_placement: val as string,
+                        })
+                      }
+                      options={PLACEMENT_OPTIONS.map((opt) => ({
+                        value: opt.id,
+                        label: opt.label,
+                        labelNode: (
+                          <div className="tubebay-flex tubebay-flex-col tubebay-py-1">
+                            <span className="tubebay-font-bold tubebay-text-[13px]">
+                              {opt.label}
+                            </span>
+                            <span className="tubebay-text-[11px] tubebay-opacity-60 tubebay-leading-tight">
+                              {opt.description}
+                            </span>
+                          </div>
+                        ),
+                      }))}
+                      placeholder="Choose placement..."
+                      enableSearch={true}
+                      border="tubebay-border-gray-200"
+                      color="tubebay-text-gray-700"
+                      fontSize={14}
+                    />
+                  </div>
+
+                  <div
+                    className="tubebay-flex-1 tubebay-bg-gray-50/50 tubebay-p-6 tubebay-rounded-xl tubebay-border tubebay-border-gray-200 tubebay-overflow-y-auto"
+                    style={{ maxHeight: "calc(100vh - 200px)" }}
+                  >
+                    <ProductSkeleton
+                      selectedPosition={
+                        tmpOtherSettings.video_placement as VideoPosition
+                      }
+                      useMotion={false}
+                    />
+                  </div>
+                </div>
+              </CustomModal>
+            )}
+          </div>
+        </div>
       </div>
     </Card>
   );
