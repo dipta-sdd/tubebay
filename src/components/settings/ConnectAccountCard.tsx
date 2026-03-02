@@ -91,25 +91,21 @@ export default function ConnectAccountCard({
           </div>
 
           {/* Change Account Button */}
-          <div className="tubebay-flex tubebay-gap-2">
+          <div className="tubebay-flex tubebay-gap-2 tubebay-justify-center tubebay-w-full">
             {settings.connection_status === "disconnected" ? (
               <Button
                 onClick={() => connectYouTube()}
                 className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-blue-600 hover:!tubebay-bg-blue-700 tubebay-text-white tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
               >
-                <div className="tubebay-bg-white/10 tubebay-rounded-full tubebay-p-[6px]">
-                  <GoogleIcon size={20} className="tubebay-text-white" />
-                </div>
+                <GoogleIcon size={20} />
                 Connect
               </Button>
             ) : null}
             <Button
               onClick={() => setEditingConnection(true)}
-              className="tubebay-w-full tubebay-max-w-[480px] !tubebay-bg-gray-100 hover:!tubebay-bg-gray-200 !tubebay-text-gray-900 tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
+              className="tubebay-w-full tubebay-max-w-[480px] tubebay-whitespace-nowrap !tubebay-bg-[#bd1e1e] hover:!tubebay-bg-[#bd1e1e]/80 !tubebay-text-white !tubebay-border-[#bd1e1e] tubebay-h-[56px] tubebay-rounded-[12px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[12px] tubebay-text-[16px] tubebay-font-bold"
             >
-              <div className="tubebay-bg-gray-200 tubebay-rounded-full tubebay-p-[6px]">
-                <GoogleIcon size={20} className="tubebay-text-gray-600" />
-              </div>
+              <GoogleIcon size={20} />
               Change Credentials
             </Button>
           </div>

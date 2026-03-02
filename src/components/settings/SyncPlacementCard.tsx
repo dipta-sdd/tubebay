@@ -133,30 +133,135 @@ export default function SyncPlacementCard({
             </h3>
             <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[700px]">
               Choose where videos will appear by default on your product pages.
-              You can override this for individual products.
             </p>
+
+            <div className="tubebay-w-full tubebay-mt-[12px]">
+              <Select
+                value={tmpOtherSettings.video_placement || ""}
+                onChange={(val) =>
+                  setTmpOtherSettings({
+                    ...tmpOtherSettings,
+                    video_placement: val as string,
+                  })
+                }
+                options={[
+                  {
+                    id: "woocommerce_before_single_product",
+                    label: "Before Single Product",
+                    description: "Top of the product page wrapper",
+                  },
+                  {
+                    id: "woocommerce_before_single_product_summary",
+                    label: "Before Product Summary",
+                    description: "Above the image and details columns",
+                  },
+                  {
+                    id: "woocommerce_product_thumbnails",
+                    label: "Product Thumbnails",
+                    description: "Inside the product gallery",
+                  },
+                  {
+                    id: "woocommerce_single_product_summary",
+                    label: "Single Product Summary",
+                    description: "Top of the product details column",
+                  },
+                  {
+                    id: "woocommerce_before_add_to_cart_form",
+                    label: "Before Add to Cart Form",
+                    description: "Before the entire add to cart form",
+                  },
+                  {
+                    id: "woocommerce_before_variations_form",
+                    label: "Before Variations Form",
+                    description: "Inside form, before variation options",
+                  },
+                  {
+                    id: "woocommerce_before_add_to_cart_button",
+                    label: "Before Add to Cart Button",
+                    description: "Before the add to cart button",
+                  },
+                  {
+                    id: "woocommerce_before_single_variation",
+                    label: "Before Single Variation",
+                    description: "Before selected variation details",
+                  },
+                  {
+                    id: "woocommerce_single_variation",
+                    label: "Single Variation",
+                    description: "Where variation price/description appears",
+                  },
+                  {
+                    id: "woocommerce_before_add_to_cart_quantity",
+                    label: "Before Quantity",
+                    description: "Before the quantity input",
+                  },
+                  {
+                    id: "woocommerce_after_single_variation",
+                    label: "After Single Variation",
+                    description: "After selected variation details",
+                  },
+                  {
+                    id: "woocommerce_after_add_to_cart_button",
+                    label: "After Add to Cart Button",
+                    description: "After the add to cart button",
+                  },
+                  {
+                    id: "woocommerce_after_variations_form",
+                    label: "After Variations Form",
+                    description: "After the variations section",
+                  },
+                  {
+                    id: "woocommerce_after_add_to_cart_form",
+                    label: "After Add to Cart Form",
+                    description: "After the entire add to cart form",
+                  },
+                  {
+                    id: "woocommerce_product_meta_start",
+                    label: "Product Meta Start",
+                    description: "Before SKU, Category, Tags",
+                  },
+                  {
+                    id: "woocommerce_product_meta_end",
+                    label: "Product Meta End",
+                    description: "After SKU, Category, Tags",
+                  },
+                  {
+                    id: "woocommerce_share",
+                    label: "Product Share",
+                    description: "At the bottom of product meta",
+                  },
+                  {
+                    id: "woocommerce_after_single_product_summary",
+                    label: "After Product Summary",
+                    description: "Full width below details/tabs",
+                  },
+                  {
+                    id: "woocommerce_after_single_product",
+                    label: "After Single Product",
+                    description: "Very bottom of the product page",
+                  },
+                ].map((opt) => ({
+                  value: opt.id,
+                  label: opt.label,
+                  labelNode: (
+                    <div className="tubebay-flex tubebay-flex-col tubebay-py-1">
+                      <span className="tubebay-font-bold tubebay-text-[13px]">
+                        {opt.label}
+                      </span>
+                      <span className="tubebay-text-[11px] tubebay-opacity-60 tubebay-leading-tight">
+                        {opt.description}
+                      </span>
+                    </div>
+                  ),
+                }))}
+                placeholder="Choose placement..."
+                enableSearch={true}
+                border="tubebay-border-gray-200"
+                color="tubebay-text-gray-700"
+                fontSize={14}
+              />
+            </div>
           </div>
-        </div>
-        <div className="tubebay-w-full">
-          <Select
-            value={tmpOtherSettings.video_placement || ""}
-            onChange={(val) =>
-              setTmpOtherSettings({
-                ...tmpOtherSettings,
-                video_placement: val as string,
-              })
-            }
-            options={[
-              { value: "below_gallery", label: "Below Gallery" },
-              { value: "below_summary", label: "Below Summary" },
-              { value: "tab", label: "Product Tab" },
-              { value: "custom", label: "Custom Hook" },
-            ]}
-            placeholder="Choose placement..."
-            border="tubebay-border-gray-200"
-            color="tubebay-text-gray-700"
-            fontSize={14}
-          />
         </div>
       </div>
 
