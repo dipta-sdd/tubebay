@@ -46,6 +46,15 @@ export interface PluginSettings {
     is_onboarding_completed: boolean;
 }
 
+export interface SyncPlacementSettings {
+    auto_sync: boolean;
+    video_placement: string;
+    cache_duration: number;
+    debug_enableMode: boolean;
+    muted_autoplay: boolean;
+    show_controls: boolean;
+}
+
 /**
  * The main store type, matching the data passed by PHP's wp_localize_script().
  */

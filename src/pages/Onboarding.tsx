@@ -9,7 +9,7 @@ import { PluginSettings } from "../utils/types";
 import Button from "../components/common/Button";
 import { Stepper } from "../components/common/Stepper";
 import ConnectAccountCard from "../components/settings/ConnectAccountCard";
-import SyncPlacementCard from "../components/settings/SyncPlacementCard";
+import PlacementSettingsCard from "../components/settings/PlacementSettingsCard";
 import {
   YouTubeFilledIcon,
   LinkIcon,
@@ -460,14 +460,10 @@ const Onboarding: FC = () => {
         {/* ─── Step 2: Configure Settings ─── */}
         {currentStep === 2 && (
           <>
-            <SyncPlacementCard
-              settings={settings}
+            <PlacementSettingsCard
               tmpOtherSettings={tmpOtherSettings}
               setTmpOtherSettings={setTmpOtherSettings}
-              syncing={syncing}
-              handleSyncLibrary={handleSyncLibrary}
               hideHeader
-              hideSyncRow
             />
             <div className="tubebay-flex tubebay-justify-end tubebay-mt-[20px]">
               <Button

@@ -1,40 +1,118 @@
-import Button from "../common/Button";
 import Card from "../common/Card";
 import { Switch } from "../common/Switch";
 import Select from "../common/Select";
-import { RefreshIcon, ClockIcon, MapPinIcon } from "../common/Icons";
-import { PluginSettings } from "../../utils/types";
+import { MapPinIcon } from "../common/Icons";
+import { SyncPlacementSettings } from "../../utils/types";
 
-export interface SyncPlacementSettings {
-  auto_sync: boolean;
-  video_placement: string;
-  cache_duration: number;
-  debug_enableMode: boolean;
-  muted_autoplay: boolean;
-  show_controls: boolean;
-}
-
-interface SyncPlacementCardProps {
-  settings: PluginSettings;
+interface PlacementSettingsCardProps {
   tmpOtherSettings: SyncPlacementSettings;
   setTmpOtherSettings: (settings: SyncPlacementSettings) => void;
-  syncing: boolean;
-  handleSyncLibrary: () => void;
-  /** Hide the card header (title + save button). Useful for onboarding steps. */
   hideHeader?: boolean;
-  /** Hide the sync row (Force Sync Library). */
-  hideSyncRow?: boolean;
 }
 
-export default function SyncPlacementCard({
-  settings,
+const PLACEMENT_OPTIONS = [
+  {
+    id: "woocommerce_before_single_product",
+    label: "Before Single Product",
+    description: "Top of the product page wrapper",
+  },
+  {
+    id: "woocommerce_before_single_product_summary",
+    label: "Before Product Summary",
+    description: "Above the image and details columns",
+  },
+  {
+    id: "woocommerce_product_thumbnails",
+    label: "Product Thumbnails",
+    description: "Inside the product gallery",
+  },
+  {
+    id: "woocommerce_single_product_summary",
+    label: "Single Product Summary",
+    description: "Top of the product details column",
+  },
+  {
+    id: "woocommerce_before_add_to_cart_form",
+    label: "Before Add to Cart Form",
+    description: "Before the entire add to cart form",
+  },
+  {
+    id: "woocommerce_before_variations_form",
+    label: "Before Variations Form",
+    description: "Inside form, before variation options",
+  },
+  {
+    id: "woocommerce_before_add_to_cart_button",
+    label: "Before Add to Cart Button",
+    description: "Before the add to cart button",
+  },
+  {
+    id: "woocommerce_before_single_variation",
+    label: "Before Single Variation",
+    description: "Before selected variation details",
+  },
+  {
+    id: "woocommerce_single_variation",
+    label: "Single Variation",
+    description: "Where variation price/description appears",
+  },
+  {
+    id: "woocommerce_before_add_to_cart_quantity",
+    label: "Before Quantity",
+    description: "Before the quantity input",
+  },
+  {
+    id: "woocommerce_after_single_variation",
+    label: "After Single Variation",
+    description: "After selected variation details",
+  },
+  {
+    id: "woocommerce_after_add_to_cart_button",
+    label: "After Add to Cart Button",
+    description: "After the add to cart button",
+  },
+  {
+    id: "woocommerce_after_variations_form",
+    label: "After Variations Form",
+    description: "After the variations section",
+  },
+  {
+    id: "woocommerce_after_add_to_cart_form",
+    label: "After Add to Cart Form",
+    description: "After the entire add to cart form",
+  },
+  {
+    id: "woocommerce_product_meta_start",
+    label: "Product Meta Start",
+    description: "Before SKU, Category, Tags",
+  },
+  {
+    id: "woocommerce_product_meta_end",
+    label: "Product Meta End",
+    description: "After SKU, Category, Tags",
+  },
+  {
+    id: "woocommerce_share",
+    label: "Product Share",
+    description: "At the bottom of product meta",
+  },
+  {
+    id: "woocommerce_after_single_product_summary",
+    label: "After Product Summary",
+    description: "Full width below details/tabs",
+  },
+  {
+    id: "woocommerce_after_single_product",
+    label: "After Single Product",
+    description: "Very bottom of the product page",
+  },
+];
+
+export default function PlacementSettingsCard({
   tmpOtherSettings,
   setTmpOtherSettings,
-  syncing,
-  handleSyncLibrary,
   hideHeader = false,
-  hideSyncRow = false,
-}: SyncPlacementCardProps) {
+}: PlacementSettingsCardProps) {
   return (
     <Card className="tubebay-flex tubebay-flex-col tubebay-gap-[32px]">
       {!hideHeader && (
@@ -52,72 +130,8 @@ export default function SyncPlacementCard({
                 fill="#4B5563"
               />
             </svg>
-            <h2 className="tubebay-t-3">Sync & Placement Settings</h2>
+            <h2 className="tubebay-t-3">Placement &amp; Player Settings</h2>
           </div>
-        </div>
-      )}
-
-      {/* Automatic Daily Sync */}
-      <div className="tubebay-flex tubebay-items-start tubebay-justify-between ">
-        <div className="tubebay-flex tubebay-gap-[12px]">
-          <div className="tubebay-bg-[#f5f3ff] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
-            <RefreshIcon size={18} className="tubebay-text-[#7c3aed]" />
-          </div>
-          <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
-            <h3 className="tubebay-t-4-bold tubebay-text-color-default">
-              Automatic Daily Sync
-            </h3>
-            <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[540px]">
-              Keep your video library up-to-date automatically. TubeBay will
-              sync new videos from your YouTube channel every 24 hours.
-            </p>
-            <div className="tubebay-flex tubebay-items-center tubebay-gap-[6px] tubebay-mt-[4px]">
-              <ClockIcon size={14} className="tubebay-text-gray-400" />
-              <span className="tubebay-text-[12px] tubebay-text-gray-400">
-                Next sync: Today at 3:00 AM
-              </span>
-            </div>
-          </div>
-        </div>
-        <Switch
-          checked={!!tmpOtherSettings.auto_sync}
-          onChange={(checked) =>
-            setTmpOtherSettings({ ...tmpOtherSettings, auto_sync: checked })
-          }
-          className={
-            tmpOtherSettings.auto_sync
-              ? "tubebay-bg-[#3858e9]"
-              : "tubebay-bg-gray-200"
-          }
-        />
-      </div>
-
-      {/* Force Sync Library */}
-      {!hideSyncRow && (
-        <div className="tubebay-flex tubebay-items-start tubebay-justify-between tubebay-border-b-2 tubebay-border-[#f2f3f5] tubebay-pb-[20px]">
-          <div className="tubebay-flex tubebay-gap-[12px]">
-            <div className="tubebay-bg-[#f0fdf4] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
-              <RefreshIcon size={18} className="tubebay-text-[#22c55e]" />
-            </div>
-            <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
-              <h3 className="tubebay-t-4-bold tubebay-text-color-default">
-                Force Sync Library
-              </h3>
-              <p className="tubebay-text-[13px] tubebay-leading-[20px] tubebay-text-gray-500 tubebay-max-w-[540px]">
-                Manually refresh your video library now if you've recently added
-                videos to your YouTube channel.
-              </p>
-            </div>
-          </div>
-          <Button
-            onClick={handleSyncLibrary}
-            disabled={syncing || !settings.api_key || !settings.channel_id}
-            color="secondary"
-            variant="outline"
-            className="tubebay-h-[38px] tubebay-px-[16px] tubebay-text-[13px] tubebay-font-bold tubebay-whitespace-nowrap"
-          >
-            {syncing ? "Syncing..." : "Sync Now"}
-          </Button>
         </div>
       )}
 
@@ -144,103 +158,7 @@ export default function SyncPlacementCard({
                     video_placement: val as string,
                   })
                 }
-                options={[
-                  {
-                    id: "woocommerce_before_single_product",
-                    label: "Before Single Product",
-                    description: "Top of the product page wrapper",
-                  },
-                  {
-                    id: "woocommerce_before_single_product_summary",
-                    label: "Before Product Summary",
-                    description: "Above the image and details columns",
-                  },
-                  {
-                    id: "woocommerce_product_thumbnails",
-                    label: "Product Thumbnails",
-                    description: "Inside the product gallery",
-                  },
-                  {
-                    id: "woocommerce_single_product_summary",
-                    label: "Single Product Summary",
-                    description: "Top of the product details column",
-                  },
-                  {
-                    id: "woocommerce_before_add_to_cart_form",
-                    label: "Before Add to Cart Form",
-                    description: "Before the entire add to cart form",
-                  },
-                  {
-                    id: "woocommerce_before_variations_form",
-                    label: "Before Variations Form",
-                    description: "Inside form, before variation options",
-                  },
-                  {
-                    id: "woocommerce_before_add_to_cart_button",
-                    label: "Before Add to Cart Button",
-                    description: "Before the add to cart button",
-                  },
-                  {
-                    id: "woocommerce_before_single_variation",
-                    label: "Before Single Variation",
-                    description: "Before selected variation details",
-                  },
-                  {
-                    id: "woocommerce_single_variation",
-                    label: "Single Variation",
-                    description: "Where variation price/description appears",
-                  },
-                  {
-                    id: "woocommerce_before_add_to_cart_quantity",
-                    label: "Before Quantity",
-                    description: "Before the quantity input",
-                  },
-                  {
-                    id: "woocommerce_after_single_variation",
-                    label: "After Single Variation",
-                    description: "After selected variation details",
-                  },
-                  {
-                    id: "woocommerce_after_add_to_cart_button",
-                    label: "After Add to Cart Button",
-                    description: "After the add to cart button",
-                  },
-                  {
-                    id: "woocommerce_after_variations_form",
-                    label: "After Variations Form",
-                    description: "After the variations section",
-                  },
-                  {
-                    id: "woocommerce_after_add_to_cart_form",
-                    label: "After Add to Cart Form",
-                    description: "After the entire add to cart form",
-                  },
-                  {
-                    id: "woocommerce_product_meta_start",
-                    label: "Product Meta Start",
-                    description: "Before SKU, Category, Tags",
-                  },
-                  {
-                    id: "woocommerce_product_meta_end",
-                    label: "Product Meta End",
-                    description: "After SKU, Category, Tags",
-                  },
-                  {
-                    id: "woocommerce_share",
-                    label: "Product Share",
-                    description: "At the bottom of product meta",
-                  },
-                  {
-                    id: "woocommerce_after_single_product_summary",
-                    label: "After Product Summary",
-                    description: "Full width below details/tabs",
-                  },
-                  {
-                    id: "woocommerce_after_single_product",
-                    label: "After Single Product",
-                    description: "Very bottom of the product page",
-                  },
-                ].map((opt) => ({
+                options={PLACEMENT_OPTIONS.map((opt) => ({
                   value: opt.id,
                   label: opt.label,
                   labelNode: (

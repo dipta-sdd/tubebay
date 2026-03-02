@@ -1,7 +1,7 @@
 import Card from "../common/Card";
 import { Switch } from "../common/Switch";
 import { CheckCircleIcon } from "../common/Icons";
-import { SyncPlacementSettings } from "./SyncPlacementCard";
+import { SyncPlacementSettings } from "../../utils/types";
 
 interface AdvancedSettingsCardProps {
   tmpOtherSettings: SyncPlacementSettings;

@@ -7,7 +7,8 @@ import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
 import { PluginSettings } from "../utils/types";
 import { useYouTubeActions } from "../hooks/useYouTubeActions";
 import ConnectAccountCard from "../components/settings/ConnectAccountCard";
-import SyncPlacementCard from "../components/settings/SyncPlacementCard";
+import SyncCard from "../components/settings/SyncCard";
+import PlacementSettingsCard from "../components/settings/PlacementSettingsCard";
 import AdvancedSettingsCard from "../components/settings/AdvancedSettingsCard";
 
 type SettingsData = Partial<PluginSettings>;
@@ -257,13 +258,19 @@ export default function Settings() {
         connectYouTube={connectYouTube}
       />
 
-      {/* Sync & Placement Settings Card */}
-      <SyncPlacementCard
+      {/* Sync Settings Card */}
+      <SyncCard
         settings={settings}
         tmpOtherSettings={tmpOtherSettings}
         setTmpOtherSettings={setTmpOtherSettings}
         syncing={syncing}
         handleSyncLibrary={handleSyncLibrary}
+      />
+
+      {/* Placement & Player Settings Card */}
+      <PlacementSettingsCard
+        tmpOtherSettings={tmpOtherSettings}
+        setTmpOtherSettings={setTmpOtherSettings}
       />
 
       {/* Advanced Settings Card */}
