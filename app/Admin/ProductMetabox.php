@@ -107,8 +107,17 @@ class ProductMetabox
             'i18n' => array(
                 'selectVideo' => __('Select Video', 'tubebay'),
                 'removeVideo' => __('Remove Video', 'tubebay'),
-                'loading' => __('Loading...', 'tubebay'),
-                'error' => __('Error loading videos.', 'tubebay'),
+                'loading'     => __('Loading...', 'tubebay'),
+                'error'       => __('Error loading videos.', 'tubebay'),
+                'loadMore'    => __('Load More', 'tubebay'),
+                'search'      => __('Search videos...', 'tubebay'),
+                'sort'        => array(
+                    'date_desc'  => __('Recently Added', 'tubebay'),
+                    'date_asc'   => __('Oldest First', 'tubebay'),
+                    'title_asc'  => __('Title (A-Z)', 'tubebay'),
+                    'title_desc' => __('Title (Z-A)', 'tubebay'),
+                    'view_count' => __('Most Viewed', 'tubebay'),
+                )
             ),
         ));
     }
@@ -201,10 +210,27 @@ class ProductMetabox
                         </h2>
                         <span class="tubebay-modal-close">&times;</span>
                     </div>
+
+                    <!-- Filter Toolbar -->
+                    <div class="tubebay-modal-toolbar">
+                        <input type="text" id="tubebay-modal-search" placeholder="<?php esc_attr_e('Search videos...', 'tubebay'); ?>" />
+                        <select id="tubebay-modal-sort">
+                            <option value="date_desc"><?php esc_html_e('Recently Added', 'tubebay'); ?></option>
+                            <option value="date_asc"><?php esc_html_e('Oldest First', 'tubebay'); ?></option>
+                            <option value="title_asc"><?php esc_html_e('Title (A-Z)', 'tubebay'); ?></option>
+                            <option value="title_desc"><?php esc_html_e('Title (Z-A)', 'tubebay'); ?></option>
+                            <option value="view_count"><?php esc_html_e('Most Viewed', 'tubebay'); ?></option>
+                        </select>
+                    </div>
+
                     <div class="tubebay-modal-body" id="tubebay-modal-video-grid">
                         <p class="tubebay-loading-text">
                             <?php esc_html_e('Loading videos...', 'tubebay'); ?>
                         </p>
+                    </div>
+                    
+                    <div class="tubebay-modal-footer" id="tubebay-modal-footer" style="display:none;">
+                         <button type="button" class="button" id="tubebay-modal-load-more"><?php esc_html_e('Load More', 'tubebay'); ?></button>
                     </div>
                 </div>
             </div>

@@ -7,7 +7,17 @@ jQuery(document).ready(function ($) {
     var overlay = $('.tubebay-modal-overlay');
 
     var videoGrid = $('#tubebay-modal-video-grid');
+    var searchInput = $('#tubebay-modal-search');
+    var sortSelect = $('#tubebay-modal-sort');
+    var loadMoreBtn = $('#tubebay-modal-load-more');
+    var loadMoreContainer = $('#tubebay-modal-footer');
+
     var isLoaded = false;
+    var currentSearch = '';
+    var currentSort = 'date_desc';
+    var nextPageToken = null;
+    var searchTimeout = null;
+    var isLoading = false;
 
     // Show Modal
     function openModal() {
@@ -51,31 +61,74 @@ jQuery(document).ready(function ($) {
         $('#tubebay-add-video-container').removeClass('hidden');
     });
 
+    // Handle Search Input with debounce
+    searchInput.on('input', function () {
+        clearTimeout(searchTimeout);
+        var query = $(this).val();
+        searchTimeout = setTimeout(function () {
+            currentSearch = query;
+            nextPageToken = null;
+            fetchVideos(false);
+        }, 500);
+    });
+
+    // Handle Sort Change
+    sortSelect.on('change', function () {
+        currentSort = $(this).val();
+        nextPageToken = null;
+        fetchVideos(false);
+    });
+
+    // Handle Load More
+    loadMoreBtn.on('click', function (e) {
+        e.preventDefault();
+        if (nextPageToken && !isLoading) {
+            fetchVideos(true);
+        }
+    });
+
     // Fetch videos via REST API
-    function fetchVideos() {
+    function fetchVideos(isLoadMore) {
+        if (isLoading) return;
+
+        isLoading = true;
+
+        if (!isLoadMore) {
+            videoGrid.html('<p class="tubebay-loading-text">' + tubebayMetabox.i18n.loading + '</p>');
+            loadMoreContainer.hide();
+        } else {
+            loadMoreBtn.prop('disabled', true).text(tubebayMetabox.i18n.loading);
+        }
+
         $.ajax({
             url: tubebayMetabox.restUrl,
             method: 'GET',
+            data: {
+                search: currentSearch,
+                sort: currentSort,
+                page_token: isLoadMore ? nextPageToken : ''
+            },
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('X-WP-Nonce', tubebayMetabox.nonce);
             },
             success: function (response) {
-                console.log('api called successfully');
-                console.log(videoGrid);
-                videoGrid.empty();
-                console.log(response);
+                if (!isLoadMore) {
+                    videoGrid.empty();
+                }
+
                 if (response && response.success && response.videos.length > 0) {
                     var html = '';
                     response.videos.forEach(function (video) {
                         html += '<div class="tubebay-modal-video-item" data-id="' + video.id + '" data-title="' + video.title + '" data-thumbnail="' + video.thumbnail_url + '">';
                         html += '<img src="' + video.thumbnail_url + '" alt="Thumbnail" />';
-                        html += '<p>' + video.title + '</p>';
+                        html += '<p title="' + video.title + '">' + video.title + '</p>';
                         html += '</div>';
                     });
-                    videoGrid.html(html);
+
+                    videoGrid.append(html);
 
                     // Add click handlers for the newly loaded items
-                    $('.tubebay-modal-video-item').on('click', function () {
+                    $('.tubebay-modal-video-item').off('click').on('click', function () {
                         var vidId = $(this).data('id');
                         var vidTitle = $(this).data('title');
                         var vidThumb = $(this).data('thumbnail');
@@ -94,14 +147,33 @@ jQuery(document).ready(function ($) {
                         hideModal();
                     });
 
+                    // Update Pagination State
+                    nextPageToken = response.next_page_token || null;
+                    if (nextPageToken) {
+                        loadMoreContainer.show();
+                    } else {
+                        loadMoreContainer.hide();
+                    }
+
                 } else {
-                    videoGrid.html('<p>' + tubebayMetabox.i18n.error + '</p>');
+                    if (!isLoadMore) {
+                        videoGrid.html('<p class="tubebay-loading-text">' + tubebayMetabox.i18n.error + '</p>');
+                    }
+                    loadMoreContainer.hide();
                 }
-                isLoaded = true;
             },
             error: function () {
-                console.log('api called failed');
-                videoGrid.html('<p>' + tubebayMetabox.i18n.error + '</p>');
+                if (!isLoadMore) {
+                    videoGrid.html('<p class="tubebay-loading-text">' + tubebayMetabox.i18n.error + '</p>');
+                }
+                loadMoreContainer.hide();
+            },
+            complete: function () {
+                isLoading = false;
+                isLoaded = true;
+                if (isLoadMore) {
+                    loadMoreBtn.prop('disabled', false).text(tubebayMetabox.i18n.loadMore);
+                }
             }
         });
     }

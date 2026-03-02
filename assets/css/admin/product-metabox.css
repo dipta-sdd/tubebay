@@ -228,6 +228,32 @@ input:checked + .tubebay-slider:before {
     color: #111827;
 }
 
+/* Filter Toolbar */
+.tubebay-modal-toolbar {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    gap: 16px;
+    background: #f9fafb;
+}
+
+#tubebay-modal-search {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#tubebay-modal-sort {
+    width: 180px;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Modal Body */
 .tubebay-modal-body {
     padding: 24px;
     overflow-y: auto;
@@ -271,4 +297,18 @@ input:checked + .tubebay-slider:before {
     text-align: center;
     color: #6b7280;
     padding: 40px 0;
+}
+
+/* Modal Footer */
+.tubebay-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    background: #f9fafb;
+    border-radius: 0 0 8px 8px;
+}
+
+#tubebay-modal-load-more {
+    width: 200px;
+    font-weight: 600;
 }
