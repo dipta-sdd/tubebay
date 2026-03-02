@@ -3,6 +3,8 @@ import { Switch } from "../common/Switch";
 import Select from "../common/Select";
 import { MapPinIcon } from "../common/Icons";
 import { SyncPlacementSettings } from "../../utils/types";
+import { ProductSkeleton } from "./ProductSkeleton";
+import { VideoPosition } from "./types";
 
 interface PlacementSettingsCardProps {
   tmpOtherSettings: SyncPlacementSettings;
@@ -137,11 +139,11 @@ export default function PlacementSettingsCard({
 
       {/* Global Video Placement */}
       <div className="tubebay-flex tubebay-flex-col tubebay-gap-[16px]">
-        <div className="tubebay-flex tubebay-gap-[12px]">
-          <div className="tubebay-bg-[#fff7ed] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
+        <div className="tubebay-flex tubebay-w-full tubebay-gap-[12px]">
+          <div className=" tubebay-bg-[#fff7ed] tubebay-p-[8px] tubebay-rounded-[8px] tubebay-h-fit">
             <MapPinIcon size={18} className="tubebay-text-[#ea580c]" />
           </div>
-          <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
+          <div className="tubebay-flex tubebay-w-full tubebay-flex-col tubebay-gap-[4px]">
             <h3 className="tubebay-t-4-bold tubebay-text-color-default">
               Global Video Placement
             </h3>
@@ -177,6 +179,15 @@ export default function PlacementSettingsCard({
                 border="tubebay-border-gray-200"
                 color="tubebay-text-gray-700"
                 fontSize={14}
+              />
+            </div>
+
+            <div className="tubebay-flex-1">
+              <ProductSkeleton
+                selectedPosition={
+                  tmpOtherSettings.video_placement as VideoPosition
+                }
+                useMotion={false}
               />
             </div>
           </div>
