@@ -144,6 +144,22 @@ export const ClockIcon: FC<IconProps> = ({ size = 12, ...props }) => (
   </svg>
 );
 
+// ─── Layout Grid ───────────────────────────────────────────────────
+export const LayoutGridIcon: FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    {...defaultStroke}
+    {...props}
+  >
+    <rect width="7" height="7" x="3" y="3" rx="1" />
+    <rect width="7" height="7" x="14" y="3" rx="1" />
+    <rect width="7" height="7" x="14" y="14" rx="1" />
+    <rect width="7" height="7" x="3" y="14" rx="1" />
+  </svg>
+);
+
 // ─── Link / Connect ─────────────────────────────────────────────────
 export const LinkIcon: FC<IconProps> = ({ size = 24, ...props }) => (
   <svg

@@ -9,10 +9,12 @@ import {
   CheckIcon,
   InfoIcon,
   ListIcon,
+  LayoutGridIcon,
   EyeIcon,
   CalendarIcon,
   CodeIcon,
 } from "../components/common/Icons";
+import Select from "../components/common/Select";
 
 interface VideoData {
   id: string;
@@ -26,25 +28,51 @@ export default function ChannelLibrary() {
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [videos, setVideos] = useState<VideoData[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchVideos = async () => {
-    setLoading(true);
+  const [videos, setVideos] = useState<VideoData[]>([]);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+
+  const [searchInput, setSearchInput] = useState("");
+  const [serverSearchQuery, setServerSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("date_desc");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const SORT_OPTIONS = [
+    { value: "date_desc", label: "Recently Added" },
+    { value: "date_asc", label: "Oldest First" },
+    { value: "title_asc", label: "Title (A-Z)" },
+    { value: "title_desc", label: "Title (Z-A)" },
+    { value: "view_count", label: "Most Viewed" },
+  ];
+
+  const fetchVideos = async (page_token: string = "", isLoadMore = false) => {
+    if (isLoadMore) setLoadingMore(true);
+    else setLoading(true);
+
     try {
       const response = await apiFetch<{
         success: boolean;
         videos: VideoData[];
+        next_page_token?: string | null;
       }>({
-        path: "/tubebay/v1/youtube/videos",
+        path: `/tubebay/v1/youtube/videos?search=${encodeURIComponent(
+          serverSearchQuery,
+        )}&sort=${sortBy}&page_token=${page_token}`,
       });
       if (response.success) {
-        setVideos(response.videos);
+        if (isLoadMore) {
+          setVideos((prev) => [...prev, ...response.videos]);
+        } else {
+          setVideos(response.videos);
+        }
+        setNextPageToken(response.next_page_token || null);
       }
     } catch (error) {
       addToast(`Error fetching library: ${(error as Error).message}`, "error");
     } finally {
-      setLoading(false);
+      if (isLoadMore) setLoadingMore(false);
+      else setLoading(false);
     }
   };
 
@@ -58,6 +86,10 @@ export default function ChannelLibrary() {
         path: "/tubebay/v1/youtube/sync-library",
       });
       if (response.success) {
+        // Reset filters when forced sync occurs to see the freshest items
+        setSearchInput("");
+        setServerSearchQuery("");
+        setSortBy("date_desc");
         setVideos(response.videos);
         addToast(
           `Successfully fetched ${response.videos.length} videos.`,
@@ -71,13 +103,18 @@ export default function ChannelLibrary() {
     }
   };
 
+  // Effect to trigger initial load and re-fetch when search/sort changes
   useEffect(() => {
     fetchVideos();
-  }, []);
+  }, [serverSearchQuery, sortBy]);
 
-  const filteredVideos = videos.filter((v) =>
-    v.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setServerSearchQuery(searchInput);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -148,23 +185,43 @@ export default function ChannelLibrary() {
           <Input
             type="text"
             placeholder="Search videos by title..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             classNames={{ input: "tubebay-bg-white" }}
           />
         </div>
         <div className="tubebay-w-full md:tubebay-w-[200px]">
-          {/* Simple select for UI mockup */}
-          <select className="tubebay-w-full tubebay-p-[9px] tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] tubebay-bg-white tubebay-text-[13px] tubebay-outline-none focus:tubebay-ring-2 focus:tubebay-ring-blue-500">
-            <option>Recently Added</option>
-            <option>Oldest First</option>
-          </select>
+          <Select
+            value={sortBy}
+            onChange={(val) => setSortBy(val as string)}
+            options={SORT_OPTIONS}
+            border="tubebay-border-gray-300"
+            color="tubebay-text-gray-700"
+            fontSize={13}
+            className="tubebay-bg-white tubebay-h-[42px]"
+          />
         </div>
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">
-          <button className="tubebay-p-[10px] tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] hover:tubebay-bg-gray-50">
-            <InfoIcon size={18} />
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`tubebay-p-[10px] tubebay-border tubebay-rounded-[8px] tubebay-transition-colors ${
+              viewMode === "grid"
+                ? "tubebay-bg-blue-50 tubebay-border-blue-200 tubebay-text-blue-600"
+                : "tubebay-bg-white tubebay-border-gray-300 tubebay-text-gray-600 hover:tubebay-bg-gray-50"
+            }`}
+            title="Grid View"
+          >
+            <LayoutGridIcon size={18} />
           </button>
-          <button className="tubebay-p-[10px] tubebay-bg-white tubebay-border tubebay-border-gray-300 tubebay-rounded-[8px] hover:tubebay-bg-gray-50">
+          <button
+            onClick={() => setViewMode("list")}
+            className={`tubebay-p-[10px] tubebay-border tubebay-rounded-[8px] tubebay-transition-colors ${
+              viewMode === "list"
+                ? "tubebay-bg-blue-50 tubebay-border-blue-200 tubebay-text-blue-600"
+                : "tubebay-bg-white tubebay-border-gray-300 tubebay-text-gray-600 hover:tubebay-bg-gray-50"
+            }`}
+            title="List View"
+          >
             <ListIcon size={18} />
           </button>
         </div>
@@ -174,23 +231,39 @@ export default function ChannelLibrary() {
         <div className="tubebay-text-center tubebay-py-[48px] tubebay-text-gray-500">
           Loading library...
         </div>
-      ) : filteredVideos.length === 0 ? (
+      ) : videos.length === 0 ? (
         <div className="tubebay-text-center tubebay-py-[48px] tubebay-text-gray-500">
           No videos found. Try syncing or adjusting your search.
         </div>
       ) : (
-        <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 lg:tubebay-grid-cols-3 xl:tubebay-grid-cols-4 tubebay-gap-[24px]">
-          {filteredVideos.map((video) => (
+        <div
+          className={
+            viewMode === "grid"
+              ? "tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 lg:tubebay-grid-cols-3 xl:tubebay-grid-cols-4 tubebay-gap-[24px]"
+              : "tubebay-flex tubebay-flex-col tubebay-gap-[16px]"
+          }
+        >
+          {videos.map((video) => (
             <div
               key={video.id}
-              className="tubebay-bg-white tubebay-border tubebay-border-gray-200 tubebay-rounded-[12px] tubebay-overflow-hidden tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-shadow"
+              className={`tubebay-bg-white tubebay-border tubebay-border-gray-200 tubebay-rounded-[12px] tubebay-overflow-hidden tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-shadow ${
+                viewMode === "list"
+                  ? "tubebay-flex tubebay-flex-col sm:tubebay-flex-row"
+                  : ""
+              }`}
             >
               {/* Thumbnail */}
-              <div className="tubebay-relative tubebay-aspect-video tubebay-bg-gray-100">
+              <div
+                className={`tubebay-relative tubebay-bg-gray-100 ${
+                  viewMode === "list"
+                    ? "sm:tubebay-w-[240px] tubebay-shrink-0"
+                    : "tubebay-aspect-video"
+                }`}
+              >
                 <img
                   src={video.thumbnail_url}
                   alt={video.title}
-                  className="tubebay-w-full tubebay-h-full tubebay-object-cover"
+                  className="tubebay-w-full tubebay-h-full tubebay-object-cover tubebay-aspect-video"
                 />
                 <div className="tubebay-absolute tubebay-bottom-[8px] tubebay-right-[8px] tubebay-bg-black/80 tubebay-text-white tubebay-text-[11px] tubebay-font-medium tubebay-px-[6px] tubebay-py-[2px] tubebay-rounded-[4px]">
                   Video
@@ -198,7 +271,7 @@ export default function ChannelLibrary() {
               </div>
 
               {/* Content */}
-              <div className="tubebay-p-[16px] tubebay-flex tubebay-flex-col tubebay-justify-between">
+              <div className="tubebay-p-[16px] tubebay-flex tubebay-flex-col tubebay-justify-between tubebay-flex-1">
                 <div>
                   <h4
                     className="tubebay-text-[15px] tubebay-font-bold tubebay-text-gray-900 tubebay-tracking-tight tubebay-line-clamp-2 tubebay-mb-[8px] tubebay-leading-tight"
@@ -206,6 +279,11 @@ export default function ChannelLibrary() {
                   >
                     {video.title}
                   </h4>
+                  {viewMode === "list" && video.description && (
+                    <p className="tubebay-text-[13px] tubebay-text-gray-600 tubebay-line-clamp-2 tubebay-mb-[12px]">
+                      {video.description}
+                    </p>
+                  )}
                   <div className="tubebay-flex tubebay-items-center tubebay-text-[13px] tubebay-text-gray-500 tubebay-mb-[16px] tubebay-gap-[8px]">
                     <span className="tubebay-flex tubebay-items-center tubebay-gap-[4px]">
                       <EyeIcon size={14} />
@@ -220,9 +298,15 @@ export default function ChannelLibrary() {
                 </div>
 
                 {/* Actions */}
-                <div className="tubebay-flex tubebay-gap-[8px]">
+                <div
+                  className={`tubebay-flex tubebay-gap-[8px] ${
+                    viewMode === "list"
+                      ? "sm:tubebay-justify-end sm:tubebay-mt-auto"
+                      : ""
+                  }`}
+                >
                   <Button
-                    className="tubebay-flex-1"
+                    className={viewMode === "list" ? "" : "tubebay-flex-1"}
                     color="primary"
                     onClick={() =>
                       window.open(
@@ -254,13 +338,15 @@ export default function ChannelLibrary() {
         </div>
       )}
 
-      {!loading && filteredVideos.length > 0 && (
+      {!loading && nextPageToken && (
         <div className="tubebay-mt-[32px] tubebay-text-center">
           <Button
             variant="outline"
+            onClick={() => fetchVideos(nextPageToken, true)}
+            disabled={loadingMore}
             className="tubebay-w-full md:tubebay-w-[200px] tubebay-py-[12px] tubebay-font-bold tubebay-text-gray-700"
           >
-            Load More Videos
+            {loadingMore ? "Loading..." : "Load More Videos"}
           </Button>
         </div>
       )}

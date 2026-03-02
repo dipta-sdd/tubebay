@@ -169,6 +169,125 @@ class Channel
     }
 
     /**
+     * Search and sort videos using the YouTube Search API.
+     * Supports pagination via pageToken.
+     *
+     * @param string $query       Search term.
+     * @param string $sort        Sorting order ('date_desc', 'date_asc', 'title_asc', 'title_desc', 'view_count').
+     * @param string $page_token  Next page token.
+     * @param int    $limit       Max results per request (1-50).
+     * @return array|\WP_Error    Array with 'videos' (Video[]) and 'next_page_token' (string|null).
+     */
+    public function search_videos($query = '', $sort = 'date_desc', $page_token = '', $limit = 50)
+    {
+        if (!$this->is_configured()) {
+            return new \WP_Error('not_configured', __('TubeBay API Key or Channel ID is missing.', 'tubebay'));
+        }
+
+        // Map our internal sort keys to YouTube API 'order'
+        $order = 'date'; // Default: Resources are sorted in reverse chronological order
+        switch ($sort) {
+            case 'date_desc':
+            case 'date_asc': // YouTube Search API doesn't support proper chronological ascending, so we fallback
+                $order = 'date';
+                break;
+            case 'title_asc':
+            case 'title_desc':
+                $order = 'title';
+                break;
+            case 'view_count':
+                $order = 'viewCount';
+                break;
+            default:
+                $order = 'date';
+                break;
+        }
+
+        $args = [
+            'channelId' => $this->channel_id,
+            'part' => 'snippet',
+            'type' => 'video', // Limit to videos only
+            'maxResults' => max(1, min((int) $limit, 50)),
+            'order' => $order,
+            'key' => $this->api_key,
+        ];
+
+        if (!empty($query)) {
+            $args['q'] = sanitize_text_field($query);
+        }
+
+        if (!empty($page_token)) {
+            $args['pageToken'] = sanitize_text_field($page_token);
+        }
+
+        $search_url = add_query_arg($args, 'https://www.googleapis.com/youtube/v3/search');
+
+        tubebay_log("search_videos: Querying YouTube search API. URL params: " . json_encode($args), 'debug');
+
+        $response = wp_remote_get($search_url);
+
+        if (is_wp_error($response)) {
+            tubebay_log('search_videos: Network error - ' . $response->get_error_message(), 'error');
+            return $response;
+        }
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (isset($body['error'])) {
+            tubebay_log('search_videos: API error - ' . ($body['error']['message'] ?? 'Unknown Error'), 'error');
+            return new \WP_Error('api_error', $body['error']['message'] ?? 'Unknown API Error');
+        }
+
+        $videos = [];
+        if (!empty($body['items'])) {
+            foreach ($body['items'] as $item) {
+                $snippet = $item['snippet'];
+
+                // Thumbnail selection
+                $thumbnails = $snippet['thumbnails'] ?? [];
+                $thumb_url = '';
+                if (isset($thumbnails['high']['url'])) {
+                    $thumb_url = $thumbnails['high']['url'];
+                } elseif (isset($thumbnails['medium']['url'])) {
+                    $thumb_url = $thumbnails['medium']['url'];
+                } elseif (isset($thumbnails['default']['url'])) {
+                    $thumb_url = $thumbnails['default']['url'];
+                }
+
+                // In Search API, ID is in id.videoId
+                $video_id = $item['id']['videoId'] ?? '';
+
+                if (empty($video_id)) {
+                    continue; // Skip rare cases where it's not a video
+                }
+
+                $videos[] = new Video([
+                    'id' => $video_id,
+                    'title' => $snippet['title'] ?? '',
+                    'thumbnail_url' => $thumb_url,
+                    'published_at' => $snippet['publishedAt'] ?? '',
+                    'description' => $snippet['description'] ?? '',
+                ]);
+            }
+        }
+
+        // Search API reverse sort fix
+        // YouTube API doesn't support reverse sorts for title or date ascending natively.
+        // We'll flip the array manually for the specific page if requested.
+        if ($sort === 'date_asc' || $sort === 'title_desc') {
+            $videos = array_reverse($videos);
+        }
+
+        $next_page_token = $body['nextPageToken'] ?? null;
+
+        return [
+            'videos' => $videos,
+            'next_page_token' => $next_page_token,
+        ];
+    }
+
+
+    /**
      * Fetch channel details (like title) from the API.
      * 
      * @return array|\WP_Error

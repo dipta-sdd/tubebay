@@ -173,7 +173,26 @@ class YouTubeController extends ApiController
             return new WP_REST_Response(array('success' => true, 'videos' => []), 200);
         }
 
-        $videos = $channel->get_latest_videos(false);
+        $params = $request->get_params();
+        $search = isset($params['search']) ? sanitize_text_field($params['search']) : '';
+        $sort = isset($params['sort']) ? sanitize_text_field($params['sort']) : 'date_desc';
+        $page_token = isset($params['page_token']) ? sanitize_text_field($params['page_token']) : '';
+
+        // If no search, default sort, and first page, use the fast cached playlist response
+        if (empty($search) && $sort === 'date_desc' && empty($page_token)) {
+            $videos = $channel->get_latest_videos(false);
+            $next_page_token = null;
+        } else {
+            // Otherwise hit the search API directly
+            $result = $channel->search_videos($search, $sort, $page_token, 50);
+
+            if (is_wp_error($result)) {
+                return new \WP_Error('search_failed', $result->get_error_message(), array('status' => 400));
+            }
+
+            $videos = $result['videos'];
+            $next_page_token = $result['next_page_token'];
+        }
 
         if (is_wp_error($videos)) {
             return new \WP_Error('fetch_failed', $videos->get_error_message(), array('status' => 400));
@@ -187,6 +206,7 @@ class YouTubeController extends ApiController
         return new WP_REST_Response(array(
             'success' => true,
             'videos' => $response_videos,
+            'next_page_token' => $next_page_token ?? null,
         ), 200);
     }
 }
