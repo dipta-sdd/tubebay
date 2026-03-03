@@ -18,7 +18,7 @@ import {
 } from "../components/common/Icons";
 import Select from "../components/common/Select";
 import { VideoGridSkeleton } from "../components/loading/VideoGridSkeleton";
-import { useWpabStore } from "../store/wpabStore";
+import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
 import { timeDiff } from "../utils/Dates";
 import { Toggler } from "../components/common/Toggler";
 
@@ -32,6 +32,8 @@ interface VideoData {
 
 export default function ChannelLibrary() {
   const { addToast } = useToast();
+  const { updateStore } = useWpabStoreActions();
+
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -92,6 +94,7 @@ export default function ChannelLibrary() {
       const response = await apiFetch<{
         success: boolean;
         videos: VideoData[];
+        last_sync_time: string;
       }>({
         path: "/tubebay/v1/youtube/sync-library",
       });
@@ -101,6 +104,14 @@ export default function ChannelLibrary() {
         setServerSearchQuery("");
         setSortBy("date_desc");
         setVideos(response.videos);
+        // sync with context
+        if(response.last_sync_time){
+          updateStore("plugin_settings", {
+            ...plugin_settings,
+            last_sync_time: Number(response.last_sync_time),
+          });
+        }
+
         addToast(
           `Successfully fetched ${response.videos.length} videos.`,
           "success",
@@ -134,7 +145,6 @@ export default function ChannelLibrary() {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
 
   if (!isConnected) {
     return (

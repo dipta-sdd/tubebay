@@ -25,22 +25,20 @@ interface SidebarMenuItem {
 
 const Sidebar: FC = () => {
   const { plugin_settings } = useWpabStore();
-  const { updateStore } = useWpabStoreActions();
-  const { addToast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = "/" + (location.pathname.split("/")[1] || "");
 
   const menuItems: SidebarMenuItem[] = [
     {
-      label: "TubeBay Settings",
-      path: "/settings",
-      icon: <SettingsIcon />,
-    },
-    {
       label: "Channel Library",
       path: "/",
       icon: <ChannelLibraryIcon />,
+    },
+    {
+      label: "TubeBay Settings",
+      path: "/settings",
+      icon: <SettingsIcon />,
     },
     // {
     //   label: "Products",
@@ -152,7 +150,7 @@ const Sidebar: FC = () => {
               <div className="tubebay-flex tubebay-gap-[12px] tubebay-justify-between tubebay-w-full">
                 {isConnected ? (
                   <Button
-                  className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
+                    className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
                     variant="ghost"
                     color="danger"
                     onClick={() => disconnectYouTube()}
@@ -161,7 +159,7 @@ const Sidebar: FC = () => {
                   </Button>
                 ) : (
                   <Button
-                  className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
+                    className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
                     variant="ghost"
                     color="primary"
                     onClick={() => connectYouTube()}
@@ -170,7 +168,7 @@ const Sidebar: FC = () => {
                   </Button>
                 )}
                 <Button
-                className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
+                  className="tubebay-font-bold !tubebay-text-[12px] !tubebay-leading-[16px] !tubebay-px-[6px]"
                   variant="ghost"
                   color="primary"
                   onClick={() => syncLibrary()}

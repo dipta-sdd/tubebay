@@ -2,15 +2,15 @@
 
 /**
  * Plugin Name:       TubeBay
- * Plugin URI:        wpanchorbay.com
+ * Plugin URI:        https://wpanchorbay.com/products/tubebay
  * Source URI:        https://github.com/dipta-sdd/tubebay
- * Description:       A modern WordPress plugin boilerplate with React/TypeScript admin UI, REST API, and modular PHP architecture.
- * Requires at least: 5.6
- * Requires PHP:      7.0
+ * Description:       Boost your WooCommerce conversions by replacing static product images with high-performance YouTube videos.
+ * Requires at least: 5.8
+ * Requires PHP:      7.4
  * Version:           1.0.0
  * Stable tag:        1.0.0
  * Author:            sankarsan
- * Author URI:        wpanchorbay.com
+ * Author URI:        https://wpanchorbay.com
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       tubebay
@@ -30,7 +30,7 @@ define('TUBEBAY_PLUGIN_NAME', 'tubebay');
 define('TUBEBAY_TEXT_DOMAIN', 'tubebay');
 define('TUBEBAY_OPTION_NAME', 'tubebay');
 define('TUBEBAY_PLUGIN_BASENAME', plugin_basename(__FILE__));
-define('TUBEBAY_DEV_MODE', true);
+define('TUBEBAY_DEV_MODE', false);
 
 if (file_exists(TUBEBAY_PATH . 'vendor/autoload.php')) {
 	require_once TUBEBAY_PATH . 'vendor/autoload.php';

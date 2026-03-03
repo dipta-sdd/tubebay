@@ -163,6 +163,7 @@ class YouTubeController extends ApiController
             'success' => true,
             'message' => __('Library synced successfully.', 'tubebay'),
             'videos' => $response_videos,
+            'last_sync_time' => \TubeBay\Helper\Settings::get_last_sync_time(),
         ), 200);
     }
 
