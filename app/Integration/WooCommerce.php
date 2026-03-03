@@ -58,6 +58,9 @@ class WooCommerce
             if ('replace_main_image' === $placement_hook) {
                 tubebay_log('WooCommerce: Registering replace_main_image on hook: woocommerce_single_product_image_thumbnail_html', 'debug');
                 $loader->add_filter('woocommerce_single_product_image_thumbnail_html', $this, 'video_as_main_image', 10, 2);
+
+                // Also hook into shop loop images
+                $loader->add_filter('woocommerce_product_get_image', $this, 'tubebay_video_on_shop_page', 10, 5);
             } else {
                 tubebay_log('WooCommerce: Registering render_product_video on hook: ' . $placement_hook, 'debug');
                 $loader->add_action($placement_hook, $this, 'render_product_video', 20);
@@ -202,5 +205,65 @@ class WooCommerce
 
         // For all other gallery thumbnails, just return the normal image HTML
         return $html;
+    }
+
+    /**
+     * Hook into the WooCommerce Shop Loop image generation.
+     *
+     * @param string      $html
+     * @param \WC_Product $product
+     * @param string      $size
+     * @param array       $attr
+     * @param bool        $placeholder
+     * @return string
+     */
+    public function tubebay_video_on_shop_page($html, $product, $size, $attr, $placeholder)
+    {
+        // 1. DO NOT run this on the single product page (we already handle that), Cart, or Checkout pages.
+        if (is_singular('product') || is_cart() || is_checkout()) {
+            tubebay_log('WooCommerce: Skipping shop page for product ID ' . $product->get_id(), 'debug');
+            return $html;
+        }
+
+        // 2. Get the video ID and placement setting from the product object
+        $video_id = $product->get_meta('_tubebay_video_id');
+
+        // 3. If no video, or placement isn't main image, show normal image
+        if (empty($video_id)) {
+
+            tubebay_log('WooCommerce: Video ID: ' . $video_id, 'debug');
+            tubebay_log('WooCommerce: Skipping shop page for product ' . $product->get_name() . ' ID ' . $product->get_id(), 'debug');
+            return $html;
+        }
+
+        // 4. Get the high-quality YouTube Thumbnail
+        $yt_thumb = 'https://i.ytimg.com/vi/' . esc_attr($video_id) . '/hqdefault.jpg';
+
+        // 5. Build the exact same Facade HTML
+        ob_start();
+        ?>
+        <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
+            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; cursor: pointer; background: #000; border-radius: 8px; margin-bottom: 10px;">
+
+            <!-- The Thumbnail Image -->
+            <img src="<?php echo esc_url($yt_thumb); ?>" alt="<?php echo esc_attr($product->get_name()); ?> Video"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; margin: 0;" />
+
+            <!-- The SVG Play Button -->
+            <div class="tubebay-play-button"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 35px; transition: all 0.2s ease-in-out;">
+                <svg viewBox="0 0 68 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <path class="tubebay-play-bg"
+                        d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"
+                        fill="#212121" fill-opacity="0.8"></path>
+                    <path d="M 45,24 27,14 27,34" fill="#fff"></path>
+                </svg>
+            </div>
+
+        </div>
+        <?php
+
+        // Return our Facade INSTEAD of the normal WooCommerce image
+        return ob_get_clean();
     }
 }

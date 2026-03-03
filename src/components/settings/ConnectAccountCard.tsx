@@ -160,6 +160,18 @@ export default function ConnectAccountCard({
             >
               {testing ? "Testing..." : "Test Connection"}
             </Button>
+
+            {settings.channel_name && (
+              <Button
+                onClick={() => setEditingConnection(false)}
+                color="secondary"
+                variant="ghost"
+                disabled={saving}
+                className="tubebay-ml-auto"
+              >
+                Cancel
+              </Button>
+            )}
           </div>
         </div>
       )}
