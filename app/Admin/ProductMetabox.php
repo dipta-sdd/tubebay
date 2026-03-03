@@ -3,6 +3,7 @@
 namespace TubeBay\Admin;
 
 use TubeBay\Core\Plugin;
+use TubeBay\Helper\Settings;
 
 // Exit if accessed directly.
 if (!defined('ABSPATH')) {
@@ -58,6 +59,19 @@ class ProductMetabox
      */
     public function add_metabox()
     {
+        $is_connected = (Settings::get('connection_status', 'inactive') === 'connected');
+
+        // If not connected, only show metabox if product already has a video
+        if (!$is_connected) {
+            global $post;
+            if ($post) {
+                $video_id = get_post_meta($post->ID, '_tubebay_video_id', true);
+                if (empty($video_id)) {
+                    return; // Not connected and no video — hide metabox
+                }
+            }
+        }
+
         add_meta_box(
             'tubebay_product_video_metabox',
             __('TubeBay Video', 'tubebay'),
@@ -101,9 +115,11 @@ class ProductMetabox
         );
 
         // Pass localized data to script
+        $is_connected = (Settings::get('connection_status', 'inactive') === 'connected');
         wp_localize_script('tubebay-product-metabox-js', 'tubebayMetabox', array(
-            'restUrl' => esc_url_raw(rest_url('tubebay/v1/youtube/videos')),
-            'nonce' => wp_create_nonce('wp_rest'),
+            'restUrl'     => esc_url_raw(rest_url('tubebay/v1/youtube/videos')),
+            'nonce'       => wp_create_nonce('wp_rest'),
+            'isConnected' => $is_connected,
             'i18n' => array(
                 'selectVideo' => __('Select Video', 'tubebay'),
                 'removeVideo' => __('Remove Video', 'tubebay'),
@@ -142,7 +158,9 @@ class ProductMetabox
         $muted_autoplay = get_post_meta($post->ID, '_tubebay_muted_autoplay', true);
 
         // Fallback to global defaults if not explicitly set yet
-        $muted_autoplay = ($muted_autoplay === '') ? (\TubeBay\Helper\Settings::get('muted_autoplay', true) ? '1' : '0') : $muted_autoplay;
+        $muted_autoplay = ($muted_autoplay === '') ? (Settings::get('muted_autoplay', true) ? '1' : '0') : $muted_autoplay;
+
+        $is_connected = (Settings::get('connection_status', 'inactive') === 'connected');
 
         ?>
         <div class="tubebay-metabox-wrapper">
@@ -161,9 +179,11 @@ class ProductMetabox
                             alt="Video Thumbnail" />
                         <div class="tubebay-play-icon">▶</div>
                         <div class="tubebay-video-actions">
+                            <?php if ($is_connected) : ?>
                             <button type="button" class="button" id="tubebay_edit_video_btn"
                                 title="<?php esc_attr_e('Change Video', 'tubebay'); ?>"><span
                                     class="dashicons dashicons-edit"></span></button>
+                            <?php endif; ?>
                             <button type="button" class="button tubebay-danger-btn" id="tubebay_remove_video_btn"
                                 title="<?php esc_attr_e('Remove Video', 'tubebay'); ?>"><span
                                     class="dashicons dashicons-trash"></span></button>
@@ -175,11 +195,23 @@ class ProductMetabox
                 </div>
             </div>
 
+            <?php if ($is_connected) : ?>
             <div id="tubebay-add-video-container" class="<?php echo !empty($video_id) ? 'hidden' : ''; ?>">
                 <button type="button" class="button button-primary" id="tubebay_select_video_btn">
                     <?php esc_html_e('Select Video from Library', 'tubebay'); ?>
                 </button>
             </div>
+            <?php else : ?>
+            <?php if (empty($video_id)) : ?>
+            <p class="description" style="margin-top: 8px; color: #b91c1c;">
+                <?php esc_html_e('Connect your YouTube account in TubeBay Settings to select videos.', 'tubebay'); ?>
+            </p>
+            <?php else : ?>
+            <p class="description" style="margin-top: 8px; color: #b91c1c;">
+                <?php esc_html_e('Reconnect your YouTube account in TubeBay Settings to change or add videos.', 'tubebay'); ?>
+            </p>
+            <?php endif; ?>
+            <?php endif; ?>
 
             <hr />
 
@@ -200,6 +232,7 @@ class ProductMetabox
                 </div>
             </div>
 
+            <?php if ($is_connected) : ?>
             <!-- Modal (Hidden by default) -->
             <div id="tubebay-video-modal" style="display:none;">
                 <div class="tubebay-modal-overlay"></div>
@@ -234,6 +267,7 @@ class ProductMetabox
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
         <?php
     }

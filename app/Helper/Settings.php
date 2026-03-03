@@ -46,7 +46,7 @@ class Settings
         'channel_name' => '',
         'thumbnails_default' => '',
         'thumbnails_medium' => '',
-        'connection_status' => 'disconnected',
+        'connection_status' => 'inactive',
         'cache_duration' => 12,
         'auto_sync' => true,
         'video_placement' => 'woocommerce_product_thumbnails',

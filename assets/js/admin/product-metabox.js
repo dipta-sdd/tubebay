@@ -18,9 +18,11 @@ jQuery(document).ready(function ($) {
     var nextPageToken = null;
     var searchTimeout = null;
     var isLoading = false;
+    var isConnected = !!tubebayMetabox.isConnected;
 
     // Show Modal
     function openModal() {
+        if (!isConnected) return;
         modal.show();
         if (!isLoaded) {
             fetchVideos();

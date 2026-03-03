@@ -4,6 +4,7 @@ import { useToast } from "../store/toast/use-toast";
 import { Input } from "../components/common/Input";
 import Button from "../components/common/Button";
 import Page from "../components/common/Page";
+import CustomModal from "../components/common/CustomModal";
 import {
   RefreshIcon,
   CheckIcon,
@@ -38,6 +39,7 @@ export default function ChannelLibrary() {
   const [serverSearchQuery, setServerSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date_desc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [previewVideoId, setPreviewVideoId] = useState<string | null>(null);
 
   const SORT_OPTIONS = [
     { value: "date_desc", label: "Recently Added" },
@@ -307,12 +309,7 @@ export default function ChannelLibrary() {
                   <Button
                     className={viewMode === "list" ? "" : "tubebay-flex-1"}
                     color="primary"
-                    onClick={() =>
-                      window.open(
-                        `https://youtube.com/watch?v=${video.id}`,
-                        "_blank",
-                      )
-                    }
+                    onClick={() => setPreviewVideoId(video.id)}
                   >
                     <EyeIcon size={16} className="tubebay-mr-[6px]" />
                     Preview
@@ -348,6 +345,29 @@ export default function ChannelLibrary() {
             {loadingMore ? "Loading..." : "Load More Videos"}
           </Button>
         </div>
+      )}
+      {/* Video Preview Modal */}
+      {previewVideoId && (
+        <CustomModal
+          isOpen={!!previewVideoId}
+          onClose={() => setPreviewVideoId(null)}
+          title={
+            videos.find((v) => v.id === previewVideoId)?.title ||
+            "Video Preview"
+          }
+          maxWidth="tubebay-max-w-3xl"
+        >
+          <div className="tubebay-aspect-video tubebay-w-full tubebay-rounded-lg tubebay-overflow-hidden tubebay-bg-black">
+            <iframe
+              className="tubebay-w-full tubebay-h-full"
+              src={`https://www.youtube.com/embed/${previewVideoId}?autoplay=1&rel=0`}
+              title="Video Preview"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </CustomModal>
       )}
     </Page>
   );

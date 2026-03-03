@@ -14,4 +14,5 @@ return array(
     \TubeBay\Helper\Settings::class,
     \TubeBay\Core\Cron::class,
     \TubeBay\Integration\WooCommerce::class,
+    \TubeBay\Frontend\VideoShortcode::class,
 );
