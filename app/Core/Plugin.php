@@ -123,7 +123,7 @@ class Plugin
 	}
 
 	/**
-	 * Enqueue the public CSS for the plugin.
+	 * Enqueue the public CSS and JS for the plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   public
@@ -131,7 +131,7 @@ class Plugin
 	 */
 	public function enqueue_public_styles()
 	{
-		tubebay_log('Plugin: Enqueueing public CSS', 'debug');
+		tubebay_log('Plugin: Enqueueing public CSS and JS', 'debug');
 		wp_enqueue_style(TUBEBAY_OPTION_NAME . '_public', TUBEBAY_URL . 'assets/css/public.css', array(), TUBEBAY_VERSION);
 	}
 

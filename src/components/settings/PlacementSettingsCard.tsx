@@ -18,6 +18,11 @@ interface PlacementSettingsCardProps {
 
 const PLACEMENT_OPTIONS = [
   {
+    id: "replace_main_image",
+    label: "Replace Main Image",
+    description: "Replaces the primary product photo with the video",
+  },
+  {
     id: "woocommerce_before_single_product",
     label: "Before Single Product",
     description: "Top of the product page wrapper",
