@@ -2,11 +2,13 @@ import { useState, useEffect, FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
 import { useWpabStore } from "../../store/wpabStore";
-import { MenuIcon, CloseIcon } from "./Icons";
+import { MenuIcon, CloseIcon, BookIcon, HelpStethoscopeIcon } from "./Icons";
 
 interface MenuLink {
   label: string;
   path: string;
+  icon?: FC<{ size?: number; className?: string }>;
+  isExternal?: boolean;
 }
 
 const Navbar: FC = () => {
@@ -14,18 +16,19 @@ const Navbar: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const store = useWpabStore();
 
-  const menus: MenuLink[] = [
+
+  const secondaryMenus: MenuLink[] = [
     {
-      label: __("Channel Library", "tubebay"),
-      path: "/library",
+      label: __("Documentation", "tubebay"),
+      path: "#",
+      icon: BookIcon,
+      isExternal: true,
     },
     {
-      label: __("Settings", "tubebay"),
-      path: "/settings",
-    },
-    {
-      label: __("Logs", "tubebay"),
-      path: "/logs",
+      label: __("Support", "tubebay"),
+      path: "#",
+      icon: HelpStethoscopeIcon,
+      isExternal: true,
     },
   ];
 
@@ -55,23 +58,21 @@ const Navbar: FC = () => {
             }`}
           >
             <nav className="tubebay-items-stretch md:tubebay-items-center tubebay-gap-0 tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-w-full">
-              {menus.map((menu) => (
-                <span
-                  key={menu.path}
-                  className={`tubebay-text-default tubebay-font-[700]
-                    tubebay-cursor-pointer tubebay-py-[8px] tubebay-px-[16px] tubebay-border-b md:tubebay-border-b-0 tubebay-border-gray-300 last:tubebay-border-gray-300 ${
-                      activeTab === menu.path
-                        ? "tubebay-text-blue-800 tubebay-bg-gray-100 tubebay-rounded-[0] md:tubebay-rounded-[8px]"
-                        : "tubebay-text-gray-800 hover:tubebay-text-blue-800"
-                    }`}
-                  onClick={() => {
-                    navigate(menu.path);
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  {menu.label}
-                </span>
-              ))}
+              
+              <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-items-stretch md:tubebay-items-center tubebay-gap-0 md:tubebay-gap-[8px]">
+                {secondaryMenus.map((menu) => (
+                  <a
+                    key={menu.label}
+                    href={menu.path}
+                    target={menu.isExternal ? "_blank" : undefined}
+                    rel={menu.isExternal ? "noopener noreferrer" : undefined}
+                    className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-text-gray-600 hover:tubebay-text-blue-800 tubebay-font-[600] tubebay-text-[14px] tubebay-py-[8px] tubebay-px-[16px] tubebay-no-underline tubebay-transition-colors"
+                  >
+                    {menu.icon && <menu.icon size={18} />}
+                    {menu.label}
+                  </a>
+                ))}
+              </div>
             </nav>
           </div>
           <button

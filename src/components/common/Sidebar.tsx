@@ -42,11 +42,11 @@ const Sidebar: FC = () => {
       path: "/",
       icon: <ChannelLibraryIcon />,
     },
-    {
-      label: "Products",
-      path: "/products",
-      icon: <ShoppingBagIcon />,
-    },
+    // {
+    //   label: "Products",
+    //   path: "/products",
+    //   icon: <ShoppingBagIcon />,
+    // },
     {
       label: "Help & Diagnostics",
       path: "/logs",

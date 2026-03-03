@@ -386,7 +386,7 @@ const Onboarding: FC = () => {
         <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 tubebay-gap-[24px] tubebay-w-full">
           <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-start tubebay-gap-[16px] tubebay-text-left tubebay-group">
             <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-blue-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-blue-600">
-              <BookIcon size={20} className="!tubebay-stroke-[2.5px]" />
+              <BookIcon size={20} className="!tubebay-stroke-[2.5px] tubebay-text-[#2563EB]" />
             </div>
             <div className="tubebay-flex-1">
               <h4 className="tubebay-t-5 tubebay-text-[#111827]">
@@ -496,7 +496,7 @@ const Onboarding: FC = () => {
               className="tubebay-h-[44px] tubebay-px-[24px] tubebay-text-[14px] tubebay-font-bold"
               onClick={() => window.location.reload()}
             >
-              Go to Dashboard
+              Go to All Videos
             </Button>
           </div>
         )}

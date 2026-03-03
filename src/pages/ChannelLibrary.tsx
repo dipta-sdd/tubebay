@@ -14,6 +14,7 @@ import {
   EyeIcon,
   CalendarIcon,
   CodeIcon,
+  YouTubeFilledIcon,
 } from "../components/common/Icons";
 import Select from "../components/common/Select";
 import { VideoGridSkeleton } from "../components/loading/VideoGridSkeleton";
@@ -134,6 +135,34 @@ export default function ChannelLibrary() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+
+  if (!isConnected) {
+    return (
+      <Page>
+        <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-min-h-[500px] tubebay-text-center tubebay-bg-white tubebay-rounded-[16px] tubebay-border tubebay-border-dashed tubebay-border-gray-300 tubebay-p-[48px]">
+          <div className="tubebay-w-[80px] tubebay-h-[80px] tubebay-bg-red-50 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-mb-[24px]">
+            <YouTubeFilledIcon size={40} className="tubebay-text-red-600" />
+          </div>
+          <h2 className="tubebay-t-2 tubebay-text-color-default tubebay-mb-[12px]">
+            Connect Your YouTube Channel
+          </h2>
+          <p className="tubebay-t-4 tubebay-text-[#4b5563] tubebay-max-w-[420px] tubebay-mb-[32px]">
+            Your YouTube library is currently disconnected. Connect your account
+            in settings to sync your videos and manage them here.
+          </p>
+          <Button
+            color="primary"
+            size="large"
+            className="tubebay-px-[32px]"
+            onClick={() => (window.location.hash = "/settings")}
+          >
+            Go to Settings
+          </Button>
+        </div>
+      </Page>
+    );
+  }
+
   return (
     <Page>
       {/* Header */}
@@ -220,7 +249,7 @@ export default function ChannelLibrary() {
             value={viewMode}
             onChange={(val) => setViewMode(val as "grid" | "list")}
             classNames={{
-              button:"!tubebay-px-2"
+              button: "!tubebay-px-2",
             }}
           />
         </div>
