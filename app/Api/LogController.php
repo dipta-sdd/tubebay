@@ -25,13 +25,15 @@ class LogController extends ApiController
      * Route base.
      *
      * @var string
+     * @since 1.0.0
      */
     protected $rest_base = 'logs';
 
     /**
      * Instance of this class.
      *
-     * @var LogController
+     * @var LogController|null
+     * @since 1.0.0
      */
     protected static $instance = null;
 
@@ -39,6 +41,7 @@ class LogController extends ApiController
      * Get instance of this class.
      *
      * @return LogController
+     * @since 1.0.0
      */
     public static function get_instance()
     {
@@ -50,6 +53,9 @@ class LogController extends ApiController
 
     /**
      * Register the routes for the objects of the controller.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function register_routes()
     {
@@ -80,8 +86,9 @@ class LogController extends ApiController
     /**
      * Check if a given request has access to get items.
      *
-     * @param WP_REST_Request $request Full data about the request.
-     * @return bool|WP_Error
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return bool True if permitted, false otherwise.
+     * @since 1.0.0
      */
     public function get_items_permissions_check($request)
     {
@@ -91,8 +98,9 @@ class LogController extends ApiController
     /**
      * Check if a given request has access to delete items.
      *
-     * @param WP_REST_Request $request Full data about the request.
-     * @return bool|WP_Error
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return bool True if permitted, false otherwise.
+     * @since 1.0.0
      */
     public function update_items_permissions_check($request)
     {
@@ -102,17 +110,20 @@ class LogController extends ApiController
     /**
      * Get logs from file.
      *
-     * @param WP_REST_Request $request Full data about the request.
-     * @return WP_REST_Response|WP_Error
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return \WP_REST_Response|\WP_Error
+     * @since 1.0.0
      */
     public function get_items($request)
     {
+        tubebay_log('LogController: Handling GET /logs request', 'debug');
         $upload_dir = wp_upload_dir();
         $log_dir = $upload_dir['basedir'] . '/' . TUBEBAY_TEXT_DOMAIN . '-logs/';
 
         // Find the most recent log file
         $files = glob($log_dir . 'plugin-log-*.log');
         if (empty($files)) {
+            tubebay_log('LogController: No log files found in ' . $log_dir, 'debug');
             return rest_ensure_response(array('content' => ''));
         }
 
@@ -121,9 +132,11 @@ class LogController extends ApiController
         $log_file = $files[0];
 
         if (!file_exists($log_file)) {
+            tubebay_log('LogController: Most recent log file does not exist: ' . $log_file, 'debug');
             return rest_ensure_response(array('content' => ''));
         }
 
+        tubebay_log('LogController: Returning content from log file: ' . basename($log_file), 'debug');
         $content = file_get_contents($log_file);
         return rest_ensure_response(array('content' => $content));
     }
@@ -131,11 +144,13 @@ class LogController extends ApiController
     /**
      * Clear logs.
      *
-     * @param WP_REST_Request $request Full data about the request.
-     * @return WP_REST_Response|WP_Error
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return \WP_REST_Response|\WP_Error
+     * @since 1.0.0
      */
     public function delete_items($request)
     {
+        tubebay_log('LogController: Handling DELETE /logs request — clearing all log files', 'info');
         $upload_dir = wp_upload_dir();
         $log_dir = $upload_dir['basedir'] . '/' . TUBEBAY_TEXT_DOMAIN . '-logs/';
 
@@ -145,10 +160,14 @@ class LogController extends ApiController
             foreach ($files as $file) {
                 if (file_exists($file)) {
                     unlink($file);
+                    tubebay_log('LogController: Deleted log file: ' . basename($file), 'debug');
                 }
             }
+        } else {
+            tubebay_log('LogController: No log files found to delete', 'debug');
         }
 
+        tubebay_log('LogController: Log clear complete', 'info');
         return rest_ensure_response(array('success' => true));
     }
 }

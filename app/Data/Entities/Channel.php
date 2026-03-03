@@ -5,11 +5,41 @@ namespace TubeBay\Data\Entities;
 use TubeBay\Helper\Settings;
 use TubeBay\Data\Entities\Video;
 
+/**
+ * Channel class.
+ *
+ * Handles YouTube channel-related data operations.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Data/Entities
+ */
 class Channel
 {
+    /**
+     * YouTube API key.
+     *
+     * @var string
+     */
     private $api_key;
+
+    /**
+     * YouTube channel ID.
+     *
+     * @var string
+     */
     private $channel_id;
 
+    /**
+     * Constructor.
+     *
+     * @param array $data {
+     *     Optional. Data to initialize the channel.
+     *
+     *     @type string $api_key    YouTube API key.
+     *     @type string $channel_id YouTube channel ID.
+     * }
+     */
     public function __construct($data = [])
     {
         $this->api_key = !empty($data['api_key']) ? $data['api_key'] : Settings::get_api_key();
@@ -18,6 +48,8 @@ class Channel
 
     /**
      * Check if the API is correctly configured.
+     *
+     * @return bool True if configured, false otherwise.
      */
     public function is_configured()
     {
@@ -75,8 +107,8 @@ class Channel
     /**
      * Perform the actual API call to YouTube.
      * Phase 1 format.
-     * 
-     * @return Video[]|\WP_Error
+     *
+     * @return Video[]|\WP_Error Array of Video objects or a WP_Error on failure.
      */
     private function fetch_videos_from_api()
     {

@@ -27,9 +27,8 @@ class SampleController extends ApiController
     /**
      * The single instance of the class.
      *
+     * @var SampleController|null
      * @since 1.0.0
-     * @var   SampleController
-     * @access private
      */
     private static $instance = null;
 
@@ -43,7 +42,6 @@ class SampleController extends ApiController
      */
     public static function get_instance()
     {
-        static $instance = null;
         if (null === self::$instance) {
             self::$instance = new self();
         }
@@ -53,6 +51,7 @@ class SampleController extends ApiController
     /**
      * Register the routes for this controller.
      *
+     * @return void
      * @since 1.0.0
      */
     public function register_routes()
@@ -81,9 +80,9 @@ class SampleController extends ApiController
     /**
      * Handle GET request for sample data.
      *
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return \WP_REST_Response
      * @since 1.0.0
-     * @param WP_REST_Request $request Full data about the request.
-     * @return WP_REST_Response
      */
     public function get_sample_data($request)
     {

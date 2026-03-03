@@ -20,7 +20,8 @@ tubebay_run_uninstall();
 /**
  * The main controller function for the uninstallation process.
  *
- * @since 1.0.0
+ * @since  1.0.0
+ * @return void
  */
 function tubebay_run_uninstall()
 {
@@ -37,7 +38,8 @@ function tubebay_run_uninstall()
 /**
  * Drop Custom Database Tables.
  *
- * @since 1.0.0
+ * @since  1.0.0
+ * @return void
  */
 function tubebay_drop_custom_tables()
 {
@@ -55,7 +57,8 @@ function tubebay_drop_custom_tables()
 /**
  * Delete Plugin Options.
  *
- * @since 1.0.0
+ * @since  1.0.0
+ * @return void
  */
 function tubebay_delete_plugin_options()
 {
@@ -65,7 +68,8 @@ function tubebay_delete_plugin_options()
 /**
  * Remove Custom Capabilities.
  *
- * @since 1.0.0
+ * @since  1.0.0
+ * @return void
  */
 function tubebay_remove_capabilities()
 {

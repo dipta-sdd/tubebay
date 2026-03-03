@@ -2,6 +2,11 @@
 
 namespace TubeBay\Core;
 
+// Exit if accessed directly.
+if (!defined('ABSPATH')) {
+	exit;
+}
+
 use TubeBay\Data\DbManager;
 use TubeBay\Helper\Settings;
 
@@ -13,12 +18,6 @@ use TubeBay\Helper\Settings;
  * @subpackage TubeBay/Core
  * @author     sankarsan <wpanchorbay@gmail.com>
  */
-
-// Exit if accessed directly.
-if (!defined('ABSPATH')) {
-	exit;
-}
-
 class Activator
 {
 	/**
@@ -34,6 +33,7 @@ class Activator
 
 		// Set up the default options if they don't exist.
 		/* Default Settings */
+		tubebay_log('Activator: Setting default plugin options', 'debug');
 		foreach (Settings::get_defaults() as $key => $value) {
 			if (get_option(Settings::PREFIX . $key) === false) {
 				Settings::set($key, $value);
@@ -41,16 +41,22 @@ class Activator
 		}
 
 		// Create custom database tables.
+		tubebay_log('Activator: Creating custom database tables', 'debug');
 		self::create_custom_tables();
 
 		// Flush rewrite rules.
+		tubebay_log('Activator: Flushing rewrite rules', 'debug');
 		flush_rewrite_rules();
 
 		// Secure the log directory.
+		tubebay_log('Activator: Securing log directory', 'debug');
 		self::secure_log_directory();
 
 		// Add custom capabilities.
+		tubebay_log('Activator: Adding custom plugin capabilities', 'debug');
 		self::add_plugin_roles_and_capabilities();
+
+		tubebay_log('Activator: Activation sequence complete', 'info');
 	}
 
 	/**
@@ -79,6 +85,7 @@ class Activator
 
 		if (!is_dir($log_dir)) {
 			wp_mkdir_p($log_dir);
+			tubebay_log('Activator: Created log directory at ' . $log_dir, 'debug');
 		}
 
 		$htaccess_file = $log_dir . '.htaccess';
@@ -91,12 +98,14 @@ class Activator
 			</Files>
 			";
 			file_put_contents($htaccess_file, $htaccess_content); // phpcs:ignore
+			tubebay_log('Activator: Created .htaccess to protect log directory', 'debug');
 		}
 
 		$index_file = $log_dir . 'index.php';
 		if (!file_exists($index_file)) {
 			$index_content = "<?php\n// Silence is golden.\n";
 			file_put_contents($index_file, $index_content); // phpcs:ignore
+			tubebay_log('Activator: Created index.php in log directory', 'debug');
 		}
 	}
 
@@ -114,6 +123,9 @@ class Activator
 		$admin_role = get_role('administrator');
 		if ($admin_role && !$admin_role->has_cap($custom_capability)) {
 			$admin_role->add_cap($custom_capability);
+			tubebay_log('Activator: Added capability ' . $custom_capability . ' to administrator role', 'info');
+		} else {
+			tubebay_log('Activator: Capability ' . $custom_capability . ' already exists on administrator role', 'debug');
 		}
 	}
 }

@@ -17,6 +17,7 @@ if (!defined('ABSPATH')) {
  *
  * @package    TubeBay
  * @subpackage TubeBay/Frontend
+ * @since      1.0.0
  */
 class VideoShortcode
 {
@@ -31,6 +32,7 @@ class VideoShortcode
      * Gets an instance of this object.
      *
      * @return VideoShortcode
+     * @since 1.0.0
      */
     public static function get_instance()
     {
@@ -44,9 +46,11 @@ class VideoShortcode
      * Register hooks for this class.
      *
      * @param Plugin $plugin
+     * @since 1.0.0
      */
     public function run($plugin)
     {
+        tubebay_log('VideoShortcode: Registering [tubebay_video] shortcode', 'debug');
         add_shortcode('tubebay_video', array($this, 'render_shortcode'));
     }
 
@@ -72,8 +76,11 @@ class VideoShortcode
         $video_id = sanitize_text_field($atts['id']);
 
         if (empty($video_id)) {
+            tubebay_log('VideoShortcode: render_shortcode called without a video ID — returning empty', 'debug');
             return '';
         }
+
+        tubebay_log('VideoShortcode: Rendering video ID ' . $video_id, 'info');
 
         // Resolve settings: shortcode attrs override globals
         $muted_autoplay = $atts['autoplay'] !== null
@@ -102,14 +109,9 @@ class VideoShortcode
         <div class="tubebay-shortcode-video-wrapper">
             <div class="tubebay-responsive-iframe-container">
                 <iframe <?php if ($width): ?>width="
-            <?php echo esc_attr($width); ?>"
-                    <?php endif; ?>
-                    <?php if ($height): ?>height="
-            <?php echo esc_attr($height); ?>"
-                    <?php endif; ?>
-                    src="<?php echo esc_url($embed_url); ?>"
-                    title="<?php esc_attr_e('TubeBay Video', 'tubebay'); ?>"
-                    frameborder="0"
+            <?php echo esc_attr($width); ?>" <?php endif; ?>         <?php if ($height): ?>height="
+            <?php echo esc_attr($height); ?>" <?php endif; ?> src="<?php echo esc_url($embed_url); ?>"
+                    title="<?php esc_attr_e('TubeBay Video', 'tubebay'); ?>" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
                 </iframe>

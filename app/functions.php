@@ -23,6 +23,7 @@ if (!function_exists('tubebay_log')) {
 	 *
 	 * @param mixed  $message  The message to log.
 	 * @param string $level    The log level (e.g., 'DEBUG', 'INFO', 'ERROR').
+	 * @since 1.0.0
 	 */
 	function tubebay_log($message, $level = 'INFO')
 	{

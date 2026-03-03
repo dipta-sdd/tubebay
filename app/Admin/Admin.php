@@ -45,20 +45,12 @@ class Admin
 	 */
 	public static function get_instance()
 	{
-		static $instance = null;
 		if (null === self::$instance) {
 			self::$instance = new self();
 		}
 		return self::$instance;
 	}
 
-	/**
-	 * Add Admin Page Menu page.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return void
-	 */
 	/**
 	 * Get plugin data (formerly white label options).
 	 *
@@ -91,7 +83,7 @@ class Admin
 	 */
 	public function add_admin_menu()
 	{
-		tubebay_log('Registering TubeBay admin menu', 'info');
+		tubebay_log('Admin: Registering TubeBay admin menu', 'info');
 		$plugin_data = $this->get_plugin_data();
 
 		// Define menu items
@@ -114,6 +106,7 @@ class Admin
 		);
 
 		foreach ($menu_items as $item) {
+			tubebay_log('Admin: Adding menu page: ' . $item['menu_title'], 'debug');
 			add_menu_page(
 				$item['page_title'],
 				$item['menu_title'],
@@ -199,7 +192,7 @@ class Admin
 			return;
 		}
 
-		tubebay_log('Enqueueing admin resources for TubeBay', 'debug');
+		tubebay_log('Admin: Enqueueing admin resources for TubeBay menu page', 'debug');
 
 		$deps_file = TUBEBAY_PATH . 'build/admin.asset.php';
 		$dependency = array('wp-i18n');
@@ -208,6 +201,9 @@ class Admin
 			$deps_file = require $deps_file;
 			$dependency = $deps_file['dependencies'];
 			$version = $deps_file['version'];
+			tubebay_log('Admin: Loaded exact build dependencies: ' . json_encode($dependency), 'debug');
+		} else {
+			tubebay_log('Admin: Build asset file not found; falling back to default dependencies', 'debug');
 		}
 
 		/**

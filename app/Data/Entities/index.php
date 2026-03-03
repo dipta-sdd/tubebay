@@ -3,7 +3,7 @@
  * Silence is golden.
  *
  * @package TubeBay
- * @subpackage TubeBay/Admin
+ * @subpackage TubeBay/Data/Entities
  * @since 1.0.0
  */
 
@@ -11,4 +11,3 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-

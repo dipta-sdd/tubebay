@@ -14,10 +14,31 @@ use WP_REST_Request;
 use WP_REST_Response;
 use TubeBay\Helper\Settings;
 
+/**
+ * SettingsController class.
+ *
+ * Handles API endpoints for saving and retrieving TubeBay settings.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Api
+ */
 class SettingsController extends ApiController
 {
+    /**
+     * Instance of this class.
+     *
+     * @var SettingsController|null
+     * @since 1.0.0
+     */
     private static $instance = null;
 
+    /**
+     * Get instance of this class.
+     *
+     * @return SettingsController
+     * @since 1.0.0
+     */
     public static function get_instance()
     {
         if (null === self::$instance) {
@@ -26,6 +47,12 @@ class SettingsController extends ApiController
         return self::$instance;
     }
 
+    /**
+     * Register the routes for the objects of the controller.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function register_routes()
     {
         $namespace = $this->namespace . $this->version;
@@ -44,11 +71,25 @@ class SettingsController extends ApiController
         ));
     }
 
+    /**
+     * Handle GET request for settings.
+     *
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return \WP_REST_Response
+     * @since 1.0.0
+     */
     public function get_settings($request)
     {
         return new WP_REST_Response(Settings::get_all_settings(), 200);
     }
 
+    /**
+     * Handle POST request to update settings.
+     *
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return \WP_REST_Response
+     * @since 1.0.0
+     */
     public function update_settings($request)
     {
         $body = $request->get_json_params();

@@ -12,16 +12,35 @@ use TubeBay\Data\Entities\Channel;
 
 /**
  * Handles WP-Cron scheduling for automatic daily sync.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Core
  */
 class Cron
 {
+    /**
+     * The single instance of the class.
+     *
+     * @var Cron|null
+     * @since 1.0.0
+     */
     private static $instance = null;
 
     /**
      * Cron hook name.
+     *
+     * @var string
+     * @since 1.0.0
      */
     const HOOK_NAME = 'tubebay_daily_sync_event';
 
+    /**
+     * Gets an instance of this object.
+     *
+     * @return Cron
+     * @since 1.0.0
+     */
     public static function get_instance()
     {
         if (null === self::$instance) {
@@ -32,6 +51,10 @@ class Cron
 
     /**
      * Initial hook registration.
+     *
+     * @param \TubeBay\Core\Plugin $plugin The plugin instance.
+     * @return void
+     * @since 1.0.0
      */
     public function run($plugin)
     {
@@ -46,6 +69,9 @@ class Cron
 
     /**
      * Schedules the daily sync if auto_sync is enabled and not already scheduled.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function check_and_schedule()
     {
@@ -76,6 +102,9 @@ class Cron
 
     /**
      * The callback function for the cron event.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function do_daily_sync()
     {

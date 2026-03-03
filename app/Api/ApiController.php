@@ -35,6 +35,7 @@ class ApiController extends WP_REST_Controller
 	 * Rest route namespace.
 	 *
 	 * @var string
+	 * @since 1.0.0
 	 */
 	public $namespace = TUBEBAY_TEXT_DOMAIN . '/';
 
@@ -42,6 +43,7 @@ class ApiController extends WP_REST_Controller
 	 * Rest route version.
 	 *
 	 * @var string
+	 * @since 1.0.0
 	 */
 	public $version = 'v1';
 
@@ -64,6 +66,9 @@ class ApiController extends WP_REST_Controller
 
 	/**
 	 * Initialize the class — registers REST routes.
+	 *
+	 * @return void
+	 * @since 1.0.0
 	 */
 	public function run()
 	{
@@ -80,7 +85,6 @@ class ApiController extends WP_REST_Controller
 	 */
 	public static function get_instance()
 	{
-		static $instance = null;
 		if (null === self::$instance) {
 			self::$instance = new self();
 		}
@@ -121,6 +125,7 @@ class ApiController extends WP_REST_Controller
 	public function get_item_permissions_check($request)
 	{
 		if (!current_user_can('manage_tubebay')) {
+			tubebay_log('ApiController: Permission denied — user lacks manage_tubebay capability', 'error');
 			return new WP_Error(
 				'rest_forbidden',
 				__('Sorry, you are not allowed to access this resource.', 'tubebay'),
@@ -130,6 +135,7 @@ class ApiController extends WP_REST_Controller
 
 		$nonce = $request->get_header('X-WP-Nonce');
 		if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) {
+			tubebay_log('ApiController: Permission denied — invalid or missing nonce', 'error');
 			return new WP_Error('rest_nonce_invalid', __('The security token is invalid.', 'tubebay'), array('status' => 403));
 		}
 
@@ -146,6 +152,7 @@ class ApiController extends WP_REST_Controller
 	public function update_item_permissions_check($request)
 	{
 		if (!current_user_can('manage_tubebay')) {
+			tubebay_log('ApiController: Update permission denied — user lacks manage_tubebay capability', 'error');
 			return new WP_Error(
 				'rest_forbidden',
 				__('Sorry, you are not allowed to access this resource.', 'tubebay'),
@@ -160,6 +167,7 @@ class ApiController extends WP_REST_Controller
 		}
 
 		if (!wp_verify_nonce($nonce, 'wp_rest')) {
+			tubebay_log('ApiController: Update permission denied — invalid or missing nonce', 'error');
 			return new WP_Error(
 				'rest_invalid_nonce',
 				__('Invalid or missing nonce.', 'tubebay'),

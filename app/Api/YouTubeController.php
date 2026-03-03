@@ -14,8 +14,20 @@ use TubeBay\Data\Entities\Channel;
 
 class YouTubeController extends ApiController
 {
+    /**
+     * The single instance of the class.
+     *
+     * @var YouTubeController|null
+     * @since 1.0.0
+     */
     private static $instance = null;
 
+    /**
+     * Gets an instance of this object.
+     *
+     * @return YouTubeController
+     * @since 1.0.0
+     */
     public static function get_instance()
     {
         if (null === self::$instance) {
@@ -24,6 +36,12 @@ class YouTubeController extends ApiController
         return self::$instance;
     }
 
+    /**
+     * Register the routes for this controller.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function register_routes()
     {
         $namespace = $this->namespace . $this->version;
@@ -65,6 +83,13 @@ class YouTubeController extends ApiController
         ));
     }
 
+    /**
+     * Test YouTube API connection.
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response|\WP_Error
+     * @since 1.0.0
+     */
     public function test_connection($request)
     {
         $params = $request->get_params();
@@ -101,6 +126,13 @@ class YouTubeController extends ApiController
     }
 
 
+    /**
+     * Sync the YouTube library manually.
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response|\WP_Error
+     * @since 1.0.0
+     */
     public function sync_library($request)
     {
         tubebay_log('Manual sync_library request received', 'debug');
@@ -134,6 +166,13 @@ class YouTubeController extends ApiController
         ), 200);
     }
 
+    /**
+     * Sync the YouTube library manually and return only status.
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response|\WP_Error
+     * @since 1.0.0
+     */
     public function sync_library_status($request)
     {
         tubebay_log('Manual sync_library_status request received', 'debug');
@@ -165,6 +204,13 @@ class YouTubeController extends ApiController
         ), 200);
     }
 
+    /**
+     * Get videos from YouTube (search or latest).
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response|\WP_Error
+     * @since 1.0.0
+     */
     public function get_videos($request)
     {
         $channel = new Channel();

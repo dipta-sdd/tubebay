@@ -52,7 +52,6 @@ class Loader
 	 */
 	public static function get_instance()
 	{
-		static $instance = null;
 		if (null === self::$instance) {
 			self::$instance = new self();
 		}

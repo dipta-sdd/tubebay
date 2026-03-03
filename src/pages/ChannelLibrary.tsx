@@ -17,6 +17,9 @@ import {
 } from "../components/common/Icons";
 import Select from "../components/common/Select";
 import { VideoGridSkeleton } from "../components/loading/VideoGridSkeleton";
+import { useWpabStore } from "../store/wpabStore";
+import { timeDiff } from "../utils/Dates";
+import { Toggler } from "../components/common/Toggler";
 
 interface VideoData {
   id: string;
@@ -40,6 +43,9 @@ export default function ChannelLibrary() {
   const [sortBy, setSortBy] = useState("date_desc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [previewVideoId, setPreviewVideoId] = useState<string | null>(null);
+  const { plugin_settings } = useWpabStore();
+
+  const isConnected = plugin_settings?.connection_status === "connected";
 
   const SORT_OPTIONS = [
     { value: "date_desc", label: "Recently Added" },
@@ -131,12 +137,12 @@ export default function ChannelLibrary() {
   return (
     <Page>
       {/* Header */}
-      <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-justify-between md:tubebay-items-end tubebay-mb-[32px] tubebay-gap-[16px]">
+      <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-justify-between md:tubebay-items-end  tubebay-gap-[24px]">
         <div>
-          <h1 className="tubebay-text-[28px] tubebay-font-bold tubebay-text-gray-900 tubebay-mb-[8px]">
+          <h1 className="tubebay-t-1 tubebay-text-color-default">
             Channel Library
           </h1>
-          <p className="tubebay-text-[15px] tubebay-text-gray-500">
+          <p className="tubebay-t-4 tubebay-text-[#4b5563]">
             Manage and preview your synced YouTube videos
           </p>
         </div>
@@ -144,7 +150,7 @@ export default function ChannelLibrary() {
           onClick={handleSyncNow}
           disabled={syncing}
           color="primary"
-          className="tubebay-whitespace-nowrap tubebay-px-[24px]"
+          className="tubebay-whitespace-nowrap tubebay-px-[24px] tubebay-t-5"
         >
           {syncing ? (
             "Syncing..."
@@ -158,7 +164,7 @@ export default function ChannelLibrary() {
       </div>
 
       {/* Status Banner */}
-      <div className="tubebay-bg-green-50 tubebay-border tubebay-border-green-200 tubebay-rounded-[12px] tubebay-p-[24px] tubebay-mb-[32px] tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-items-center md:tubebay-justify-between">
+      <div className="tubebay-bg-green-50 tubebay-border tubebay-border-green-200 tubebay-rounded-[12px] tubebay-p-[24px]  tubebay-flex tubebay-flex-col md:tubebay-flex-row md:tubebay-items-center md:tubebay-justify-between">
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[16px]">
           <div className="tubebay-bg-green-500 tubebay-text-white tubebay-rounded-full tubebay-p-[8px] tubebay-flex tubebay-items-center tubebay-justify-center">
             <CheckIcon size={24} />
@@ -174,16 +180,19 @@ export default function ChannelLibrary() {
         </div>
         <div className="tubebay-text-right tubebay-mt-[16px] md:tubebay-mt-0">
           <p className="tubebay-text-[14px] tubebay-font-medium tubebay-text-gray-900">
-            Last sync: Recently
+            Last sync:{" "}
+            {isConnected
+              ? timeDiff(Number(plugin_settings.last_sync_time))
+              : "Never"}
           </p>
-          <p className="tubebay-text-[12px] tubebay-text-gray-500">
+          {/* <p className="tubebay-text-[12px] tubebay-text-gray-500">
             Cache is active
-          </p>
+          </p> */}
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-[16px] tubebay-mb-[32px]">
+      <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-[16px] tubebay-p-[24px] tubebay-bg-white tubebay-rounded-[16px] tubebay-border tubebay-shadow-sm ">
         <div className="tubebay-flex-1">
           <Input
             type="text"
@@ -198,35 +207,22 @@ export default function ChannelLibrary() {
             value={sortBy}
             onChange={(val) => setSortBy(val as string)}
             options={SORT_OPTIONS}
-            border="tubebay-border-gray-300"
-            color="tubebay-text-gray-700"
             fontSize={13}
             className="tubebay-bg-white tubebay-h-[42px]"
           />
         </div>
         <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px]">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`tubebay-p-[10px] tubebay-border tubebay-rounded-[8px] tubebay-transition-colors ${
-              viewMode === "grid"
-                ? "tubebay-bg-blue-50 tubebay-border-blue-200 tubebay-text-blue-600"
-                : "tubebay-bg-white tubebay-border-gray-300 tubebay-text-gray-600 hover:tubebay-bg-gray-50"
-            }`}
-            title="Grid View"
-          >
-            <LayoutGridIcon size={18} />
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={`tubebay-p-[10px] tubebay-border tubebay-rounded-[8px] tubebay-transition-colors ${
-              viewMode === "list"
-                ? "tubebay-bg-blue-50 tubebay-border-blue-200 tubebay-text-blue-600"
-                : "tubebay-bg-white tubebay-border-gray-300 tubebay-text-gray-600 hover:tubebay-bg-gray-50"
-            }`}
-            title="List View"
-          >
-            <ListIcon size={18} />
-          </button>
+          <Toggler
+            options={[
+              { label: <LayoutGridIcon size={18} />, value: "grid" },
+              { label: <ListIcon size={18} />, value: "list" },
+            ]}
+            value={viewMode}
+            onChange={(val) => setViewMode(val as "grid" | "list")}
+            classNames={{
+              button:"!tubebay-px-2"
+            }}
+          />
         </div>
       </div>
 

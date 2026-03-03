@@ -43,7 +43,8 @@ register_deactivation_hook(__FILE__, 'tubebay_deactivate');
 /**
  * Begins execution of the plugin.
  *
- * @since    1.0.0
+ * @since  1.0.0
+ * @return void
  */
 if (!function_exists('tubebay_run')) {
 	function tubebay_run()
@@ -58,7 +59,8 @@ tubebay_run();
 /**
  * Plugin activation hook.
  *
- * @since    1.0.0
+ * @since  1.0.0
+ * @return void
  */
 function tubebay_activate()
 {

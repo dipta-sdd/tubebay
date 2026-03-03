@@ -41,12 +41,16 @@ class Deactivator
 	{
 		$roles = get_editable_roles();
 		$custom_capability = 'manage_tubebay';
+		tubebay_log('Deactivator: Removing capability ' . $custom_capability . ' from all roles', 'info');
 
 		foreach ($roles as $role_name => $role_info) {
 			$role = get_role($role_name);
 			if ($role && $role->has_cap($custom_capability)) {
 				$role->remove_cap($custom_capability);
+				tubebay_log('Deactivator: Removed capability from role: ' . $role_name, 'debug');
 			}
 		}
+
+		tubebay_log('Deactivator: Capability removal complete', 'debug');
 	}
 }

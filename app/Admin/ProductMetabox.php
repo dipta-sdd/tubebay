@@ -24,6 +24,7 @@ class ProductMetabox
      * The single instance of the class.
      *
      * @var ProductMetabox|null
+     * @since 1.0.0
      */
     private static $instance = null;
 
@@ -31,6 +32,7 @@ class ProductMetabox
      * Gets an instance of this object.
      *
      * @return ProductMetabox
+     * @since 1.0.0
      */
     public static function get_instance()
     {
@@ -43,7 +45,9 @@ class ProductMetabox
     /**
      * Register hooks for this class.
      *
-     * @param Plugin $plugin
+     * @param \TubeBay\Core\Plugin $plugin The main plugin instance.
+     * @return void
+     * @since 1.0.0
      */
     public function run($plugin)
     {
@@ -56,6 +60,9 @@ class ProductMetabox
 
     /**
      * Add the meta box to the product screen.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function add_metabox()
     {
@@ -80,12 +87,15 @@ class ProductMetabox
             'side',
             'default'
         );
+        tubebay_log('ProductMetabox: Added TubeBay Video metabox to product screen', 'debug');
     }
 
     /**
      * Enqueue JS and CSS for the metabox on the product screen.
      *
-     * @param string $hook
+     * @param string $hook The current admin page.
+     * @return void
+     * @since 1.0.0
      */
     public function enqueue_assets($hook)
     {
@@ -141,7 +151,9 @@ class ProductMetabox
     /**
      * Render the metabox HTML.
      *
-     * @param \WP_Post $post
+     * @param \WP_Post $post The post object.
+     * @return void
+     * @since 1.0.0
      */
     public function render_metabox_content($post)
     {
@@ -275,8 +287,10 @@ class ProductMetabox
     /**
      * Save the metabox data.
      *
-     * @param int $post_id
-     * @param \WP_Post $post
+     * @param int      $post_id The post ID.
+     * @param \WP_Post $post    The post object.
+     * @return int The post ID.
+     * @since 1.0.0
      */
     public function save_metabox_data($post_id, $post)
     {
@@ -289,6 +303,7 @@ class ProductMetabox
 
         // Verify that the nonce is valid
         if (!wp_verify_nonce($nonce, 'tubebay_product_metabox_nonce')) {
+            tubebay_log('ProductMetabox: Save aborted - invalid nonce', 'error');
             return $post_id;
         }
 
@@ -304,16 +319,18 @@ class ProductMetabox
             }
         }
 
-        // Sanitize and save Video ID
+        // Santize and save Video ID
         if (isset($_POST['tubebay_video_id'])) {
             $video_id = sanitize_text_field($_POST['tubebay_video_id']);
             update_post_meta($post_id, '_tubebay_video_id', $video_id);
 
             // If video ID is cleared, clear other video data too
             if (empty($video_id)) {
+                tubebay_log('ProductMetabox: Cleared video assignment for product ID ' . $post_id, 'info');
                 delete_post_meta($post_id, '_tubebay_video_title');
                 delete_post_meta($post_id, '_tubebay_video_thumbnail');
             } else {
+                tubebay_log('ProductMetabox: Saved video assignment ' . $video_id . ' for product ID ' . $post_id, 'info');
                 if (isset($_POST['tubebay_video_title'])) {
                     update_post_meta($post_id, '_tubebay_video_title', sanitize_text_field($_POST['tubebay_video_title']));
                 }
@@ -331,5 +348,6 @@ class ProductMetabox
         // Muted Autoplay Toggle (checkboxes only exist in $_POST if checked)
         $muted_autoplay = isset($_POST['tubebay_muted_autoplay']) ? '1' : '0';
         update_post_meta($post_id, '_tubebay_muted_autoplay', $muted_autoplay);
+        tubebay_log('ProductMetabox: Saved muted_autoplay=' . $muted_autoplay . ' for product ID ' . $post_id, 'debug');
     }
 }

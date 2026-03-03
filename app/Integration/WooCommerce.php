@@ -17,6 +17,7 @@ if (!defined('ABSPATH')) {
  *
  * @package    TubeBay
  * @subpackage TubeBay/Integration
+ * @since      1.0.0
  */
 class WooCommerce
 {
@@ -54,26 +55,36 @@ class WooCommerce
 
         // Only hook if placement is valid (not empty/null)
         if (!empty($placement_hook)) {
+            tubebay_log('WooCommerce: Registering render_product_video on hook: ' . $placement_hook, 'debug');
             $loader->add_action($placement_hook, $this, 'render_product_video', 20);
+        } else {
+            tubebay_log('WooCommerce: No video placement hook configured, skipping registration', 'debug');
         }
     }
 
     /**
      * Render the video iframe if a video is attached to the current product.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function render_product_video()
     {
         global $product;
 
         if (!$product || !is_a($product, 'WC_Product')) {
+            tubebay_log('WooCommerce: render_product_video called but no valid WC_Product found', 'debug');
             return;
         }
 
         $video_id = get_post_meta($product->get_id(), '_tubebay_video_id', true);
 
         if (empty($video_id)) {
+            tubebay_log('WooCommerce: No video assigned to product ID ' . $product->get_id(), 'debug');
             return;
         }
+
+        tubebay_log('WooCommerce: Rendering video ' . $video_id . ' for product ID ' . $product->get_id(), 'info');
 
         $muted_autoplay = get_post_meta($product->get_id(), '_tubebay_muted_autoplay', true);
 

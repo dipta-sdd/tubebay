@@ -50,7 +50,7 @@ export const Input: React.FC<InputProps> = ({
       <input
         className={`
           tubebay-w-full tubebay-outline-none
-          tubebay-bg-white tubebay-border tubebay-rounded-[8px]
+          tubebay-bg-white tubebay-border !tubebay-rounded-[8px]
           tubebay-text-[#1e1e1e] tubebay-placeholder-gray-400
           ${sizeClasses[size]}
           ${borderClasses}

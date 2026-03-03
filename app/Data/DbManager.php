@@ -39,7 +39,6 @@ class DbManager
      */
     public static function get_instance()
     {
-        static $instance = null;
         if (null === self::$instance) {
             self::$instance = new self();
         }
@@ -59,6 +58,7 @@ class DbManager
     /**
      * Create all custom tables.
      *
+     * @return void
      * @since 1.0.0
      */
     public function create_tables()
@@ -73,6 +73,7 @@ class DbManager
      * Demonstrates the pattern for creating custom tables.
      * Replace this with your own table schema.
      *
+     * @return void
      * @since 1.0.0
      * @access private
      */
@@ -94,6 +95,7 @@ class DbManager
             KEY status (status)
         ) $charset_collate;";
 
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
     }
 }

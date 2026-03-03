@@ -51,7 +51,6 @@ class Plugin
 	 */
 	public static function get_instance()
 	{
-		static $instance = null;
 		if (null === self::$instance) {
 			self::$instance = new self();
 		}
@@ -67,6 +66,7 @@ class Plugin
 	 */
 	public function __construct()
 	{
+		tubebay_log('Plugin: Initializing core, admin, and public hooks', 'debug');
 		$this->loader = Loader::get_instance();
 		$this->define_core_hooks();
 		$this->define_admin_hooks();
@@ -85,34 +85,19 @@ class Plugin
 	{
 		// Initialize API controllers from config
 		$api_controllers = include TUBEBAY_PATH . 'config/api.php';
-		error_log('API Controllers: ' . print_r($api_controllers, true));
+		tubebay_log('Plugin: Loading API controllers: ' . json_encode($api_controllers), 'debug');
 		if (is_array($api_controllers)) {
 			foreach ($api_controllers as $controller) {
 				if (class_exists($controller) && method_exists($controller, 'get_instance')) {
-					error_log('Registering controller: ' . $controller);
+					tubebay_log('Plugin: Registering REST routes for: ' . $controller, 'debug');
 					add_action('rest_api_init', function () use ($controller) {
-						error_log('Registering controller: ' . $controller);
 						$controller::get_instance()->register_routes();
 					});
+				} else {
+					tubebay_log('Plugin: Controller class not found or missing get_instance: ' . $controller, 'error');
 				}
 			}
 		}
-
-		// Register your custom hook-based components here.
-		// Example:
-		// $my_component = MyComponent::get_instance();
-		// $components_with_hooks = array($my_component);
-		//
-		// foreach ($components_with_hooks as $component) {
-		//     $hooks = $component->get_hooks();
-		//     foreach ($hooks as $hook) {
-		//         if ('action' === $hook['type']) {
-		//             $this->loader->add_action($hook['hook'], $component, $hook['callback'], $hook['priority'], $hook['accepted_args']);
-		//         } elseif ('filter' === $hook['type']) {
-		//             $this->loader->add_filter($hook['hook'], $component, $hook['callback'], $hook['priority'], $hook['accepted_args']);
-		//         }
-		//     }
-		// }
 	}
 
 	/**
@@ -128,6 +113,7 @@ class Plugin
 		if (is_admin()) {
 			return;
 		}
+		tubebay_log('Plugin: Registering public-facing hooks', 'debug');
 		// Enqueue the public CSS for the plugin.
 		$this->loader->add_action(
 			'wp_enqueue_scripts',
@@ -145,6 +131,7 @@ class Plugin
 	 */
 	public function enqueue_public_styles()
 	{
+		tubebay_log('Plugin: Enqueueing public CSS', 'debug');
 		wp_enqueue_style(TUBEBAY_OPTION_NAME . '_public', TUBEBAY_URL . 'assets/css/public.css', array(), TUBEBAY_VERSION);
 	}
 
@@ -168,13 +155,17 @@ class Plugin
 	{
 		// Initialize Core classes from config
 		$core_classes = include TUBEBAY_PATH . 'config/core.php';
+		tubebay_log('Plugin: Loading core classes from config: ' . json_encode($core_classes), 'debug');
 		if (is_array($core_classes)) {
 			foreach ($core_classes as $class) {
 				if (class_exists($class) && method_exists($class, 'get_instance')) {
 					$instance = $class::get_instance();
 					if (method_exists($instance, 'run')) {
+						tubebay_log('Plugin: Running class: ' . $class, 'debug');
 						$instance->run($this);
 					}
+				} else {
+					tubebay_log('Plugin: Core class not found or missing get_instance: ' . $class, 'error');
 				}
 			}
 		}
@@ -207,6 +198,7 @@ class Plugin
 	 */
 	public function run()
 	{
+		tubebay_log('Plugin: Running loader — executing all registered WordPress hooks', 'info');
 		$this->loader->run();
 	}
 

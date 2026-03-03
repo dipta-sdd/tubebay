@@ -23,11 +23,14 @@ class Settings
      * The single instance of the class.
      *
      * @var Settings|null
+     * @since 1.0.0
      */
     private static $instance = null;
 
     /**
      * Option key prefix.
+     *
+     * @since 1.0.0
      */
     const PREFIX = 'tubebay_';
 
@@ -79,6 +82,7 @@ class Settings
      * Get singleton instance.
      *
      * @return Settings
+     * @since 1.0.0
      */
     public static function get_instance()
     {
@@ -134,6 +138,9 @@ class Settings
 
     /**
      * Get the configured API Key.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_api_key()
     {
@@ -142,6 +149,9 @@ class Settings
 
     /**
      * Get the configured Channel ID.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_channel_id()
     {
@@ -150,6 +160,9 @@ class Settings
 
     /**
      * Get the Channel Name.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_channel_name()
     {
@@ -158,6 +171,9 @@ class Settings
 
     /**
      * Get the Connection Status.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_connection_status()
     {
@@ -167,6 +183,9 @@ class Settings
     /**
      * Get the cache duration in seconds.
      * The stored value is in hours; this converts to seconds.
+     *
+     * @return int
+     * @since 1.0.0
      */
     public static function get_cache_duration()
     {
@@ -176,6 +195,9 @@ class Settings
 
     /**
      * Get the cache duration in hours (raw stored value).
+     *
+     * @return int
+     * @since 1.0.0
      */
     public static function get_cache_duration_hours()
     {
@@ -184,6 +206,9 @@ class Settings
 
     /**
      * Get the Auto Sync setting.
+     *
+     * @return bool
+     * @since 1.0.0
      */
     public static function get_auto_sync()
     {
@@ -192,6 +217,9 @@ class Settings
 
     /**
      * Get the Global Video Placement setting.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_video_placement()
     {
@@ -200,6 +228,9 @@ class Settings
 
     /**
      * Get the last sync time (unix timestamp).
+     *
+     * @return int
+     * @since 1.0.0
      */
     public static function get_last_sync_time()
     {
@@ -219,6 +250,9 @@ class Settings
 
     /**
      * Get the OAuth Access Token.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_access_token()
     {
@@ -227,6 +261,9 @@ class Settings
 
     /**
      * Get the OAuth Refresh Token.
+     *
+     * @return string
+     * @since 1.0.0
      */
     public static function get_refresh_token()
     {
@@ -235,6 +272,9 @@ class Settings
 
     /**
      * Get the OAuth Token Expiration time.
+     *
+     * @return int
+     * @since 1.0.0
      */
     public static function get_token_expires()
     {
@@ -272,6 +312,7 @@ class Settings
      * Get all plugin settings as an associative array.
      *
      * @return array
+     * @since 1.0.0
      */
     public static function get_all_settings()
     {
