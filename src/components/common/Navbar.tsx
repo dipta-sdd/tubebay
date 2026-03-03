@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
 import { useWpabStore } from "../../store/wpabStore";
 import { MenuIcon, CloseIcon, BookIcon, HelpStethoscopeIcon } from "./Icons";
+// @ts-ignore
+import logo_32px from "./../../../assets/img/TubeBay.svg";
 
 interface MenuLink {
   label: string;
@@ -43,11 +45,11 @@ const Navbar: FC = () => {
 
   return (
     <>
-      <div className="tubebay-bg-white tubebay-p-0 !tubebay-border-0 !tubebay-border-b !tubebay-border-gray-300 tubebay-z-50 tubebay-relative">
-        <div className="tubebay-flex tubebay-px-[12px] tubebay-justify-between tubebay-items-center tubebay-flex-wrap md:tubebay-flex-nowrap tubebay-gap-[4px] tubebay-relative tubebay-max-width">
+      <div data-tubebay="navbar" className="tubebay-bg-white tubebay-p-0 !tubebay-border-0 !tubebay-border-b !tubebay-border-gray-300 tubebay-z-50 tubebay-relative">
+        <div className="tubebay-flex tubebay-pl-[24px] tubebay-pr-[12px] tubebay-justify-between tubebay-items-center tubebay-flex-wrap md:tubebay-flex-nowrap tubebay-gap-[4px] tubebay-relative tubebay-max-width">
           <div className="tubebay-flex tubebay-items-center tubebay-gap-[4px] tubebay-py-[12px]">
             <span className="tubebay-font-[700] tubebay-text-[16px] tubebay-text-gray-900">
-              {store.pluginData?.plugin_name || "TubeBay"}
+              <a href="https://wpanchorbay.com/products/tubebay"><img src={logo_32px} alt="TubeBay" className="tubebay-h-[40px]" /></a>
             </span>
           </div>
           <div
