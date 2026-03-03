@@ -133,6 +133,14 @@ class Plugin
 	{
 		tubebay_log('Plugin: Enqueueing public CSS and JS', 'debug');
 		wp_enqueue_style(TUBEBAY_OPTION_NAME . '_public', TUBEBAY_URL . 'assets/css/public.css', array(), TUBEBAY_VERSION);
+
+		wp_enqueue_script(
+			TUBEBAY_OPTION_NAME . '_public_js',
+			TUBEBAY_URL . 'assets/js/public.js',
+			array(),
+			TUBEBAY_VERSION,
+			true
+		);
 	}
 
 	/**
