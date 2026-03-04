@@ -53,7 +53,7 @@ class ProductMetabox
     {
         $loader = $plugin->get_loader();
         // Hook into WooCommerce product meta boxes
-        $loader->add_action('add_meta_boxes_product', $this, 'add_metabox', 10, 3);
+        $loader->add_action('add_meta_boxes_product', $this, 'add_metabox');
         $loader->add_action('save_post_product', $this, 'save_metabox_data', 10, 2);
         $loader->add_action('admin_enqueue_scripts', $this, 'enqueue_assets');
     }
@@ -85,7 +85,7 @@ class ProductMetabox
             array($this, 'render_metabox_content'),
             'product',
             'side',
-            'default'
+            'high'
         );
         tubebay_log('ProductMetabox: Added TubeBay Video metabox to product screen', 'debug');
     }

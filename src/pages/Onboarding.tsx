@@ -245,6 +245,60 @@ const Onboarding: FC = () => {
           </p>
         </div>
 
+           {/* Call to Action */}
+        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[48px] tubebay-border tubebay-border-gray-200 tubebay-shadow-xl tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-gap-[16px] tubebay-w-full">
+          <h2 className="tubebay-t-1 tubebay-text-[#111827] ">
+            Ready to Get Started?
+          </h2>
+          <p className="tubebay-t-4 tubebay-text-[#4b5563]">
+            Set up your YouTube connection in just a few simple steps.
+          </p>
+          <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] tubebay-w-full tubebay-max-w-[448px] tubebay-mx-auto tubebay-mt-[16px]">
+            <Button
+              className="tubebay-w-full !tubebay-py-[16px] !tubebay-px-[32px] !tubebay-text-4 !tubebay-font-bold"
+              color="primary"
+              onClick={() => setWizardStarted(true)}
+            >
+              <FlightIcon size={18} className="tubebay-mr-[8px]" />
+              Start Setup Wizard
+            </Button>
+
+            <div className="tubebay-flex tubebay-items-center tubebay-w-full">
+              <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
+              <span className="tubebay-px-[16px] tubebay-text-[12px] tubebay-font-bold tubebay-text-gray-400 tubebay-tracking-wider">
+                OR
+              </span>
+              <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
+            </div>
+
+            <Button
+              variant="outline"
+              color="secondary"
+              className="!tubebay-w-full !tubebay-py-[16px] !tubebay-px-[32px] !tubebay-text-4 !tubebay-font-bold !tubebay-text-[#374151] !tubebay-border-2 !tubebay-border-[#e5e7eb]"
+              onClick={async () => {
+                // Mark onboarding as completed when skipping
+                try {
+                  await apiFetch({
+                    path: "/tubebay/v1/settings",
+                    method: "POST",
+                    data: { is_onboarding_completed: true },
+                  });
+                  updateStore("plugin_settings", {
+                    ...settings,
+                    is_onboarding_completed: true,
+                  });
+                } catch (e) {
+                  // silent
+                }
+                navigate("/settings");
+              }}
+            >
+              <SettingsIcon size={18} className="tubebay-mr-[8px] " />
+              Skip Setup & Go to Settings
+            </Button>
+          </div>
+        </div>
+
         {/* Features Grid */}
         <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-3 tubebay-gap-[24px] ">
           <div className="tubebay-bg-white tubebay-rounded-[16px] tubebay-p-[32px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm tubebay-flex tubebay-flex-col tubebay-items-start tubebay-justify-start tubebay-gap-[16px]">
@@ -328,59 +382,7 @@ const Onboarding: FC = () => {
           </div>
         </div>
 
-        {/* Call to Action */}
-        <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[48px] tubebay-border tubebay-border-gray-200 tubebay-shadow-xl tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-gap-[16px] tubebay-w-full">
-          <h2 className="tubebay-t-1 tubebay-text-[#111827] ">
-            Ready to Get Started?
-          </h2>
-          <p className="tubebay-t-4 tubebay-text-[#4b5563]">
-            Set up your YouTube connection in just a few simple steps.
-          </p>
-          <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[16px] tubebay-w-full tubebay-max-w-[448px] tubebay-mx-auto tubebay-mt-[16px]">
-            <Button
-              className="tubebay-w-full !tubebay-py-[16px] !tubebay-px-[32px] !tubebay-text-4 !tubebay-font-bold"
-              color="primary"
-              onClick={() => setWizardStarted(true)}
-            >
-              <FlightIcon size={18} className="tubebay-mr-[8px]" />
-              Start Setup Wizard
-            </Button>
-
-            <div className="tubebay-flex tubebay-items-center tubebay-w-full">
-              <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
-              <span className="tubebay-px-[16px] tubebay-text-[12px] tubebay-font-bold tubebay-text-gray-400 tubebay-tracking-wider">
-                OR
-              </span>
-              <div className="tubebay-flex-1 tubebay-h-[1px] tubebay-bg-gray-200"></div>
-            </div>
-
-            <Button
-              variant="outline"
-              color="secondary"
-              className="!tubebay-w-full !tubebay-py-[16px] !tubebay-px-[32px] !tubebay-text-4 !tubebay-font-bold !tubebay-text-[#374151] !tubebay-border-2 !tubebay-border-[#e5e7eb]"
-              onClick={async () => {
-                // Mark onboarding as completed when skipping
-                try {
-                  await apiFetch({
-                    path: "/tubebay/v1/settings",
-                    method: "POST",
-                    data: { is_onboarding_completed: true },
-                  });
-                  updateStore("plugin_settings", {
-                    ...settings,
-                    is_onboarding_completed: true,
-                  });
-                } catch (e) {
-                  // silent
-                }
-                navigate("/settings");
-              }}
-            >
-              <SettingsIcon size={18} className="tubebay-mr-[8px] " />
-              Skip Setup & Go to Settings
-            </Button>
-          </div>
-        </div>
+     
 
         {/* Footer Links */}
         <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 tubebay-gap-[24px] tubebay-w-full">

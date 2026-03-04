@@ -92,10 +92,15 @@ class Admin
 				'page_title' => $plugin_data['plugin_name'],
 				'menu_title' => $plugin_data['menu_label'],
 				'menu_slug' => TUBEBAY_PLUGIN_NAME,
-				'icon_url' => $plugin_data['menu_icon'],
+				'icon_url' => $plugin_data['custom_icon'],
 				'position' => $plugin_data['position'],
 				'callback' => array($this, 'add_setting_root_div'),
 				'submenu' => array(
+					array(
+						'menu_title' => esc_html__('Channel Library', 'tubebay'),
+						'menu_slug' => TUBEBAY_PLUGIN_NAME,
+						'callback' => array($this, 'add_setting_root_div')
+					),
 					array(
 						'menu_title' => esc_html__('Settings', 'tubebay'),
 						'menu_slug' => TUBEBAY_PLUGIN_NAME . '#/settings',
@@ -119,9 +124,10 @@ class Admin
 
 			if (!empty($item['submenu'])) {
 				foreach ($item['submenu'] as $sub) {
+					// The first submenu item should use the same slug as add_menu_page to override the default parent name
 					add_submenu_page(
 						$item['menu_slug'], // Parent slug
-						$item['menu_title'] . ' - ' . $item['page_title'] ?? $item['menu_title'], // Page title
+						$item['page_title'] . ' - ' . $sub['menu_title'], // Page title
 						$sub['menu_title'],
 						'manage_tubebay',
 						$sub['menu_slug'],
@@ -188,6 +194,8 @@ class Admin
 
 	public function enqueue_resources()
 	{
+		wp_enqueue_style('tubebay-admin-style', TUBEBAY_URL . 'assets/css/admin-menu.css', array(), TUBEBAY_VERSION);
+
 		if (!$this->is_menu_page()) {
 			return;
 		}
