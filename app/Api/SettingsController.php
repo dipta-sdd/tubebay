@@ -69,6 +69,14 @@ class SettingsController extends ApiController
                 'permission_callback' => array($this, 'update_item_permissions_check'),
             ),
         ));
+
+        register_rest_route($namespace, '/settings/delete-all-data', array(
+            array(
+                'methods' => WP_REST_Server::DELETABLE,
+                'callback' => array($this, 'delete_all_data'),
+                'permission_callback' => array($this, 'update_item_permissions_check'),
+            ),
+        ));
     }
 
     /**
@@ -129,17 +137,20 @@ class SettingsController extends ApiController
                     Settings::set('thumbnails_default', $result['thumbnails_default'] ?? '');
                     Settings::set('thumbnails_medium', $result['thumbnails_medium'] ?? '');
                     Settings::set('connection_status', 'connected');
+                    Settings::set('last_sync_time', time());
                 } else {
                     Settings::set('channel_name', '');
                     Settings::set('thumbnails_default', '');
                     Settings::set('thumbnails_medium', '');
                     Settings::set('connection_status', 'failed');
+                    Settings::set('last_sync_time', '');
                 }
             } else {
                 Settings::set('channel_name', '');
                 Settings::set('thumbnails_default', '');
                 Settings::set('thumbnails_medium', '');
                 Settings::set('connection_status', 'disconnected');
+                Settings::set('last_sync_time', '');
             }
         }
 
@@ -172,6 +183,10 @@ class SettingsController extends ApiController
             Settings::set('is_onboarding_completed', (bool) $body['is_onboarding_completed']);
         }
 
+        if (isset($body['advanced_deleteAllOnUninstall'])) {
+            Settings::set('advanced_deleteAllOnUninstall', (bool) $body['advanced_deleteAllOnUninstall']);
+        }
+
         if (!$creds_changed && isset($body['connection_status'])) {
             Settings::set('connection_status', sanitize_text_field($body['connection_status']));
         }
@@ -182,6 +197,91 @@ class SettingsController extends ApiController
             'success' => true,
             'data' => Settings::get_all_settings(),
             'message' => __('Settings saved successfully.', 'tubebay'),
+        ), 200);
+    }
+
+    /**
+     * Delete all TubeBay data (options, tables, product meta, transients).
+     * The plugin remains installed but all data is wiped clean.
+     *
+     * @param \WP_REST_Request $request Full data about the request.
+     * @return \WP_REST_Response
+     * @since 1.0.0
+     */
+    public function delete_all_data($request)
+    {
+        global $wpdb;
+
+        tubebay_log('Delete All Data: Starting complete data wipe', 'info');
+
+        // 1. Drop custom tables
+        $table_name = $wpdb->prefix . 'tubebay_items';
+        $wpdb->query("DROP TABLE IF EXISTS {$table_name}"); // phpcs:ignore
+        tubebay_log('Delete All Data: Dropped table ' . $table_name, 'debug');
+
+        // 2. Delete all tubebay_ options
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+                $wpdb->esc_like('tubebay_') . '%'
+            )
+        );
+        // Also delete legacy serialized option
+        delete_option('tubebay');
+        tubebay_log('Delete All Data: Deleted all plugin options', 'debug');
+
+        // 3. Delete all product meta
+        $meta_keys = array(
+            '_tubebay_video_id',
+            '_tubebay_video_title',
+            '_tubebay_video_thumbnail',
+            '_tubebay_display_location',
+            '_tubebay_muted_autoplay',
+            '_tubebay_placement',
+        );
+        foreach ($meta_keys as $key) {
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s",
+                    $key
+                )
+            );
+        }
+        tubebay_log('Delete All Data: Deleted all product meta', 'debug');
+
+        // 4. Delete transients
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+                $wpdb->esc_like('_transient_tubebay_') . '%',
+                $wpdb->esc_like('_transient_timeout_tubebay_') . '%'
+            )
+        );
+        tubebay_log('Delete All Data: Deleted all transients', 'debug');
+
+        // 5. Unschedule cron
+        $timestamp = wp_next_scheduled('tubebay_auto_sync_cron');
+        if ($timestamp) {
+            wp_unschedule_event($timestamp, 'tubebay_auto_sync_cron');
+        }
+        tubebay_log('Delete All Data: Unscheduled cron events', 'debug');
+
+        // 6. Re-create the table and re-initialize defaults
+        $db_manager = \TubeBay\Data\DbManager::get_instance();
+        $db_manager->create_tables();
+
+        // Re-set defaults so the plugin is in a clean state
+        $defaults = Settings::get_defaults();
+        foreach ($defaults as $key => $value) {
+            Settings::set($key, $value);
+        }
+
+        tubebay_log('Delete All Data: Complete data wipe finished, defaults restored', 'info');
+
+        return new WP_REST_Response(array(
+            'success' => true,
+            'data' => Settings::get_all_settings(),
+            'message' => __('All TubeBay data has been deleted and settings reset to defaults.', 'tubebay'),
         ), 200);
     }
 }

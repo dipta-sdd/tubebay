@@ -6,7 +6,9 @@ import Page from "../components/common/Page";
 import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
 import { PluginSettings } from "../utils/types";
 import { useYouTubeActions } from "../hooks/useYouTubeActions";
-import ConnectAccountCard from "../components/settings/ConnectAccountCard";
+import ConnectAccountCard, {
+  ConnectionFeedback,
+} from "../components/settings/ConnectAccountCard";
 import SyncCard from "../components/settings/SyncCard";
 import PlacementSettingsCard from "../components/settings/PlacementSettingsCard";
 import AdvancedSettingsCard from "../components/settings/AdvancedSettingsCard";
@@ -22,6 +24,8 @@ export default function Settings() {
   const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [editingConnection, setEditingConnection] = useState(false);
+  const [connectionFeedback, setConnectionFeedback] =
+    useState<ConnectionFeedback | null>(null);
 
   const { plugin_settings: settings } = useWpabStore();
   const { updateStore } = useWpabStoreActions();
@@ -48,6 +52,8 @@ export default function Settings() {
     debug_enableMode: settings.debug_enableMode ?? false,
     muted_autoplay: settings.muted_autoplay ?? true,
     show_controls: settings.show_controls ?? true,
+    advanced_deleteAllOnUninstall:
+      settings.advanced_deleteAllOnUninstall ?? false,
   });
 
   useEffect(() => {
@@ -71,6 +77,8 @@ export default function Settings() {
         debug_enableMode: response.debug_enableMode ?? false,
         muted_autoplay: response.muted_autoplay ?? true,
         show_controls: response.show_controls ?? true,
+        advanced_deleteAllOnUninstall:
+          response.advanced_deleteAllOnUninstall ?? false,
       };
 
       setTmpCredentials(creds);
@@ -85,6 +93,7 @@ export default function Settings() {
 
   const handleConnect = async () => {
     setSaving(true);
+    setConnectionFeedback(null);
     try {
       const response = await apiFetch<{
         success: boolean;
@@ -100,16 +109,39 @@ export default function Settings() {
       });
 
       if (response.success) {
-        addToast(response.message, "success");
         setSettings(response.data);
         setTmpCredentials({
           api_key: response.data.api_key || "",
           channel_id: response.data.channel_id || "",
         });
-        setEditingConnection(false);
+
+        // Check if connection actually succeeded
+        if (
+          response.data.connection_status === "failed" ||
+          response.data.connection_status === "disconnected"
+        ) {
+          setConnectionFeedback({
+            type: "error",
+            message:
+              "Could not verify the API key or Channel ID. Please double-check your credentials.",
+          });
+        } else {
+          setConnectionFeedback({
+            type: "success",
+            message:
+              "Successfully connected! Your YouTube channel is now linked.",
+          });
+          addToast(response.message, "success");
+          setEditingConnection(false);
+        }
       }
     } catch (error) {
-      addToast(`Error connecting: ${(error as Error).message}`, "error");
+      const msg = (error as Error).message || "An unknown error occurred.";
+      setConnectionFeedback({
+        type: "error",
+        message: `Connection failed: ${msg}`,
+      });
+      addToast(`Error connecting: ${msg}`, "error");
     } finally {
       setSaving(false);
     }
@@ -132,6 +164,8 @@ export default function Settings() {
           debug_enableMode: tmpOtherSettings.debug_enableMode,
           muted_autoplay: tmpOtherSettings.muted_autoplay,
           show_controls: tmpOtherSettings.show_controls,
+          advanced_deleteAllOnUninstall:
+            tmpOtherSettings.advanced_deleteAllOnUninstall,
         },
       });
 
@@ -145,6 +179,8 @@ export default function Settings() {
           debug_enableMode: response.data.debug_enableMode ?? false,
           muted_autoplay: response.data.muted_autoplay ?? true,
           show_controls: response.data.show_controls ?? true,
+          advanced_deleteAllOnUninstall:
+            response.data.advanced_deleteAllOnUninstall ?? false,
         });
       }
     } catch (error) {
@@ -156,6 +192,7 @@ export default function Settings() {
 
   const handleTestConnection = async () => {
     setTesting(true);
+    setConnectionFeedback(null);
 
     try {
       const response = await apiFetch<{
@@ -173,6 +210,12 @@ export default function Settings() {
       });
 
       if (response.success) {
+        setConnectionFeedback({
+          type: "success",
+          message: `Connection test passed! Channel: ${
+            response.channel_name || "Unknown"
+          }. Click "Connect" to save your credentials.`,
+        });
         addToast(
           `${response.message} Channel: ${
             response.channel_name || "Unknown"
@@ -181,7 +224,12 @@ export default function Settings() {
         );
       }
     } catch (error) {
-      addToast(`Connection Failed: ${(error as any).message}`, "error");
+      const msg = (error as any).message || "Could not verify credentials.";
+      setConnectionFeedback({
+        type: "error",
+        message: `Test failed: ${msg}`,
+      });
+      addToast(`Connection Failed: ${msg}`, "error");
     } finally {
       setTesting(false);
     }
@@ -227,7 +275,9 @@ export default function Settings() {
       tmpOtherSettings.debug_enableMode !==
         (settings.debug_enableMode ?? false) ||
       tmpOtherSettings.muted_autoplay !== (settings.muted_autoplay ?? true) ||
-      tmpOtherSettings.show_controls !== (settings.show_controls ?? true)
+      tmpOtherSettings.show_controls !== (settings.show_controls ?? true) ||
+      tmpOtherSettings.advanced_deleteAllOnUninstall !==
+        (settings.advanced_deleteAllOnUninstall ?? false)
     );
   };
 
@@ -261,8 +311,15 @@ export default function Settings() {
         handleTestConnection={handleTestConnection}
         credentialsChanged={credentialsChanged}
         connectYouTube={connectYouTube}
+        feedback={connectionFeedback}
+        setFeedback={setConnectionFeedback}
       />
 
+      {/* Placement & Player Settings Card */}
+      <PlacementSettingsCard
+        tmpOtherSettings={tmpOtherSettings}
+        setTmpOtherSettings={setTmpOtherSettings}
+      />
       {/* Sync Settings Card */}
       <SyncCard
         settings={settings}
@@ -270,12 +327,6 @@ export default function Settings() {
         setTmpOtherSettings={setTmpOtherSettings}
         syncing={syncing}
         handleSyncLibrary={handleSyncLibrary}
-      />
-
-      {/* Placement & Player Settings Card */}
-      <PlacementSettingsCard
-        tmpOtherSettings={tmpOtherSettings}
-        setTmpOtherSettings={setTmpOtherSettings}
       />
 
       {/* Advanced Settings Card */}

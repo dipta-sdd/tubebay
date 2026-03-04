@@ -21,6 +21,7 @@ import { VideoGridSkeleton } from "../components/loading/VideoGridSkeleton";
 import { useWpabStore, useWpabStoreActions } from "../store/wpabStore";
 import { timeDiff } from "../utils/Dates";
 import { Toggler } from "../components/common/Toggler";
+import { Copy } from "lucide-react";
 
 interface VideoData {
   id: string;
@@ -364,7 +365,7 @@ export default function ChannelLibrary() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="!tubebay-px-[12px] tubebay-text-gray-700 tubebay-border-gray-300 hover:tubebay-bg-gray-50"
+                    className="!tubebay-px-[12px] tubebay-text-gray-700 tubebay-border-gray-300 "
                     title="Copy Shortcode"
                     onClick={() => {
                       navigator.clipboard.writeText(
@@ -373,7 +374,7 @@ export default function ChannelLibrary() {
                       addToast("Shortcode copied to clipboard", "success");
                     }}
                   >
-                    <CodeIcon size={18} />
+                    <Copy size={16} />
                   </Button>
                 </div>
               </div>

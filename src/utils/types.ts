@@ -53,6 +53,7 @@ export interface SyncPlacementSettings {
     debug_enableMode: boolean;
     muted_autoplay: boolean;
     show_controls: boolean;
+    advanced_deleteAllOnUninstall: boolean;
 }
 
 /**
@@ -67,4 +68,5 @@ export interface BoilerplateStore {
     pluginData: PluginData;
     wpSettings: WpSettings;
     plugin_settings: PluginSettings;
+    products_url: string;
 }

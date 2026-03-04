@@ -256,7 +256,8 @@ class Admin
 					'dateFormat' => get_option('date_format'),
 					'timeFormat' => get_option('time_format'),
 				),
-				'plugin_settings' => Settings::get_all()
+				'plugin_settings' => Settings::get_all(),
+				'products_url' => admin_url('edit.php?post_type=product'),
 			)
 		);
 

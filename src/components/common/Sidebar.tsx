@@ -24,7 +24,7 @@ interface SidebarMenuItem {
 }
 
 const Sidebar: FC = () => {
-  const { plugin_settings } = useWpabStore();
+  const { plugin_settings, products_url } = useWpabStore();
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = "/" + (location.pathname.split("/")[1] || "");
@@ -50,6 +50,11 @@ const Sidebar: FC = () => {
       path: "/logs",
       icon: <HelpStethoscopeIcon />,
     },
+    {
+      label: "Go to Products",
+      path: products_url,
+      icon: <ShoppingBagIcon />,
+    },
   ];
 
   const isConnected = plugin_settings?.connection_status === "connected";
@@ -67,10 +72,19 @@ const Sidebar: FC = () => {
             const isActive =
               currentPath === item.path ||
               (item.path === "/" && currentPath === "/library");
+            const isExternal =
+              item.path.startsWith("http") || item.path.includes("wp-admin");
+
             return (
               <button
                 key={item.path}
-                onClick={() => navigate(item.path)}
+                onClick={() => {
+                  if (isExternal) {
+                    window.location.href = item.path;
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
                 className={`tubebay-flex tubebay-items-center tubebay-gap-[10px] 
                   tubebay-px-[16px] tubebay-py-[12px] tubebay-rounded-[12px] 
                   tubebay-t-6-bold

@@ -8,7 +8,9 @@ import { useYouTubeActions } from "../hooks/useYouTubeActions";
 import { PluginSettings } from "../utils/types";
 import Button from "../components/common/Button";
 import { Stepper } from "../components/common/Stepper";
-import ConnectAccountCard from "../components/settings/ConnectAccountCard";
+import ConnectAccountCard, {
+  ConnectionFeedback,
+} from "../components/settings/ConnectAccountCard";
 import PlacementSettingsCard from "../components/settings/PlacementSettingsCard";
 import {
   YouTubeFilledIcon,
@@ -49,6 +51,8 @@ const Onboarding: FC = () => {
   const [editingConnection, setEditingConnection] = useState(false);
   const [savingSettings, setSavingSettings] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [connectionFeedback, setConnectionFeedback] =
+    useState<ConnectionFeedback | null>(null);
 
   const [tmpCredentials, setTmpCredentials] = useState({
     api_key: settings.api_key || "",
@@ -62,6 +66,8 @@ const Onboarding: FC = () => {
     debug_enableMode: settings.debug_enableMode ?? false,
     muted_autoplay: settings.muted_autoplay ?? true,
     show_controls: settings.show_controls ?? true,
+    advanced_deleteAllOnUninstall:
+      settings.advanced_deleteAllOnUninstall ?? false,
   });
 
   const setSettings = (data: SettingsData) => {
@@ -81,6 +87,7 @@ const Onboarding: FC = () => {
 
   const handleConnect = async () => {
     setSaving(true);
+    setConnectionFeedback(null);
     try {
       const response = await apiFetch<{
         success: boolean;
@@ -96,16 +103,38 @@ const Onboarding: FC = () => {
       });
 
       if (response.success) {
-        addToast(response.message, "success");
         setSettings(response.data);
         setTmpCredentials({
           api_key: response.data.api_key || "",
           channel_id: response.data.channel_id || "",
         });
-        setEditingConnection(false);
+
+        if (
+          response.data.connection_status === "failed" ||
+          response.data.connection_status === "disconnected"
+        ) {
+          setConnectionFeedback({
+            type: "error",
+            message:
+              "Could not verify the API key or Channel ID. Please double-check your credentials.",
+          });
+        } else {
+          setConnectionFeedback({
+            type: "success",
+            message:
+              "Successfully connected! Your YouTube channel is now linked.",
+          });
+          addToast(response.message, "success");
+          setEditingConnection(false);
+        }
       }
     } catch (error) {
-      addToast(`Error connecting: ${(error as Error).message}`, "error");
+      const msg = (error as Error).message || "An unknown error occurred.";
+      setConnectionFeedback({
+        type: "error",
+        message: `Connection failed: ${msg}`,
+      });
+      addToast(`Error connecting: ${msg}`, "error");
     } finally {
       setSaving(false);
     }
@@ -113,6 +142,7 @@ const Onboarding: FC = () => {
 
   const handleTestConnection = async () => {
     setTesting(true);
+    setConnectionFeedback(null);
     try {
       const response = await apiFetch<{
         success: boolean;
@@ -128,6 +158,12 @@ const Onboarding: FC = () => {
       });
 
       if (response.success) {
+        setConnectionFeedback({
+          type: "success",
+          message: `Connection test passed! Channel: ${
+            response.channel_name || "Unknown"
+          }. Click "Connect" to save your credentials.`,
+        });
         addToast(
           `${response.message} Channel: ${
             response.channel_name || "Unknown"
@@ -136,7 +172,12 @@ const Onboarding: FC = () => {
         );
       }
     } catch (error) {
-      addToast(`Connection Failed: ${(error as any).message}`, "error");
+      const msg = (error as any).message || "Could not verify credentials.";
+      setConnectionFeedback({
+        type: "error",
+        message: `Test failed: ${msg}`,
+      });
+      addToast(`Connection Failed: ${msg}`, "error");
     } finally {
       setTesting(false);
     }
@@ -195,6 +236,8 @@ const Onboarding: FC = () => {
           debug_enableMode: response.data.debug_enableMode ?? false,
           muted_autoplay: response.data.muted_autoplay ?? true,
           show_controls: response.data.show_controls ?? true,
+          advanced_deleteAllOnUninstall:
+            response.data.advanced_deleteAllOnUninstall ?? false,
         });
       }
     } catch (error) {
@@ -245,7 +288,7 @@ const Onboarding: FC = () => {
           </p>
         </div>
 
-           {/* Call to Action */}
+        {/* Call to Action */}
         <div className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[48px] tubebay-border tubebay-border-gray-200 tubebay-shadow-xl tubebay-flex tubebay-flex-col tubebay-items-center tubebay-justify-center tubebay-gap-[16px] tubebay-w-full">
           <h2 className="tubebay-t-1 tubebay-text-[#111827] ">
             Ready to Get Started?
@@ -382,13 +425,14 @@ const Onboarding: FC = () => {
           </div>
         </div>
 
-     
-
         {/* Footer Links */}
         <div className="tubebay-grid tubebay-grid-cols-1 md:tubebay-grid-cols-2 tubebay-gap-[24px] tubebay-w-full">
           <button className="tubebay-bg-white tubebay-rounded-[12px] tubebay-p-[24px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-flex tubebay-items-start tubebay-gap-[16px] tubebay-text-left tubebay-group">
             <div className="tubebay-w-[40px] tubebay-h-[40px] tubebay-bg-blue-50 tubebay-rounded-[10px] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-blue-600">
-              <BookIcon size={20} className="!tubebay-stroke-[2.5px] tubebay-text-[#2563EB]" />
+              <BookIcon
+                size={20}
+                className="!tubebay-stroke-[2.5px] tubebay-text-[#2563EB]"
+              />
             </div>
             <div className="tubebay-flex-1">
               <h4 className="tubebay-t-5 tubebay-text-[#111827]">
@@ -456,6 +500,8 @@ const Onboarding: FC = () => {
             handleTestConnection={handleTestConnection}
             credentialsChanged={credentialsChanged}
             connectYouTube={connectYouTube}
+            feedback={connectionFeedback}
+            setFeedback={setConnectionFeedback}
           />
         )}
 
