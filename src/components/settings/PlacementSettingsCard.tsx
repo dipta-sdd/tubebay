@@ -21,7 +21,12 @@ const PLACEMENT_OPTIONS = [
   {
     id: "replace_main_image",
     label: "Main Gallery (First Slide)",
-    description: "The video becomes the main product image/slide",
+    description: "The video becomes the FIRST product image/slide",
+  },
+  {
+    id: "add_to_gallery_last",
+    label: "Main Gallery (Last Slide)",
+    description: "The video becomes the LAST product image/slide",
   },
   {
     id: "woocommerce_product_thumbnails",

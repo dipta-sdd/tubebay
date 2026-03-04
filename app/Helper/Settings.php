@@ -52,7 +52,7 @@ class Settings
         'connection_status' => 'inactive',
         'cache_duration' => 12,
         'auto_sync' => true,
-        'video_placement' => 'woocommerce_product_thumbnails',
+        'video_placement' => 'add_to_gallery_last',
         'muted_autoplay' => false,
         'show_controls' => false,
         'is_onboarding_completed' => false,

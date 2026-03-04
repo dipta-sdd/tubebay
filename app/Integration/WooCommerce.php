@@ -55,9 +55,9 @@ class WooCommerce
 
         // Only hook if placement is valid (not empty/null)
         if (!empty($placement_hook)) {
-            if ('replace_main_image' === $placement_hook) {
-                tubebay_log('WooCommerce: Registering replace_main_image on hook: woocommerce_single_product_image_thumbnail_html', 'debug');
-                $loader->add_filter('woocommerce_single_product_image_thumbnail_html', $this, 'video_as_main_image', 10, 2);
+            if ('replace_main_image' === $placement_hook || 'add_to_gallery_last' === $placement_hook) {
+                tubebay_log("WooCommerce: Registering {$placement_hook} on hook: woocommerce_single_product_image_thumbnail_html", 'debug');
+                $loader->add_filter('woocommerce_single_product_image_thumbnail_html', $this, 'render_video_in_gallery', 10, 2);
 
                 // Also hook into shop loop images
                 // $loader->add_filter('woocommerce_product_get_image', $this, 'tubebay_video_on_shop_page', 10, 5);
@@ -114,7 +114,7 @@ class WooCommerce
             $embed_url .= '&controls=0';
         }
 
-        ?>
+?>
         <div class="tubebay-product-video-wrapper">
             <div class="tubebay-responsive-iframe-container">
                 <iframe width="560" height="315" src="<?php echo esc_url($embed_url); ?>"
@@ -124,18 +124,18 @@ class WooCommerce
                 </iframe>
             </div>
         </div>
-        <?php
+    <?php
     }
 
     /**
-     * Replace the main product image with the video iframe.
+     * Inject the video into the WooCommerce product gallery (either as first or last slide).
      *
      * @param string $html              The original image HTML.
      * @param int    $post_thumbnail_id The thumbnail ID.
      * @return string
      * @since 1.0.0
      */
-    public function video_as_main_image($html, $post_thumbnail_id)
+    public function render_video_in_gallery($html, $post_thumbnail_id)
     {
         global $post;
 
@@ -152,7 +152,7 @@ class WooCommerce
             return $html;
         }
 
-        // 4. Check for Autoplay (respect product override with global fallback)
+        // 4. Check for Autoplay
         $is_autoplay = get_post_meta($post->ID, '_tubebay_muted_autoplay', true);
         if ($is_autoplay === '') {
             $is_autoplay = Settings::get('muted_autoplay');
@@ -160,24 +160,22 @@ class WooCommerce
         $is_autoplay = filter_var($is_autoplay, FILTER_VALIDATE_BOOLEAN);
 
         $main_image_id = get_post_thumbnail_id($post->ID);
+        $placement = Settings::get('video_placement');
 
-        // 1. Get the YouTube thumbnail
+        // 5. Get the YouTube thumbnail
         $yt_thumb = get_post_meta($post->ID, '_tubebay_video_thumbnail', true);
         if (empty($yt_thumb)) {
             $yt_thumb = 'https://i.ytimg.com/vi/' . esc_attr($video_id) . '/hqdefault.jpg';
         }
 
-        tubebay_log('WooCommerce: Processing main image for product ID ' . $post->ID . ($is_autoplay ? ' (Autoplay ON)' : ' (Lazy Load ON)'), 'info');
-
-        // Build the HTML
+        // Build the Video Slide HTML
         ob_start();
-        ?>
+    ?>
         <div data-thumb="<?php echo esc_url($yt_thumb); ?>" class="woocommerce-product-gallery__image tubebay-video-slide">
             <div class="tubebay-video-wrapper"
                 style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; background: #000;">
 
                 <?php if ($is_autoplay): ?>
-                    <!-- OPTION A: MUTED AUTOPLAY (Immediate Iframe) -->
                     <iframe
                         src="https://www.youtube.com/embed/<?php echo esc_attr($video_id); ?>?autoplay=1&mute=1&loop=1&playlist=<?php echo esc_attr($video_id); ?>&rel=0&controls=0"
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
@@ -185,13 +183,11 @@ class WooCommerce
                         allowfullscreen>
                     </iframe>
                 <?php else: ?>
-                    <!-- OPTION B: LAZY LOAD (Image Facade) -->
                     <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
                         style="cursor: pointer; height: 100%; width: 100%; position: absolute; top: 0; left: 0;">
                         <img src="<?php echo esc_url($yt_thumb); ?>" alt="Product Video"
                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
 
-                        <!-- The SVG Play Button -->
                         <div class="tubebay-play-button"
                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 68px; height: 48px; transition: all 0.2s ease-in-out;">
                             <svg viewBox="0 0 68 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -209,17 +205,35 @@ class WooCommerce
         <?php
         $video_slide_html = ob_get_clean();
 
-        // SCENARIO 1: No Image
-        if (empty($main_image_id)) {
-            return $video_slide_html;
+        // SCENARIO A: FIRST SLIDE
+        if ('replace_main_image' === $placement) {
+            if (empty($main_image_id)) {
+                return $video_slide_html;
+            }
+            if ($post_thumbnail_id == $main_image_id) {
+                return $video_slide_html . $html;
+            }
         }
 
-        // SCENARIO 2: Has Image
-        if ($post_thumbnail_id == $main_image_id) {
-            return $video_slide_html . $html;
+        // SCENARIO B: LAST SLIDE
+        if ('add_to_gallery_last' === $placement) {
+            $product = wc_get_product($post->ID);
+            if ($product) {
+                $gallery_ids = $product->get_gallery_image_ids();
+                if (empty($gallery_ids)) {
+                    // Only main image exists, so it is the last image
+                    if ($post_thumbnail_id == $main_image_id) {
+                        return $html . $video_slide_html;
+                    }
+                } else {
+                    $last_gallery_id = end($gallery_ids);
+                    if ($post_thumbnail_id == $last_gallery_id) {
+                        return $html . $video_slide_html;
+                    }
+                }
+            }
         }
 
-        // For all other gallery thumbnails, just return the normal image HTML
         return $html;
     }
 
@@ -258,7 +272,7 @@ class WooCommerce
         // 5. Get the YouTube Thumbnail
         $yt_thumb = 'https://i.ytimg.com/vi/' . esc_attr($video_id) . '/hqdefault.jpg';
 
-        tubebay_log('WooCommerce: Processing shop page image for product ID ' . $product->get_id() . ( $is_autoplay ? ' (Autoplay ON)' : ' (Lazy Load ON)' ), 'info');
+        tubebay_log('WooCommerce: Processing shop page image for product ID ' . $product->get_id() . ($is_autoplay ? ' (Autoplay ON)' : ' (Lazy Load ON)'), 'info');
 
         // 6. Build the HTML
         ob_start();
@@ -266,7 +280,7 @@ class WooCommerce
         <div class="tubebay-video-wrapper"
             style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; background: #000; border-radius: 8px; margin-bottom: 10px;">
 
-            <?php if ($is_autoplay) : ?>
+            <?php if ($is_autoplay): ?>
                 <!-- OPTION A: MUTED AUTOPLAY (Immediate Iframe) -->
                 <iframe
                     src="https://www.youtube.com/embed/<?php echo esc_attr($video_id); ?>?autoplay=1&mute=1&loop=1&playlist=<?php echo esc_attr($video_id); ?>&rel=0&controls=0"
@@ -274,7 +288,7 @@ class WooCommerce
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
                 </iframe>
-            <?php else : ?>
+            <?php else: ?>
                 <!-- OPTION B: LAZY LOAD (Image Facade) -->
                 <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
                     style="cursor: pointer; height: 100%; width: 100%; position: absolute; top: 0; left: 0;">
@@ -295,7 +309,7 @@ class WooCommerce
             <?php endif; ?>
 
         </div>
-        <?php
+<?php
 
         // Return our video block INSTEAD of the normal WooCommerce image
         return ob_get_clean();

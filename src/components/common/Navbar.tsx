@@ -2,7 +2,7 @@ import { useState, useEffect, FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
 import { useWpabStore } from "../../store/wpabStore";
-import { MenuIcon, CloseIcon, BookIcon, HelpStethoscopeIcon } from "./Icons";
+import { MenuIcon, CloseIcon, BookIcon, HelpStethoscopeIcon, SupportIcon } from "./Icons";
 // @ts-ignore
 import logo_32px from "./../../../assets/img/TubeBay.svg";
 
@@ -22,14 +22,14 @@ const Navbar: FC = () => {
   const secondaryMenus: MenuLink[] = [
     {
       label: __("Documentation", "tubebay"),
-      path: "#",
+      path: "https://docs.wpanchorbay.com/tubebay/",
       icon: BookIcon,
       isExternal: true,
     },
     {
       label: __("Support", "tubebay"),
-      path: "#",
-      icon: HelpStethoscopeIcon,
+      path: "https://wpanchorbay.com/support/",
+      icon: SupportIcon,
       isExternal: true,
     },
   ];

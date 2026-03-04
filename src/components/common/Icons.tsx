@@ -82,6 +82,27 @@ export const HelpStethoscopeIcon: FC<IconProps> = ({ size = 18, ...props }) => (
     />
   </svg>
 );
+export const SupportIcon: FC<IconProps> = ({ size = 18, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="m4.93 4.93 4.24 4.24" />
+    <path d="m14.83 9.17 4.24-4.24" />
+    <path d="m14.83 14.83 4.24 4.24" />
+    <path d="m9.17 14.83-4.24 4.24" />
+    <circle cx="12" cy="12" r="4" />
+  </svg>
+);
 
 // ─── Wifi / Connection ──────────────────────────────────────────────
 export const WifiIcon: FC<IconProps> = ({ size = 18, ...props }) => (

@@ -1,4 +1,6 @@
-export type VideoPosition = 
+export type VideoPosition =
+  | 'replace_main_image'
+  | 'add_to_gallery_last'
   | 'woocommerce_before_single_product'
   | 'woocommerce_before_single_product_summary'
   | 'woocommerce_product_thumbnails'

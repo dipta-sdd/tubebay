@@ -53,8 +53,17 @@ export function ProductSkeleton({
           {/* Left Column: Gallery */}
           <div className="tubebay-space-y-4">
             {/* Main Image */}
-            <div className="tubebay-w-full tubebay-aspect-square tubebay-bg-gray-100 tubebay-rounded-lg tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-gray-300 tubebay-animate-pulse">
-              <ImageIcon className="tubebay-w-16 tubebay-h-16 tubebay-opacity-50" />
+            <div className="tubebay-relative">
+              {isSelected("replace_main_image") ? (
+                <VideoPlaceholder
+                  label="Featured Video (First Slide)"
+                  className="tubebay-aspect-square tubebay-w-full"
+                />
+              ) : (
+                <div className="tubebay-w-full tubebay-aspect-square tubebay-bg-gray-100 tubebay-rounded-lg tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-gray-300 tubebay-animate-pulse">
+                  <ImageIcon className="tubebay-w-16 tubebay-h-16 tubebay-opacity-50" />
+                </div>
+              )}
             </div>
 
             {/* woocommerce_product_thumbnails */}
@@ -67,12 +76,22 @@ export function ProductSkeleton({
 
             {/* Thumbnails */}
             <div className="tubebay-grid tubebay-grid-cols-4 tubebay-gap-4">
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <div
                   key={i}
                   className="tubebay-aspect-square tubebay-bg-gray-100 tubebay-rounded-md tubebay-animate-pulse"
                 />
               ))}
+
+              {isSelected("add_to_gallery_last") ? (
+                <VideoPlaceholder
+                  label="Video Slot"
+                  className="tubebay-aspect-square"
+                  hideLabel={true}
+                />
+              ) : (
+                <div className="tubebay-aspect-square tubebay-bg-gray-100 tubebay-rounded-md tubebay-animate-pulse" />
+              )}
             </div>
           </div>
 
