@@ -60,7 +60,7 @@ class WooCommerce
                 $loader->add_filter('woocommerce_single_product_image_thumbnail_html', $this, 'video_as_main_image', 10, 2);
 
                 // Also hook into shop loop images
-                $loader->add_filter('woocommerce_product_get_image', $this, 'tubebay_video_on_shop_page', 10, 5);
+                // $loader->add_filter('woocommerce_product_get_image', $this, 'tubebay_video_on_shop_page', 10, 5);
             } else {
                 tubebay_log('WooCommerce: Registering render_product_video on hook: ' . $placement_hook, 'debug');
                 $loader->add_action($placement_hook, $this, 'render_product_video', 20);
@@ -152,43 +152,59 @@ class WooCommerce
             return $html;
         }
 
+        // 4. Check for Autoplay (respect product override with global fallback)
+        $is_autoplay = get_post_meta($post->ID, '_tubebay_muted_autoplay', true);
+        if ($is_autoplay === '') {
+            $is_autoplay = Settings::get('muted_autoplay');
+        }
+        $is_autoplay = filter_var($is_autoplay, FILTER_VALIDATE_BOOLEAN);
+
         $main_image_id = get_post_thumbnail_id($post->ID);
 
-        // 1. Get the YouTube thumbnail to use for the WooCommerce navigation strip and the facade
+        // 1. Get the YouTube thumbnail
         $yt_thumb = get_post_meta($post->ID, '_tubebay_video_thumbnail', true);
         if (empty($yt_thumb)) {
-            // hqdefault is the highest resolution guaranteed to exist for all videos
             $yt_thumb = 'https://i.ytimg.com/vi/' . esc_attr($video_id) . '/hqdefault.jpg';
         }
 
-        tubebay_log('WooCommerce: Replacing main image for product ID ' . $post->ID . ' with lazy-load video facade ' . $video_id, 'info');
+        tubebay_log('WooCommerce: Processing main image for product ID ' . $post->ID . ($is_autoplay ? ' (Autoplay ON)' : ' (Lazy Load ON)'), 'info');
 
-        // Build the Lazy Load Facade HTML
+        // Build the HTML
         ob_start();
         ?>
         <div data-thumb="<?php echo esc_url($yt_thumb); ?>" class="woocommerce-product-gallery__image tubebay-video-slide">
+            <div class="tubebay-video-wrapper"
+                style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; background: #000;">
 
-            <!-- The Facade Container -->
-            <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
-                style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; cursor: pointer; background: #000;">
+                <?php if ($is_autoplay): ?>
+                    <!-- OPTION A: MUTED AUTOPLAY (Immediate Iframe) -->
+                    <iframe
+                        src="https://www.youtube.com/embed/<?php echo esc_attr($video_id); ?>?autoplay=1&mute=1&loop=1&playlist=<?php echo esc_attr($video_id); ?>&rel=0&controls=0"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                <?php else: ?>
+                    <!-- OPTION B: LAZY LOAD (Image Facade) -->
+                    <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
+                        style="cursor: pointer; height: 100%; width: 100%; position: absolute; top: 0; left: 0;">
+                        <img src="<?php echo esc_url($yt_thumb); ?>" alt="Product Video"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
 
-                <!-- The Thumbnail Image -->
-                <img src="<?php echo esc_url($yt_thumb); ?>" alt="Product Video"
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
-
-                <!-- The SVG Play Button -->
-                <div class="tubebay-play-button"
-                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 68px; height: 48px; transition: all 0.2s ease-in-out;">
-                    <svg viewBox="0 0 68 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                        <path class="tubebay-play-bg"
-                            d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"
-                            fill="#212121" fill-opacity="0.8"></path>
-                        <path d="M 45,24 27,14 27,34" fill="#fff"></path>
-                    </svg>
-                </div>
+                        <!-- The SVG Play Button -->
+                        <div class="tubebay-play-button"
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 68px; height: 48px; transition: all 0.2s ease-in-out;">
+                            <svg viewBox="0 0 68 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                <path class="tubebay-play-bg"
+                                    d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"
+                                    fill="#212121" fill-opacity="0.8"></path>
+                                <path d="M 45,24 27,14 27,34" fill="#fff"></path>
+                            </svg>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
             </div>
-
         </div>
         <?php
         $video_slide_html = ob_get_clean();
@@ -221,49 +237,67 @@ class WooCommerce
     {
         // 1. DO NOT run this on the single product page (we already handle that), Cart, or Checkout pages.
         if (is_singular('product') || is_cart() || is_checkout()) {
-            tubebay_log('WooCommerce: Skipping shop page for product ID ' . $product->get_id(), 'debug');
             return $html;
         }
 
         // 2. Get the video ID and placement setting from the product object
         $video_id = $product->get_meta('_tubebay_video_id');
 
-        // 3. If no video, or placement isn't main image, show normal image
+        // 3. If no video, show normal image
         if (empty($video_id)) {
-
-            tubebay_log('WooCommerce: Video ID: ' . $video_id, 'debug');
-            tubebay_log('WooCommerce: Skipping shop page for product ' . $product->get_name() . ' ID ' . $product->get_id(), 'debug');
             return $html;
         }
 
-        // 4. Get the high-quality YouTube Thumbnail
+        // 4. Check for Autoplay (respect product override with global fallback)
+        $is_autoplay = $product->get_meta('_tubebay_muted_autoplay');
+        if ($is_autoplay === '') {
+            $is_autoplay = Settings::get('muted_autoplay');
+        }
+        $is_autoplay = filter_var($is_autoplay, FILTER_VALIDATE_BOOLEAN);
+
+        // 5. Get the YouTube Thumbnail
         $yt_thumb = 'https://i.ytimg.com/vi/' . esc_attr($video_id) . '/hqdefault.jpg';
 
-        // 5. Build the exact same Facade HTML
+        tubebay_log('WooCommerce: Processing shop page image for product ID ' . $product->get_id() . ( $is_autoplay ? ' (Autoplay ON)' : ' (Lazy Load ON)' ), 'info');
+
+        // 6. Build the HTML
         ob_start();
         ?>
-        <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
-            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; cursor: pointer; background: #000; border-radius: 8px; margin-bottom: 10px;">
+        <div class="tubebay-video-wrapper"
+            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; background: #000; border-radius: 8px; margin-bottom: 10px;">
 
-            <!-- The Thumbnail Image -->
-            <img src="<?php echo esc_url($yt_thumb); ?>" alt="<?php echo esc_attr($product->get_name()); ?> Video"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; margin: 0;" />
+            <?php if ($is_autoplay) : ?>
+                <!-- OPTION A: MUTED AUTOPLAY (Immediate Iframe) -->
+                <iframe
+                    src="https://www.youtube.com/embed/<?php echo esc_attr($video_id); ?>?autoplay=1&mute=1&loop=1&playlist=<?php echo esc_attr($video_id); ?>&rel=0&controls=0"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            <?php else : ?>
+                <!-- OPTION B: LAZY LOAD (Image Facade) -->
+                <div class="tubebay-video-facade" data-video-id="<?php echo esc_attr($video_id); ?>"
+                    style="cursor: pointer; height: 100%; width: 100%; position: absolute; top: 0; left: 0;">
+                    <img src="<?php echo esc_url($yt_thumb); ?>" alt="<?php echo esc_attr($product->get_name()); ?> Video"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; margin: 0;" />
 
-            <!-- The SVG Play Button -->
-            <div class="tubebay-play-button"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 35px; transition: all 0.2s ease-in-out;">
-                <svg viewBox="0 0 68 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <path class="tubebay-play-bg"
-                        d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"
-                        fill="#212121" fill-opacity="0.8"></path>
-                    <path d="M 45,24 27,14 27,34" fill="#fff"></path>
-                </svg>
-            </div>
+                    <!-- The SVG Play Button -->
+                    <div class="tubebay-play-button"
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 35px; transition: all 0.2s ease-in-out;">
+                        <svg viewBox="0 0 68 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path class="tubebay-play-bg"
+                                d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z"
+                                fill="#212121" fill-opacity="0.8"></path>
+                            <path d="M 45,24 27,14 27,34" fill="#fff"></path>
+                        </svg>
+                    </div>
+                </div>
+            <?php endif; ?>
 
         </div>
         <?php
 
-        // Return our Facade INSTEAD of the normal WooCommerce image
+        // Return our video block INSTEAD of the normal WooCommerce image
         return ob_get_clean();
     }
 }

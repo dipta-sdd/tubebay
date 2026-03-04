@@ -59,8 +59,9 @@ jQuery(document).ready(function ($) {
         $('#tubebay_video_title').val('');
         $('#tubebay_video_thumbnail').val('');
 
-        $('#tubebay-selected-video-container').addClass('hidden');
-        $('#tubebay-add-video-container').removeClass('hidden');
+        $('#tubebay-selected-video-container').addClass('tubebay-hidden');
+        $('#tubebay-add-video-container').removeClass('tubebay-hidden');
+        $('#tubebay-autoplay-setting').addClass('tubebay-hidden');
     });
 
     // Handle Search Input with debounce
@@ -143,8 +144,9 @@ jQuery(document).ready(function ($) {
                         $('#tubebay_video_title_display').text(vidTitle);
                         $('#tubebay_video_thumbnail_img').attr('src', vidThumb);
 
-                        $('#tubebay-selected-video-container').removeClass('hidden');
-                        $('#tubebay-add-video-container').addClass('hidden');
+                        $('#tubebay-selected-video-container').removeClass('tubebay-hidden');
+                        $('#tubebay-add-video-container').addClass('tubebay-hidden');
+                        $('#tubebay-autoplay-setting').removeClass('tubebay-hidden');
 
                         hideModal();
                     });

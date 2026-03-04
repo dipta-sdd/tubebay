@@ -184,7 +184,7 @@ class ProductMetabox
                 value="<?php echo esc_attr($video_thumb); ?>" />
             <input type="hidden" name="tubebay_display_location" value="<?php echo esc_attr($display_location); ?>" />
 
-            <div id="tubebay-selected-video-container" class="<?php echo empty($video_id) ? 'hidden' : ''; ?>">
+            <div id="tubebay-selected-video-container" class="<?php echo empty($video_id) ? 'tubebay-hidden' : ''; ?>">
                 <div class="tubebay-video-card">
                     <div class="tubebay-video-thumbnail-wrap">
                         <img id="tubebay_video_thumbnail_img" src="<?php echo esc_url($video_thumb); ?>"
@@ -208,7 +208,7 @@ class ProductMetabox
             </div>
 
             <?php if ($is_connected) : ?>
-            <div id="tubebay-add-video-container" class="<?php echo !empty($video_id) ? 'hidden' : ''; ?>">
+            <div id="tubebay-add-video-container" class="<?php echo !empty($video_id) ? 'tubebay-hidden' : ''; ?>">
                 <button type="button" class="button button-primary" id="tubebay_select_video_btn">
                     <?php esc_html_e('Select Video from Library', 'tubebay'); ?>
                 </button>
@@ -225,22 +225,23 @@ class ProductMetabox
             <?php endif; ?>
             <?php endif; ?>
 
-            <hr />
-
-            <div class="tubebay-setting-row">
-                <div class="tubebay-setting-label">
-                    <strong>
-                        <?php esc_html_e('Muted Autoplay', 'tubebay'); ?>
-                    </strong>
-                    <p class="description">
-                        <?php esc_html_e('Video plays automatically without sound', 'tubebay'); ?>
-                    </p>
-                </div>
-                <div class="tubebay-setting-control">
-                    <label class="tubebay-switch">
-                        <input type="checkbox" name="tubebay_muted_autoplay" value="1" <?php checked($muted_autoplay, '1'); ?> />
-                        <span class="tubebay-slider tubebay-round"></span>
-                    </label>
+            <div id="tubebay-autoplay-setting" class="<?php echo empty($video_id) ? 'tubebay-hidden' : ''; ?>">
+                <hr />
+                <div class="tubebay-setting-row">
+                    <div class="tubebay-setting-label">
+                        <strong>
+                            <?php esc_html_e('Muted Autoplay', 'tubebay'); ?>
+                        </strong>
+                        <p class="description">
+                            <?php esc_html_e('Video plays automatically without sound', 'tubebay'); ?>
+                        </p>
+                    </div>
+                    <div class="tubebay-setting-control">
+                        <label class="tubebay-switch">
+                            <input type="checkbox" name="tubebay_muted_autoplay" value="1" <?php checked($muted_autoplay, '1'); ?> />
+                            <span class="tubebay-slider tubebay-round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -349,5 +350,7 @@ class ProductMetabox
         $muted_autoplay = isset($_POST['tubebay_muted_autoplay']) ? '1' : '0';
         update_post_meta($post_id, '_tubebay_muted_autoplay', $muted_autoplay);
         tubebay_log('ProductMetabox: Saved muted_autoplay=' . $muted_autoplay . ' for product ID ' . $post_id, 'debug');
+
+        return $post_id;
     }
 }

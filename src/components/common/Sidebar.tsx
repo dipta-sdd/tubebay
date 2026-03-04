@@ -36,7 +36,7 @@ const Sidebar: FC = () => {
       icon: <ChannelLibraryIcon />,
     },
     {
-      label: "TubeBay Settings",
+      label: "Settings",
       path: "/settings",
       icon: <SettingsIcon />,
     },
