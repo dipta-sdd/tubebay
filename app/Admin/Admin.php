@@ -141,6 +141,16 @@ class Admin
 		$this->menu_info = array(
 			'menu_slug' => TUBEBAY_PLUGIN_NAME
 		);
+
+		// Add Videos submenu under Products
+		add_submenu_page(
+			'edit.php?post_type=product',
+			esc_html__('Videos', 'tubebay'),
+			esc_html__('Videos', 'tubebay'),
+			'manage_tubebay',
+			TUBEBAY_PLUGIN_NAME,
+			array($this, 'add_setting_root_div')
+		);
 	}
 
 	/**
@@ -153,7 +163,10 @@ class Admin
 	public function is_menu_page()
 	{
 		$screen = get_current_screen();
-		$admin_scripts_bases = array('toplevel_page_' . TUBEBAY_PLUGIN_NAME);
+		$admin_scripts_bases = array(
+			'toplevel_page_' . TUBEBAY_PLUGIN_NAME,
+			'product_page_' . TUBEBAY_PLUGIN_NAME,
+		);
 		if (!(isset($screen->base) && in_array($screen->base, $admin_scripts_bases, true))) {
 			return false;
 		}
