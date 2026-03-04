@@ -95,6 +95,9 @@ export default function ChannelLibrary() {
         success: boolean;
         videos: VideoData[];
         last_sync_time: string;
+        channel_name: string;
+        thumbnails_default: string;
+        thumbnails_medium: string;
       }>({
         path: "/tubebay/v1/youtube/sync-library",
       });
@@ -105,10 +108,20 @@ export default function ChannelLibrary() {
         setSortBy("date_desc");
         setVideos(response.videos);
         // sync with context
-        if(response.last_sync_time){
+        const updateData: any = {};
+        if (response.last_sync_time)
+          updateData.last_sync_time = Number(response.last_sync_time);
+        if (response.channel_name)
+          updateData.channel_name = response.channel_name;
+        if (response.thumbnails_default)
+          updateData.thumbnails_default = response.thumbnails_default;
+        if (response.thumbnails_medium)
+          updateData.thumbnails_medium = response.thumbnails_medium;
+
+        if (Object.keys(updateData).length > 0) {
           updateStore("plugin_settings", {
             ...plugin_settings,
-            last_sync_time: Number(response.last_sync_time),
+            ...updateData,
           });
         }
 

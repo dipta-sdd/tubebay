@@ -17,105 +17,99 @@ interface PlacementSettingsCardProps {
 }
 
 const PLACEMENT_OPTIONS = [
+  // --- PRIMARY VISUALS ---
   {
     id: "replace_main_image",
-    label: "Replace Main Image",
-    description: "Replaces the primary product photo with the video",
-  },
-  {
-    id: "woocommerce_before_single_product",
-    label: "Before Single Product",
-    description: "Top of the product page wrapper",
-  },
-  {
-    id: "woocommerce_before_single_product_summary",
-    label: "Before Product Summary",
-    description: "Above the image and details columns",
+    label: "Main Gallery (First Slide)",
+    description: "The video becomes the main product image/slide",
   },
   {
     id: "woocommerce_product_thumbnails",
-    label: "Product Thumbnails",
-    description: "Inside the product gallery",
+    label: "Below Main Image",
+    description: "Appears alongside the gallery thumbnails",
   },
-  {
-    id: "woocommerce_single_product_summary",
-    label: "Single Product Summary",
-    description: "Top of the product details column",
-  },
+
+  // --- BUY BOX (High Conversion Areas) ---
   {
     id: "woocommerce_before_add_to_cart_form",
-    label: "Before Add to Cart Form",
-    description: "Before the entire add to cart form",
-  },
-  {
-    id: "woocommerce_before_variations_form",
-    label: "Before Variations Form",
-    description: "Inside form, before variation options",
+    label: "Above Purchase Options",
+    description: "Before price, variations, and add to cart",
   },
   {
     id: "woocommerce_before_add_to_cart_button",
-    label: "Before Add to Cart Button",
-    description: "Before the add to cart button",
-  },
-  {
-    id: "woocommerce_before_single_variation",
-    label: "Before Single Variation",
-    description: "Before selected variation details",
-  },
-  {
-    id: "woocommerce_single_variation",
-    label: "Single Variation",
-    description: "Where variation price/description appears",
-  },
-  {
-    id: "woocommerce_before_add_to_cart_quantity",
-    label: "Before Quantity",
-    description: "Before the quantity input",
-  },
-  {
-    id: "woocommerce_after_single_variation",
-    label: "After Single Variation",
-    description: "After selected variation details",
+    label: "Above 'Add to Cart' Button",
+    description: "Between the quantity input and the button",
   },
   {
     id: "woocommerce_after_add_to_cart_button",
-    label: "After Add to Cart Button",
-    description: "After the add to cart button",
-  },
-  {
-    id: "woocommerce_after_variations_form",
-    label: "After Variations Form",
-    description: "After the variations section",
+    label: "Below 'Add to Cart' Button",
+    description: "Directly under the buy button (High Conversion)",
   },
   {
     id: "woocommerce_after_add_to_cart_form",
-    label: "After Add to Cart Form",
-    description: "After the entire add to cart form",
+    label: "Below Purchase Options",
+    description: "After the entire buying section",
+  },
+
+  // --- PRODUCT DETAILS (Right Column) ---
+  {
+    id: "woocommerce_single_product_summary",
+    label: "Top of Product Details",
+    description: "Top of the right-hand text column",
+  },
+  {
+    id: "woocommerce_before_single_product_summary",
+    label: "Above Title & Price",
+    description: "Above the product title",
   },
   {
     id: "woocommerce_product_meta_start",
-    label: "Product Meta Start",
-    description: "Before SKU, Category, Tags",
+    label: "Above SKU & Categories",
+    description: "Before the meta information section",
   },
   {
     id: "woocommerce_product_meta_end",
-    label: "Product Meta End",
-    description: "After SKU, Category, Tags",
+    label: "Below SKU & Categories",
+    description: "After the meta information section",
   },
   {
     id: "woocommerce_share",
-    label: "Product Share",
-    description: "At the bottom of product meta",
+    label: "Social Share Area",
+    description: "Where social media icons usually appear",
+  },
+
+  // --- VARIATIONS (Advanced) ---
+  // {
+  //   id: "woocommerce_before_variations_form",
+  //   label: "Above Variation Selectors",
+  //   description: "Before the dropdowns for Size/Color",
+  // },
+  // {
+  //   id: "woocommerce_after_variations_form",
+  //   label: "Below Variation Selectors",
+  //   description: "After the dropdowns for Size/Color",
+  // },
+  // {
+  //   id: "woocommerce_single_variation",
+  //   label: "Inside Variation Details",
+  //   description: "Appears only when a variation is selected",
+  // },
+
+  // --- PAGE LAYOUT (Full Width) ---
+  {
+    id: "woocommerce_before_single_product",
+    label: "Top of Page (Full Width)",
+    description: "Very top of the content area",
   },
   {
     id: "woocommerce_after_single_product_summary",
-    label: "After Product Summary",
-    description: "Full width below details/tabs",
+    label: "Middle of Page (Above Tabs)",
+    description: "Full width area between details and tabs",
   },
   {
     id: "woocommerce_after_single_product",
-    label: "After Single Product",
-    description: "Very bottom of the product page",
+    label: "Bottom of Page (Footer)",
+    description: "Very bottom, below Related Products",
   },
 ];
 

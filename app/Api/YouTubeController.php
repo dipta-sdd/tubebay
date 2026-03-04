@@ -164,6 +164,9 @@ class YouTubeController extends ApiController
             'message' => __('Library synced successfully.', 'tubebay'),
             'videos' => $response_videos,
             'last_sync_time' => \TubeBay\Helper\Settings::get_last_sync_time(),
+            'channel_name' => \TubeBay\Helper\Settings::get('channel_name'),
+            'thumbnails_default' => \TubeBay\Helper\Settings::get('thumbnails_default'),
+            'thumbnails_medium' => \TubeBay\Helper\Settings::get('thumbnails_medium'),
         ), 200);
     }
 
@@ -202,6 +205,9 @@ class YouTubeController extends ApiController
             'success' => true,
             'message' => __('Library synced successfully.', 'tubebay'),
             'last_sync_time' => \TubeBay\Helper\Settings::get_last_sync_time(),
+            'channel_name' => \TubeBay\Helper\Settings::get('channel_name'),
+            'thumbnails_default' => \TubeBay\Helper\Settings::get('thumbnails_default'),
+            'thumbnails_medium' => \TubeBay\Helper\Settings::get('thumbnails_medium'),
         ), 200);
     }
 

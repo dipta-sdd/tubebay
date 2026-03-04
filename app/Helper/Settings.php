@@ -53,8 +53,8 @@ class Settings
         'cache_duration' => 12,
         'auto_sync' => true,
         'video_placement' => 'woocommerce_product_thumbnails',
-        'muted_autoplay' => true,
-        'show_controls' => true,
+        'muted_autoplay' => false,
+        'show_controls' => false,
         'is_onboarding_completed' => false,
         'last_sync_time' => 0,
 

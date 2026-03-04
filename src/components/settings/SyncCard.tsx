@@ -48,12 +48,12 @@ export default function SyncCard({
               Keep your video library up-to-date automatically. TubeBay will
               sync new videos from your YouTube channel every 24 hours.
             </p>
-            <div className="tubebay-flex tubebay-items-center tubebay-gap-[6px] tubebay-mt-[4px]">
+            {/* <div className="tubebay-flex tubebay-items-center tubebay-gap-[6px] tubebay-mt-[4px]">
               <ClockIcon size={14} className="tubebay-text-gray-400" />
               <span className="tubebay-text-[12px] tubebay-text-gray-400">
                 Next sync: Today at 3:00 AM
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
         <Switch

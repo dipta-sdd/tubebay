@@ -69,12 +69,12 @@ export default function ConnectAccountCard({
 
             <div className="tubebay-text-center">
               <h3 className="tubebay-text-[18px] tubebay-font-bold tubebay-text-[#111827] tubebay-mb-[4px]">
-                Youtube Channel
+                {settings.channel_name}
               </h3>
               <div className="tubebay-flex tubebay-items-center tubebay-justify-center tubebay-gap-[8px]">
-                <span className="tubebay-text-[14px] tubebay-text-gray-600">
+                {/* <span className="tubebay-text-[14px] tubebay-text-gray-600">
                   {settings.channel_name}
-                </span>
+                </span> */}
                 <span
                   className={`tubebay-text-[12px] tubebay-font-bold tubebay-px-[8px] tubebay-py-[2px] tubebay-rounded-full ${
                     settings.connection_status === "connected"

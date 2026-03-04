@@ -116,7 +116,7 @@ class Channel
         tubebay_log('fetch_videos_from_api: Requesting channel details for uploads playlist', 'debug');
         $channel_url = add_query_arg([
             'id' => $this->channel_id,
-            'part' => 'contentDetails',
+            'part' => 'snippet,contentDetails',
             'key' => $this->api_key,
         ], 'https://www.googleapis.com/youtube/v3/channels');
 
@@ -139,7 +139,17 @@ class Channel
             return new \WP_Error('no_uploads_playlist', __('Could not find the uploads playlist for this channel.', 'tubebay'));
         }
 
-        $uploads_playlist_id = $channel_body['items'][0]['contentDetails']['relatedPlaylists']['uploads'];
+        $channel_data = $channel_body['items'][0];
+        $uploads_playlist_id = $channel_data['contentDetails']['relatedPlaylists']['uploads'];
+
+        // Sync channel snippet info
+        if (!empty($channel_data['snippet'])) {
+            $snippet = $channel_data['snippet'];
+            Settings::set('channel_name', $snippet['title'] ?? '');
+            Settings::set('thumbnails_default', $snippet['thumbnails']['default']['url'] ?? '');
+            Settings::set('thumbnails_medium', $snippet['thumbnails']['medium']['url'] ?? '');
+            tubebay_log('fetch_videos_from_api: Synced channel details: ' . ($snippet['title'] ?? 'no title'), 'debug');
+        }
 
         // 2. Get up to 50 videos from the uploads playlist
         tubebay_log("fetch_videos_from_api: Fetching videos from playlist {$uploads_playlist_id}", 'debug');
