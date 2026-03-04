@@ -7,6 +7,7 @@ import { WpabProvider } from "./store/wpabStore";
 import { ToastProvider } from "./store/toast/use-toast";
 import Logs from "./pages/Logs";
 import { ToastContainer } from "./components/common/ToastContainer";
+import { useMenuSync } from "./utils/useMenuSync";
 
 function App() {
   return (
@@ -14,16 +15,18 @@ function App() {
       <ToastProvider>
         <ToastContainer />
         <HashRouter>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<ChannelLibrary />} />
-              <Route path="onboarding" element={<Onboarding />} />
-              <Route path="logs" element={<Logs />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="library" element={<ChannelLibrary />} />
-              {/* Add your routes here */}
-            </Route>
-          </Routes>
+          <MenuSyncProvider>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<ChannelLibrary />} />
+                <Route path="onboarding" element={<Onboarding />} />
+                <Route path="logs" element={<Logs />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="library" element={<ChannelLibrary />} />
+                {/* Add your routes here */}
+              </Route>
+            </Routes>
+          </MenuSyncProvider>
         </HashRouter>
       </ToastProvider>
     </WpabProvider>
@@ -31,3 +34,7 @@ function App() {
 }
 
 export default App;
+const MenuSyncProvider = ({ children }: { children: React.ReactNode }) => {
+  useMenuSync();
+  return <>{children}</>;
+};
