@@ -148,9 +148,21 @@ class Admin
 			esc_html__('Videos', 'tubebay'),
 			esc_html__('Videos', 'tubebay'),
 			'manage_tubebay',
-			TUBEBAY_PLUGIN_NAME,
-			array($this, 'add_setting_root_div')
+			'tubebay-videos-redirect',
+			array($this, 'redirect_to_tubebay')
 		);
+	}
+
+	/**
+	 * Redirect to the main TubeBay dashboard.
+	 *
+	 * @return void
+	 */
+	public function redirect_to_tubebay()
+	{
+		$redirect_url = admin_url('admin.php?page=' . TUBEBAY_PLUGIN_NAME);
+		wp_safe_redirect($redirect_url);
+		exit;
 	}
 
 	/**

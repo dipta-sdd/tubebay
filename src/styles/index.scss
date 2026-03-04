@@ -262,7 +262,7 @@
   position: relative;
   padding: 16px 20px;
   border-radius: 12px;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: flex-start;
@@ -271,35 +271,31 @@
   overflow: hidden;
   border: 1px solid #e5e7eb;
   border-left-width: 6px;
+  backdrop-filter: blur(8px);
   
   opacity: 0;
-  transform: translateY(20px);
-  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: toastSlideIn 0.35s ease-out forwards;
 }
 
 .toast--closing {
-  animation: toastSlideOut 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  animation: toastSlideOut 0.3s ease-in forwards;
 }
 
 @keyframes toastSlideIn {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes toastSlideOut {
   from {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateY(10px) scale(0.95);
   }
 }
 
