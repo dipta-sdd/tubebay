@@ -300,7 +300,7 @@ class ProductMetabox
             return $post_id;
         }
 
-        $nonce = $_POST['tubebay_product_metabox_nonce_field'];
+        $nonce = sanitize_text_field(wp_unslash($_POST['tubebay_product_metabox_nonce_field']));
 
         // Verify that the nonce is valid
         if (!wp_verify_nonce($nonce, 'tubebay_product_metabox_nonce')) {
@@ -314,7 +314,7 @@ class ProductMetabox
         }
 
         // Check the user's permissions
-        if ('product' === $_POST['post_type']) {
+        if (isset($_POST['post_type']) && 'product' === sanitize_text_field(wp_unslash($_POST['post_type']))) {
             if (!current_user_can('edit_post', $post_id)) {
                 return $post_id;
             }
@@ -322,7 +322,7 @@ class ProductMetabox
 
         // Santize and save Video ID
         if (isset($_POST['tubebay_video_id'])) {
-            $video_id = sanitize_text_field($_POST['tubebay_video_id']);
+            $video_id = sanitize_text_field(wp_unslash($_POST['tubebay_video_id']));
             update_post_meta($post_id, '_tubebay_video_id', $video_id);
 
             // If video ID is cleared, clear other video data too
@@ -333,17 +333,17 @@ class ProductMetabox
             } else {
                 tubebay_log('ProductMetabox: Saved video assignment ' . $video_id . ' for product ID ' . $post_id, 'info');
                 if (isset($_POST['tubebay_video_title'])) {
-                    update_post_meta($post_id, '_tubebay_video_title', sanitize_text_field($_POST['tubebay_video_title']));
+                    update_post_meta($post_id, '_tubebay_video_title', sanitize_text_field(wp_unslash($_POST['tubebay_video_title'])));
                 }
                 if (isset($_POST['tubebay_video_thumbnail'])) {
-                    update_post_meta($post_id, '_tubebay_video_thumbnail', esc_url_raw($_POST['tubebay_video_thumbnail']));
+                    update_post_meta($post_id, '_tubebay_video_thumbnail', esc_url_raw(wp_unslash($_POST['tubebay_video_thumbnail'])));
                 }
             }
         }
 
         // Display Location (hidden field for now)
         if (isset($_POST['tubebay_display_location'])) {
-            update_post_meta($post_id, '_tubebay_display_location', sanitize_text_field($_POST['tubebay_display_location']));
+            update_post_meta($post_id, '_tubebay_display_location', sanitize_text_field(wp_unslash($_POST['tubebay_display_location'])));
         }
 
         // Muted Autoplay Toggle (checkboxes only exist in $_POST if checked)

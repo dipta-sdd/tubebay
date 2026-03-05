@@ -64,38 +64,8 @@ class DbManager
     public function create_tables()
     {
         tubebay_log('Creating TubeBay custom database tables', 'info');
-        $this->create_example_table();
+        // $this->create_example_table();
     }
 
-    /**
-     * Create an example items table.
-     *
-     * Demonstrates the pattern for creating custom tables.
-     * Replace this with your own table schema.
-     *
-     * @return void
-     * @since 1.0.0
-     * @access private
-     */
-    private function create_example_table()
-    {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'tubebay_items';
-        $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE {$table_name} (
-            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            title varchar(255) NOT NULL,
-            content longtext DEFAULT NULL,
-            status varchar(20) NOT NULL DEFAULT 'draft',
-            created_by bigint(20) UNSIGNED NOT NULL DEFAULT 0,
-            date_created datetime NOT NULL,
-            date_modified datetime NOT NULL,
-            PRIMARY KEY  (id),
-            KEY status (status)
-        ) $charset_collate;";
-
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta($sql);
-    }
 }

@@ -159,7 +159,7 @@ class LogController extends ApiController
         if ($files) {
             foreach ($files as $file) {
                 if (file_exists($file)) {
-                    unlink($file);
+                    wp_delete_file($file);
                     tubebay_log('LogController: Deleted log file: ' . basename($file), 'debug');
                 }
             }

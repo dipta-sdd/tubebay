@@ -220,7 +220,7 @@ class SettingsController extends ApiController
         tubebay_log('Delete All Data: Dropped table ' . $table_name, 'debug');
 
         // 2. Delete all tubebay_ options
-        $wpdb->query(
+        $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
                 $wpdb->esc_like('tubebay_') . '%'
@@ -240,7 +240,7 @@ class SettingsController extends ApiController
             '_tubebay_placement',
         );
         foreach ($meta_keys as $key) {
-            $wpdb->query(
+            $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->prepare(
                     "DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s",
                     $key
@@ -250,7 +250,7 @@ class SettingsController extends ApiController
         tubebay_log('Delete All Data: Deleted all product meta', 'debug');
 
         // 4. Delete transients
-        $wpdb->query(
+        $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
                 $wpdb->esc_like('_transient_tubebay_') . '%',

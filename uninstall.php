@@ -31,31 +31,11 @@ function tubebay_run_uninstall()
 		return;
 	}
 
-	tubebay_drop_custom_tables();
 	tubebay_delete_plugin_options();
 	tubebay_delete_product_meta();
 	tubebay_delete_transients();
 	tubebay_remove_capabilities();
 	tubebay_unschedule_cron();
-}
-
-/**
- * Drop Custom Database Tables.
- *
- * @since  1.0.0
- * @return void
- */
-function tubebay_drop_custom_tables()
-{
-	global $wpdb;
-
-	$tables = array(
-		$wpdb->prefix . 'tubebay_items',
-	);
-
-	foreach ($tables as $table) {
-		$wpdb->query("DROP TABLE IF EXISTS {$table}"); // phpcs:ignore
-	}
 }
 
 /**
@@ -69,7 +49,7 @@ function tubebay_delete_plugin_options()
 	global $wpdb;
 
 	// Delete all options starting with our prefix
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
 			$wpdb->esc_like(TUBEBAY_OPTION_PREFIX) . '%'
@@ -100,7 +80,7 @@ function tubebay_delete_product_meta()
 	);
 
 	foreach ($meta_keys as $key) {
-		$wpdb->query(
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s",
 				$key
@@ -119,7 +99,7 @@ function tubebay_delete_transients()
 {
 	global $wpdb;
 
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
 			$wpdb->esc_like('_transient_tubebay_') . '%',

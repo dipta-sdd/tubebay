@@ -47,7 +47,7 @@ if (!function_exists('tubebay_log')) {
 			$formatted_message = $message;
 		}
 
-		$log_level = is_string($level) ? strtoupper($level) : (is_array($level) || is_object($level) ? print_r($level, true) : '');
+		$log_level = is_string($level) ? strtoupper($level) : (is_array($level) || is_object($level) ? print_r($level, true) : ''); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		$log_entry = sprintf(
 			"[%s] [%s]: %s\n",
 			current_time('mysql'),
