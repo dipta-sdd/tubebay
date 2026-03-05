@@ -11,7 +11,12 @@ import {
   SettingsIcon,
   HelpStethoscopeIcon,
   ShoppingBagIcon,
+  WifiIcon,
+  YouTubeIcon,
+  ClockIcon,
 } from "./Icons";
+import { getConnectionStatusText } from "../../utils/status_helpers";
+import { timeDiff } from "../../utils/Dates";
 // @ts-ignore
 import logo_32px from "./../../../assets/img/TubeBay.svg";
 
@@ -31,7 +36,9 @@ interface SidebarNavItem {
 
 const Navbar: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const { products_url } = useWpabStore();
+  const { products_url, plugin_settings } = useWpabStore();
+  const isConnected = plugin_settings?.connection_status === "connected";
+  const channelName = plugin_settings?.channel_name || "";
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = "/" + (location.pathname.split("/")[1] || "");
@@ -139,12 +146,12 @@ const Navbar: FC = () => {
         <>
           {/* Backdrop */}
           <div
-            className="tubebay-fixed tubebay-top-0 tubebay-left-0 tubebay-w-full tubebay-h-full tubebay-bg-black/50 tubebay-z-[9998] lg:tubebay-hidden"
+            className="tubebay-fixed tubebay-top-0 tubebay-left-0 tubebay-w-full tubebay-h-full tubebay-bg-black/50 tubebay-z-[99999] lg:tubebay-hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
           {/* Slide-in drawer */}
-          <div className="tubebay-fixed tubebay-top-0 tubebay-right-0 tubebay-w-[280px] tubebay-h-full tubebay-bg-white tubebay-z-[9999] tubebay-shadow-2xl tubebay-flex tubebay-flex-col tubebay-animate-slide-in-right lg:tubebay-hidden">
+          <div className="tubebay-fixed tubebay-top-0 tubebay-right-0 tubebay-w-[280px] tubebay-h-full tubebay-bg-white tubebay-z-[100000] tubebay-shadow-2xl tubebay-flex tubebay-flex-col tubebay-animate-slide-in-right lg:tubebay-hidden">
             {/* Drawer header */}
             <div className="tubebay-flex tubebay-items-center tubebay-justify-between tubebay-px-[20px] tubebay-py-[16px] tubebay-border-b tubebay-border-gray-200">
               <span className="tubebay-font-bold tubebay-text-[16px] tubebay-text-gray-900">
@@ -202,6 +209,51 @@ const Navbar: FC = () => {
                 );
               })}
             </nav>
+
+            {/* Connection Status (mobile drawer) */}
+            <div className="tubebay-border-t tubebay-border-gray-200 tubebay-px-[16px] tubebay-py-[12px]">
+              <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-mb-[8px]">
+                <WifiIcon
+                  className={`tubebay-w-[16px] tubebay-h-[16px] ${
+                    isConnected
+                      ? "tubebay-text-green-500"
+                      : "tubebay-text-gray-400"
+                  }`}
+                />
+                <span className="tubebay-text-[13px] tubebay-font-bold tubebay-text-gray-700">
+                  {getConnectionStatusText(plugin_settings.connection_status)}
+                </span>
+              </div>
+
+              {channelName && (
+                <div className="tubebay-flex tubebay-items-center tubebay-gap-[10px] tubebay-bg-gray-50 tubebay-rounded-[10px] tubebay-p-[10px] tubebay-mb-[8px]">
+                  {plugin_settings.thumbnails_default ? (
+                    <img
+                      src={plugin_settings.thumbnails_default}
+                      alt={channelName}
+                      className="tubebay-w-[28px] tubebay-h-[28px] tubebay-rounded-full tubebay-flex-shrink-0 tubebay-object-cover"
+                    />
+                  ) : (
+                    <div className="tubebay-w-[28px] tubebay-h-[28px] tubebay-bg-red-100 tubebay-rounded-full tubebay-flex tubebay-items-center tubebay-justify-center tubebay-text-red-600 tubebay-flex-shrink-0">
+                      <YouTubeIcon size={14} />
+                    </div>
+                  )}
+                  <span className="tubebay-text-[13px] tubebay-font-semibold tubebay-text-gray-800 tubebay-truncate">
+                    {channelName}
+                  </span>
+                </div>
+              )}
+
+              <div className="tubebay-flex tubebay-items-center tubebay-gap-[6px]">
+                <ClockIcon className="tubebay-text-gray-400 tubebay-w-[14px] tubebay-h-[14px]" />
+                <span className="tubebay-text-[12px] tubebay-text-gray-500">
+                  Last sync:{" "}
+                  {isConnected
+                    ? timeDiff(Number(plugin_settings.last_sync_time))
+                    : "Never"}
+                </span>
+              </div>
+            </div>
 
             {/* External links at the bottom of drawer */}
             <div className="tubebay-border-t tubebay-border-gray-200 tubebay-p-[12px] tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
