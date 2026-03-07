@@ -5,11 +5,11 @@
  * Plugin URI:        https://wpanchorbay.com/products/tubebay
  * Source URI:        https://github.com/dipta-sdd/tubebay
  * Description:       Boost your WooCommerce conversions by replacing static product images with high-performance YouTube videos.
- * Requires at least: 5.8
+ * Requires at least: 6.8
  * Requires PHP:      7.4
  * Version:           1.0.0
  * Stable tag:        1.0.0
- * Author:            sankarsan
+ * Author:            WPAnchorBay
  * Author URI:        https://wpanchorbay.com
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html

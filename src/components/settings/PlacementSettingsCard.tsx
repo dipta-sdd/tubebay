@@ -219,46 +219,57 @@ export default function PlacementSettingsCard({
                 }}
               >
                 <div className="tubebay-flex tubebay-flex-col md:tubebay-flex-row tubebay-gap-8 tubebay-my-3">
-                  <div className="tubebay-w-full md:tubebay-w-[320px] tubebay-flex-shrink-0">
-                    <div className="tubebay-mb-4">
-                      <label className="tubebay-block tubebay-text-sm tubebay-font-semibold tubebay-text-gray-800 tubebay-mb-1">
-                        Experiment with Video Positions
-                      </label>
-                      <p className="tubebay-text-[13px] tubebay-text-gray-500 tubebay-leading-relaxed">
-                        Note: Selecting a position updates the preview
-                        immediately. You will still need to save settings to
-                        apply changes globally.
-                      </p>
-                    </div>
+                  <div className="tubebay-flex tubebay-flex-col tubebay-justify-between">
+                    <div className="tubebay-w-full md:tubebay-w-[320px] tubebay-flex-shrink-0">
+                      <div className="tubebay-mb-4">
+                        <label className="tubebay-block tubebay-text-sm tubebay-font-semibold tubebay-text-gray-800 tubebay-mb-1">
+                          Experiment with Video Positions
+                        </label>
+                        <p className="tubebay-text-[13px] tubebay-text-gray-500 tubebay-leading-relaxed">
+                          Note: Selecting a position updates the preview
+                          immediately. You will still need to save settings to
+                          apply changes globally.
+                        </p>
+                      </div>
 
-                    <Select
-                      value={tmpOtherSettings.video_placement || ""}
-                      onChange={(val) =>
-                        setTmpOtherSettings({
-                          ...tmpOtherSettings,
-                          video_placement: val as string,
-                        })
-                      }
-                      options={PLACEMENT_OPTIONS.map((opt) => ({
-                        value: opt.id,
-                        label: opt.label,
-                        labelNode: (
-                          <div className="tubebay-flex tubebay-flex-col tubebay-py-1">
-                            <span className="tubebay-font-bold tubebay-text-[13px]">
-                              {opt.label}
-                            </span>
-                            <span className="tubebay-text-[11px] tubebay-opacity-60 tubebay-leading-tight">
-                              {opt.description}
-                            </span>
-                          </div>
-                        ),
-                      }))}
-                      placeholder="Choose placement..."
-                      enableSearch={true}
-                      border="tubebay-border-gray-200"
-                      color="tubebay-text-gray-700"
-                      fontSize={14}
-                    />
+                      <Select
+                        value={tmpOtherSettings.video_placement || ""}
+                        onChange={(val) =>
+                          setTmpOtherSettings({
+                            ...tmpOtherSettings,
+                            video_placement: val as string,
+                          })
+                        }
+                        options={PLACEMENT_OPTIONS.map((opt) => ({
+                          value: opt.id,
+                          label: opt.label,
+                          labelNode: (
+                            <div className="tubebay-flex tubebay-flex-col tubebay-py-1">
+                              <span className="tubebay-font-bold tubebay-text-[13px]">
+                                {opt.label}
+                              </span>
+                              <span className="tubebay-text-[11px] tubebay-opacity-60 tubebay-leading-tight">
+                                {opt.description}
+                              </span>
+                            </div>
+                          ),
+                        }))}
+                        placeholder="Choose placement..."
+                        enableSearch={true}
+                        border="tubebay-border-gray-200"
+                        color="tubebay-text-gray-700"
+                        fontSize={14}
+                      />
+                    </div>
+                    <Button
+                      variant="solid"
+                      size="small"
+                      className="tubebay-w-max"
+                      onClick={() => setIsPreviewModalOpen(false)}
+
+                    >
+                      Back
+                    </Button>
                   </div>
 
                   <div

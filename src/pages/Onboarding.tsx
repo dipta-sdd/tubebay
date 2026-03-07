@@ -273,12 +273,9 @@ const Onboarding: FC = () => {
   // ─── Welcome Screen (before wizard starts) ───
   if (!wizardStarted) {
     return (
-      <div className="tubebay-py-[64px] tubebay-px-[24px] tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[48px]">
+      <div className="tubebay-py-[32px] tubebay-px-[24px] tubebay-w-full tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-[48px]">
         {/* Header Section */}
         <div className="tubebay-text-center">
-          <div className="tubebay-inline-flex tubebay-items-center tubebay-justify-center tubebay-w-[72px] tubebay-h-[72px] tubebay-rounded-[16px] tubebay-bg-[#ff0000] tubebay-mb-[24px] tubebay-shadow-[0_8px_16px_rgba(255,0,0,0.2)]">
-            <YouTubeFilledIcon size={40} />
-          </div>
           <h1 className="tubebay-text-[48px] tubebay-leading-[48px] tubebay-font-bold tubebay-text-[#111827] tubebay-mb-[12px] tubebay-tracking-tight">
             Welcome to TubeBay
           </h1>
