@@ -11,14 +11,14 @@
  */
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 use TubeBay\Api\LogController;
 
 return array(
-    \TubeBay\Api\SettingsController::class,
-    \TubeBay\Api\YouTubeController::class,
-    LogController::class
+	\TubeBay\Api\SettingsController::class,
+	\TubeBay\Api\YouTubeController::class,
+	LogController::class,
 );

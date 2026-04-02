@@ -1,10 +1,17 @@
 <?php
+/**
+ * REST API Controller for YouTube interactions.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Api
+ */
 
 namespace TubeBay\Api;
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 use WP_REST_Server;
@@ -12,254 +19,287 @@ use WP_REST_Request;
 use WP_REST_Response;
 use TubeBay\Data\Entities\Channel;
 
-class YouTubeController extends ApiController
-{
-    /**
-     * The single instance of the class.
-     *
-     * @var YouTubeController|null
-     * @since 1.0.0
-     */
-    private static $instance = null;
+/**
+ * YouTube API Controller class.
+ */
+class YouTubeController extends ApiController {
 
-    /**
-     * Gets an instance of this object.
-     *
-     * @return YouTubeController
-     * @since 1.0.0
-     */
-    public static function get_instance()
-    {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
+	/**
+	 * The single instance of the class.
+	 *
+	 * @var YouTubeController|null
+	 * @since 1.0.0
+	 */
+	private static $instance = null;
 
-    /**
-     * Register the routes for this controller.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function register_routes()
-    {
-        $namespace = $this->namespace . $this->version;
+	/**
+	 * Gets an instance of this object.
+	 *
+	 * @return YouTubeController
+	 * @since 1.0.0
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
-        // Route to test YouTube Connection
-        register_rest_route($namespace, '/youtube/test-connection', array(
-            array(
-                'methods' => WP_REST_Server::CREATABLE,
-                'callback' => array($this, 'test_connection'),
-                'permission_callback' => array($this, 'get_item_permissions_check'),
-            ),
-        ));
+	/**
+	 * Register the routes for this controller.
+	 *
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public function register_routes() {
+		$namespace = $this->namespace . $this->version;
 
-        // Route to manually sync/refresh the library
-        register_rest_route($namespace, '/youtube/sync-library', array(
-            array(
-                'methods' => WP_REST_Server::READABLE,
-                'callback' => array($this, 'sync_library'),
-                'permission_callback' => array($this, 'get_item_permissions_check'),
-            ),
-        ));
+		// Route to test YouTube Connection.
+		register_rest_route(
+			$namespace,
+			'/youtube/test-connection',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'test_connection' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				),
+			)
+		);
 
-        // Route to manually sync the library returning only status
-        register_rest_route($namespace, '/youtube/sync-library-status', array(
-            array(
-                'methods' => WP_REST_Server::READABLE,
-                'callback' => array($this, 'sync_library_status'),
-                'permission_callback' => array($this, 'get_item_permissions_check'),
-            ),
-        ));
+		// Route to manually sync/refresh the library.
+		register_rest_route(
+			$namespace,
+			'/youtube/sync-library',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'sync_library' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				),
+			)
+		);
 
-        // Route to get cached videos
-        register_rest_route($namespace, '/youtube/videos', array(
-            array(
-                'methods' => WP_REST_Server::READABLE,
-                'callback' => array($this, 'get_videos'),
-                'permission_callback' => array($this, 'get_item_permissions_check'),
-            ),
-        ));
-    }
+		// Route to manually sync the library returning only status.
+		register_rest_route(
+			$namespace,
+			'/youtube/sync-library-status',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'sync_library_status' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				),
+			)
+		);
 
-    /**
-     * Test YouTube API connection.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response|\WP_Error
-     * @since 1.0.0
-     */
-    public function test_connection($request)
-    {
-        $params = $request->get_params();
-        $api_key = $params['api_key'];
-        $channel_id = $params['channel_id'];
+		// Route to get cached videos.
+		register_rest_route(
+			$namespace,
+			'/youtube/videos',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_videos' ),
+					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				),
+			)
+		);
+	}
 
-        tubebay_log("Testing connection for Channel ID: {$channel_id}", 'debug');
+	/**
+	 * Test YouTube API connection.
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return \WP_REST_Response|\WP_Error The REST response or error.
+	 * @since 1.0.0
+	 */
+	public function test_connection( $request ) {
+		$params     = $request->get_params();
+		$api_key    = $params['api_key'];
+		$channel_id = $params['channel_id'];
 
-        $channel = new Channel(array(
-            'api_key' => $api_key ? $api_key : '--',
-            'channel_id' => $channel_id ? $channel_id : '--'
-        ));
+		tubebay_log( "Testing connection for Channel ID: {$channel_id}", 'debug' );
 
-        if (!$channel->is_configured()) {
-            tubebay_log('Connection test failed: API Key or Channel ID missing', 'error');
-            return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
-        }
+		$channel = new Channel(
+			array(
+				'api_key'    => $api_key ? $api_key : '--',
+				'channel_id' => $channel_id ? $channel_id : '--',
+			)
+		);
 
-        $result = $channel->test_connection();
+		if ( ! $channel->is_configured() ) {
+			tubebay_log( 'Connection test failed: API Key or Channel ID missing', 'error' );
+			return new \WP_Error( 'not_configured', __( 'API Key or Channel ID missing.', 'tubebay' ), array( 'status' => 400 ) );
+		}
 
-        if (is_wp_error($result)) {
-            tubebay_log('Connection test failed: ' . $result->get_error_message(), 'error');
-            return new \WP_Error('connection_failed', $result->get_error_message(), array('status' => 400));
-        }
+		$result = $channel->test_connection();
 
-        tubebay_log("Connection test successful for channel: " . ($result['title'] ?? 'Unknown'), 'info');
+		if ( is_wp_error( $result ) ) {
+			tubebay_log( 'Connection test failed: ' . $result->get_error_message(), 'error' );
+			return new \WP_Error( 'connection_failed', $result->get_error_message(), array( 'status' => 400 ) );
+		}
 
-        return new WP_REST_Response(array(
-            'success' => true,
-            'message' => __('Connection successful!', 'tubebay'),
-            'channel_name' => $result['title'] ?? '',
-            'channel_description' => $result['description'] ?? '',
-        ), 200);
-    }
+		tubebay_log( 'Connection test successful for channel: ' . ( $result['title'] ?? 'Unknown' ), 'info' );
+
+		return new WP_REST_Response(
+			array(
+				'success'             => true,
+				'message'             => __( 'Connection successful!', 'tubebay' ),
+				'channel_name'        => $result['title'] ?? '',
+				'channel_description' => $result['description'] ?? '',
+			),
+			200
+		);
+	}
 
 
-    /**
-     * Sync the YouTube library manually.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response|\WP_Error
-     * @since 1.0.0
-     */
-    public function sync_library($request)
-    {
-        tubebay_log('Manual sync_library request received', 'debug');
-        $channel = new Channel();
+	/**
+	 * Sync the YouTube library manually.
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return \WP_REST_Response|\WP_Error The REST response or error.
+	 * @since 1.0.0
+	 */
+	public function sync_library( $request ) {
+		tubebay_log( 'Manual sync_library request received', 'debug' );
+		$channel = new Channel();
 
-        if (!$channel->is_configured()) {
-            tubebay_log('Sync failed: Channel not configured', 'error');
-            return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
-        }
+		if ( ! $channel->is_configured() ) {
+			tubebay_log( 'Sync failed: Channel not configured', 'error' );
+			return new \WP_Error( 'not_configured', __( 'API Key or Channel ID missing.', 'tubebay' ), array( 'status' => 400 ) );
+		}
 
-        // Force a refresh from the API bypassing transient caches
-        $videos = $channel->get_latest_videos(true);
+		// Force a refresh from the API bypassing transient caches.
+		$videos = $channel->get_latest_videos( true );
 
-        if (is_wp_error($videos)) {
-            \TubeBay\Helper\Settings::set('connection_status', 'failed');
-            return new \WP_Error('sync_failed', $videos->get_error_message(), array('status' => 400));
-        }
+		if ( is_wp_error( $videos ) ) {
+			\TubeBay\Helper\Settings::set( 'connection_status', 'failed' );
+			return new \WP_Error( 'sync_failed', $videos->get_error_message(), array( 'status' => 400 ) );
+		}
 
-        \TubeBay\Helper\Settings::set('connection_status', 'connected');
+		\TubeBay\Helper\Settings::set( 'connection_status', 'connected' );
 
-        // Send back an array of the newly fetched videos
-        $response_videos = [];
-        foreach ($videos as $video) {
-            $response_videos[] = $video->to_array();
-        }
+		// Send back an array of the newly fetched videos.
+		$response_videos = array();
+		foreach ( $videos as $video ) {
+			$response_videos[] = $video->to_array();
+		}
 
-        return new WP_REST_Response(array(
-            'success' => true,
-            'message' => __('Library synced successfully.', 'tubebay'),
-            'videos' => $response_videos,
-            'last_sync_time' => \TubeBay\Helper\Settings::get_last_sync_time(),
-            'channel_name' => \TubeBay\Helper\Settings::get('channel_name'),
-            'thumbnails_default' => \TubeBay\Helper\Settings::get('thumbnails_default'),
-            'thumbnails_medium' => \TubeBay\Helper\Settings::get('thumbnails_medium'),
-        ), 200);
-    }
+		return new WP_REST_Response(
+			array(
+				'success'            => true,
+				'message'            => __( 'Library synced successfully.', 'tubebay' ),
+				'videos'             => $response_videos,
+				'last_sync_time'     => \TubeBay\Helper\Settings::get_last_sync_time(),
+				'channel_name'       => \TubeBay\Helper\Settings::get( 'channel_name' ),
+				'thumbnails_default' => \TubeBay\Helper\Settings::get( 'thumbnails_default' ),
+				'thumbnails_medium'  => \TubeBay\Helper\Settings::get( 'thumbnails_medium' ),
+			),
+			200
+		);
+	}
 
-    /**
-     * Sync the YouTube library manually and return only status.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response|\WP_Error
-     * @since 1.0.0
-     */
-    public function sync_library_status($request)
-    {
-        tubebay_log('Manual sync_library_status request received', 'debug');
-        $channel = new Channel();
+	/**
+	 * Sync the YouTube library manually and return only status.
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return \WP_REST_Response|\WP_Error The REST response or error.
+	 * @since 1.0.0
+	 */
+	public function sync_library_status( $request ) {
+		tubebay_log( 'Manual sync_library_status request received', 'debug' );
+		$channel = new Channel();
 
-        if (!$channel->is_configured()) {
-            tubebay_log('Sync status failed: Channel not configured', 'error');
-            return new \WP_Error('not_configured', __('API Key or Channel ID missing.', 'tubebay'), array('status' => 400));
-        }
+		if ( ! $channel->is_configured() ) {
+			tubebay_log( 'Sync status failed: Channel not configured', 'error' );
+			return new \WP_Error( 'not_configured', __( 'API Key or Channel ID missing.', 'tubebay' ), array( 'status' => 400 ) );
+		}
 
-        // Force a refresh from the API bypassing transient caches
-        $videos = $channel->get_latest_videos(true);
+		// Force a refresh from the API bypassing transient caches.
+		$videos = $channel->get_latest_videos( true );
 
-        if (is_wp_error($videos)) {
-            \TubeBay\Helper\Settings::set('connection_status', 'failed');
-            tubebay_log('Sync status failed during get_latest_videos: ' . $videos->get_error_message(), 'error');
-            return new \WP_Error('sync_failed', $videos->get_error_message(), array('status' => 400));
-        }
+		if ( is_wp_error( $videos ) ) {
+			\TubeBay\Helper\Settings::set( 'connection_status', 'failed' );
+			tubebay_log( 'Sync status failed during get_latest_videos: ' . $videos->get_error_message(), 'error' );
+			return new \WP_Error( 'sync_failed', $videos->get_error_message(), array( 'status' => 400 ) );
+		}
 
-        \TubeBay\Helper\Settings::set('connection_status', 'connected');
-        tubebay_log('Library sync_status successful, fetched ' . count($videos) . ' videos', 'info');
+		\TubeBay\Helper\Settings::set( 'connection_status', 'connected' );
+		tubebay_log( 'Library sync_status successful, fetched ' . count( $videos ) . ' videos', 'info' );
 
-        \TubeBay\Helper\Settings::set('connection_status', 'connected');
+		\TubeBay\Helper\Settings::set( 'connection_status', 'connected' );
 
-        return new WP_REST_Response(array(
-            'success' => true,
-            'message' => __('Library synced successfully.', 'tubebay'),
-            'last_sync_time' => \TubeBay\Helper\Settings::get_last_sync_time(),
-            'channel_name' => \TubeBay\Helper\Settings::get('channel_name'),
-            'thumbnails_default' => \TubeBay\Helper\Settings::get('thumbnails_default'),
-            'thumbnails_medium' => \TubeBay\Helper\Settings::get('thumbnails_medium'),
-        ), 200);
-    }
+		return new WP_REST_Response(
+			array(
+				'success'            => true,
+				'message'            => __( 'Library synced successfully.', 'tubebay' ),
+				'last_sync_time'     => \TubeBay\Helper\Settings::get_last_sync_time(),
+				'channel_name'       => \TubeBay\Helper\Settings::get( 'channel_name' ),
+				'thumbnails_default' => \TubeBay\Helper\Settings::get( 'thumbnails_default' ),
+				'thumbnails_medium'  => \TubeBay\Helper\Settings::get( 'thumbnails_medium' ),
+			),
+			200
+		);
+	}
 
-    /**
-     * Get videos from YouTube (search or latest).
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response|\WP_Error
-     * @since 1.0.0
-     */
-    public function get_videos($request)
-    {
-        $channel = new Channel();
+	/**
+	 * Get videos from YouTube (search or latest).
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return \WP_REST_Response|\WP_Error The REST response or error.
+	 * @since 1.0.0
+	 */
+	public function get_videos( $request ) {
+		$channel = new Channel();
 
-        if (!$channel->is_configured()) {
-            return new WP_REST_Response(array('success' => true, 'videos' => []), 200);
-        }
+		if ( ! $channel->is_configured() ) {
+			return new WP_REST_Response(
+				array(
+					'success' => true,
+					'videos'  => array(),
+				),
+				200
+			);
+		}
 
-        $params = $request->get_params();
-        $search = isset($params['search']) ? sanitize_text_field($params['search']) : '';
-        $sort = isset($params['sort']) ? sanitize_text_field($params['sort']) : 'date_desc';
-        $page_token = isset($params['page_token']) ? sanitize_text_field($params['page_token']) : '';
+		$params     = $request->get_params();
+		$search     = isset( $params['search'] ) ? sanitize_text_field( $params['search'] ) : '';
+		$sort       = isset( $params['sort'] ) ? sanitize_text_field( $params['sort'] ) : 'date_desc';
+		$page_token = isset( $params['page_token'] ) ? sanitize_text_field( $params['page_token'] ) : '';
 
-        // If no search, default sort, and first page, use the fast cached playlist response
-        if (empty($search) && $sort === 'date_desc' && empty($page_token)) {
-            $videos = $channel->get_latest_videos(false);
-            $next_page_token = null;
-        } else {
-            // Otherwise hit the search API directly
-            $result = $channel->search_videos($search, $sort, $page_token, 50);
+		// If no search, default sort, and first page, use the fast cached playlist response.
+		if ( empty( $search ) && 'date_desc' === $sort && empty( $page_token ) ) {
+			$videos          = $channel->get_latest_videos( false );
+			$next_page_token = null;
+		} else {
+			// Otherwise hit the search API directly.
+			$result = $channel->search_videos( $search, $sort, $page_token, 50 );
 
-            if (is_wp_error($result)) {
-                return new \WP_Error('search_failed', $result->get_error_message(), array('status' => 400));
-            }
+			if ( is_wp_error( $result ) ) {
+				return new \WP_Error( 'search_failed', $result->get_error_message(), array( 'status' => 400 ) );
+			}
 
-            $videos = $result['videos'];
-            $next_page_token = $result['next_page_token'];
-        }
+			$videos          = $result['videos'];
+			$next_page_token = $result['next_page_token'];
+		}
 
-        if (is_wp_error($videos)) {
-            return new \WP_Error('fetch_failed', $videos->get_error_message(), array('status' => 400));
-        }
+		if ( is_wp_error( $videos ) ) {
+			return new \WP_Error( 'fetch_failed', $videos->get_error_message(), array( 'status' => 400 ) );
+		}
 
-        $response_videos = [];
-        foreach ($videos as $video) {
-            $response_videos[] = $video->to_array();
-        }
+		$response_videos = array();
+		foreach ( $videos as $video ) {
+			$response_videos[] = $video->to_array();
+		}
 
-        return new WP_REST_Response(array(
-            'success' => true,
-            'videos' => $response_videos,
-            'next_page_token' => $next_page_token ?? null,
-        ), 200);
-    }
+		return new WP_REST_Response(
+			array(
+				'success'         => true,
+				'videos'          => $response_videos,
+				'next_page_token' => $next_page_token ?? null,
+			),
+			200
+		);
+	}
 }

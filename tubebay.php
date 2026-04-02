@@ -1,59 +1,69 @@
 <?php
-
 /**
+ * The plugin bootstrap file.
+ *
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
+ *
+ * @link              https://wpanchorbay.com
+ * @since             1.0.0
+ * @package           TubeBay
+ *
+ * @wordpress-plugin
  * Plugin Name:       TubeBay
  * Plugin URI:        https://wpanchorbay.com/products/tubebay
  * Source URI:        https://github.com/dipta-sdd/tubebay
  * Description:       Boost your WooCommerce conversions by replacing static product images with high-performance YouTube videos.
- * Requires at least: 6.8
- * Requires PHP:      7.4
- * Requires Plugins:  woocommerce
- * WC requires at least: 6.1
  * Version:           1.0.0
- * Stable tag:        1.0.0
  * Author:            WPAnchorBay
  * Author URI:        https://wpanchorbay.com
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       tubebay
  * Domain Path:       /languages
+ * Requires at least: 6.8
+ * Requires PHP:      7.4
+ * Requires Plugins:  woocommerce
+ * WC requires at least: 6.1
  */
 
 // If this file is called directly, abort.
-if (!defined('WPINC')) {
+if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define('TUBEBAY_PATH', plugin_dir_path(__FILE__));
-define('TUBEBAY_DIR', plugin_dir_path(__FILE__));
-define('TUBEBAY_URL', plugin_dir_url(__FILE__));
-define('TUBEBAY_VERSION', '1.0.0');
-define('TUBEBAY_PLUGIN_NAME', 'tubebay');
-define('TUBEBAY_TEXT_DOMAIN', 'tubebay');
-define('TUBEBAY_OPTION_NAME', 'tubebay');
-define('TUBEBAY_PLUGIN_BASENAME', plugin_basename(__FILE__));
-define('TUBEBAY_DEV_MODE', false);
+define( 'TUBEBAY_PATH', plugin_dir_path( __FILE__ ) );
+define( 'TUBEBAY_DIR', plugin_dir_path( __FILE__ ) );
+define( 'TUBEBAY_URL', plugin_dir_url( __FILE__ ) );
+define( 'TUBEBAY_VERSION', '1.0.0' );
+define( 'TUBEBAY_PLUGIN_NAME', 'tubebay' );
+define( 'TUBEBAY_TEXT_DOMAIN', 'tubebay' );
+define( 'TUBEBAY_OPTION_NAME', 'tubebay' );
+define( 'TUBEBAY_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'TUBEBAY_DEV_MODE', false );
 
-if (file_exists(TUBEBAY_PATH . 'vendor/autoload.php')) {
+if ( file_exists( TUBEBAY_PATH . 'vendor/autoload.php' ) ) {
 	require_once TUBEBAY_PATH . 'vendor/autoload.php';
 }
 
 require_once TUBEBAY_PATH . 'app/functions.php';
 
-register_activation_hook(__FILE__, 'tubebay_activate');
-register_deactivation_hook(__FILE__, 'tubebay_deactivate');
-/**
- * Begins execution of the plugin.
- *
- * @since  1.0.0
- * @return void
- */
-if (!function_exists('tubebay_run')) {
-	function tubebay_run()
-	{
-		tubebay_log('Initializing TubeBay plugin...', 'info');
+register_activation_hook( __FILE__, 'tubebay_activate' );
+register_deactivation_hook( __FILE__, 'tubebay_deactivate' );
+
+if ( ! function_exists( 'tubebay_run' ) ) {
+	/**
+	 * Begins execution of the plugin.
+	 *
+	 * @since    1.0.0
+	 */
+	function tubebay_run() {
+		// Run the plugin.
+		tubebay_log( 'Initializing TubeBay plugin...', 'info' );
 		$plugin = \TubeBay\Core\Plugin::get_instance();
-		add_action('plugins_loaded', array($plugin, 'run'));
+		add_action( 'plugins_loaded', array( $plugin, 'run' ) );
 	}
 }
 tubebay_run();
@@ -64,21 +74,20 @@ tubebay_run();
  * @since  1.0.0
  * @return void
  */
-function tubebay_activate()
-{
-	tubebay_log('TubeBay plugin activated', 'info');
+function tubebay_activate() {
+	tubebay_log( 'TubeBay plugin activated', 'info' );
 
 	/**
 	 * Only load when needed, and immediately use a function from that file
-	 * 
-	 * It will be needed to create custom tables at 
+	 *
+	 * It will be needed to create custom tables at
 	 * TubeBay\Core\Activator::activate() ->  create_custom_tables()
 	 */
-	if (!function_exists('dbDelta')) {
+	if ( ! function_exists( 'dbDelta' ) ) {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	}
 
-	// Calling the activation function
+	// Calling the activation function.
 	\TubeBay\Core\Activator::activate();
 }
 
@@ -87,8 +96,7 @@ function tubebay_activate()
  *
  * @since    1.0.0
  */
-function tubebay_deactivate()
-{
-	tubebay_log('TubeBay plugin deactivated', 'info');
+function tubebay_deactivate() {
+	tubebay_log( 'TubeBay plugin deactivated', 'info' );
 	\TubeBay\Core\Deactivator::deactivate();
 }

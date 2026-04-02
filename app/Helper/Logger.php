@@ -1,24 +1,24 @@
 <?php
-
-namespace TubeBay\Helper;
-
-// Exit if accessed directly.
-if (!defined('ABSPATH')) {
-	exit;
-}
-
 /**
  * Handles all logging for the plugin.
- *
- * Provides a central point for logging events to a custom database table.
  *
  * @since      1.0.0
  * @package    TubeBay
  * @subpackage TubeBay/Helper
- * @author     sankarsan <wpanchorbay@gmail.com>
  */
-class Logger
-{
+
+namespace TubeBay\Helper;
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Logger class for the plugin.
+ */
+class Logger {
+
 	/**
 	 * The instance of the Logger class.
 	 *
@@ -35,9 +35,8 @@ class Logger
 	 * @access public
 	 * @return Logger
 	 */
-	public static function get_instance()
-	{
-		if (null === self::$instance) {
+	public static function get_instance() {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -49,8 +48,7 @@ class Logger
 	 * @since 1.0.0
 	 * @access private
 	 */
-	private function __construct()
-	{
+	private function __construct() {
 	}
 
 	/**
@@ -65,12 +63,11 @@ class Logger
 	 * @param array  $context  Optional. An associative array of contextual data to store.
 	 * @return void
 	 */
-	public function log($log_type, $message, $context = array())
-	{
+	public function log( $log_type, $message, $context = array() ) {
 		$level = $log_type;
-		if (!empty($context)) {
-			$message .= ' ' . json_encode($context);
+		if ( ! empty( $context ) ) {
+			$message .= ' ' . wp_json_encode( $context );
 		}
-		tubebay_log($message, $level);
+		tubebay_log( $message, $level );
 	}
 }

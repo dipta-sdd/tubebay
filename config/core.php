@@ -11,15 +11,15 @@
  */
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 return array(
-    \TubeBay\Admin\Admin::class,
-    \TubeBay\Admin\ProductMetabox::class,
-    \TubeBay\Helper\Settings::class,
-    \TubeBay\Core\Cron::class,
-    \TubeBay\Integration\WooCommerce::class,
-    \TubeBay\Frontend\VideoShortcode::class,
+	\TubeBay\Admin\Admin::class,
+	\TubeBay\Admin\ProductMetabox::class,
+	\TubeBay\Helper\Settings::class,
+	\TubeBay\Core\Cron::class,
+	\TubeBay\Integration\WooCommerce::class,
+	\TubeBay\Frontend\VideoShortcode::class,
 );

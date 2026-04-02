@@ -1,9 +1,16 @@
 <?php
+/**
+ * The parent class of all API controllers for this plugin.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Api
+ */
 
 namespace TubeBay\Api;
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -13,15 +20,10 @@ use WP_REST_Request;
 use WP_REST_Response;
 
 /**
- * The parent class of all API controllers for this plugin.
- *
- * @since      1.0.0
- * @package    TubeBay
- * @subpackage TubeBay/Api
- * @author     sankarsan <wpanchorbay@gmail.com>
+ * Abstract Base API Controller class.
  */
-class ApiController extends WP_REST_Controller
-{
+class ApiController extends WP_REST_Controller {
+
 	/**
 	 * The single instance of the class.
 	 *
@@ -53,15 +55,14 @@ class ApiController extends WP_REST_Controller
 	 * @since 1.0.0
 	 * @var array
 	 */
-	protected $allow_batch = array('v1' => true);
+	protected $allow_batch = array( 'v1' => true );
 
 	/**
 	 * Constructor
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 	}
 
 	/**
@@ -70,9 +71,8 @@ class ApiController extends WP_REST_Controller
 	 * @return void
 	 * @since 1.0.0
 	 */
-	public function run()
-	{
-		add_action('rest_api_init', array($this, 'register_routes'));
+	public function run() {
+		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
 	/**
@@ -83,9 +83,8 @@ class ApiController extends WP_REST_Controller
 	 * @return object
 	 * @since 1.0.0
 	 */
-	public static function get_instance()
-	{
-		if (null === self::$instance) {
+	public static function get_instance() {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -98,9 +97,8 @@ class ApiController extends WP_REST_Controller
 	 * @return void
 	 * @since 1.0.0
 	 */
-	public function __clone()
-	{
-		_doing_it_wrong(__FUNCTION__, esc_html__('Cloning is not allowed.', 'tubebay'), '1.0.0');
+	public function __clone() {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Cloning is not allowed.', 'tubebay' ), '1.0.0' );
 	}
 
 	/**
@@ -110,9 +108,8 @@ class ApiController extends WP_REST_Controller
 	 * @return void
 	 * @since 1.0.0
 	 */
-	public function __wakeup()
-	{
-		_doing_it_wrong(__FUNCTION__, esc_html__('Unserializing is not allowed.', 'tubebay'), '1.0.0');
+	public function __wakeup() {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Unserializing is not allowed.', 'tubebay' ), '1.0.0' );
 	}
 
 	/**
@@ -122,21 +119,20 @@ class ApiController extends WP_REST_Controller
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return bool|WP_Error True if the request has read access, WP_Error otherwise.
 	 */
-	public function get_item_permissions_check($request)
-	{
-		if (!current_user_can('manage_tubebay')) {
-			tubebay_log('ApiController: Permission denied — user lacks manage_tubebay capability', 'error');
+	public function get_item_permissions_check( $request ) {
+		if ( ! current_user_can( 'manage_tubebay' ) ) {
+			tubebay_log( 'ApiController: Permission denied — user lacks manage_tubebay capability', 'error' );
 			return new WP_Error(
 				'rest_forbidden',
-				__('Sorry, you are not allowed to access this resource.', 'tubebay'),
-				array('status' => rest_authorization_required_code())
+				__( 'Sorry, you are not allowed to access this resource.', 'tubebay' ),
+				array( 'status' => rest_authorization_required_code() )
 			);
 		}
 
-		$nonce = $request->get_header('X-WP-Nonce');
-		if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) {
-			tubebay_log('ApiController: Permission denied — invalid or missing nonce', 'error');
-			return new WP_Error('rest_nonce_invalid', __('The security token is invalid.', 'tubebay'), array('status' => 403));
+		$nonce = $request->get_header( 'X-WP-Nonce' );
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+			tubebay_log( 'ApiController: Permission denied — invalid or missing nonce', 'error' );
+			return new WP_Error( 'rest_nonce_invalid', __( 'The security token is invalid.', 'tubebay' ), array( 'status' => 403 ) );
 		}
 
 		return true;
@@ -149,29 +145,28 @@ class ApiController extends WP_REST_Controller
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return bool|WP_Error True if the request has update access, WP_Error otherwise.
 	 */
-	public function update_item_permissions_check($request)
-	{
-		if (!current_user_can('manage_tubebay')) {
-			tubebay_log('ApiController: Update permission denied — user lacks manage_tubebay capability', 'error');
+	public function update_item_permissions_check( $request ) {
+		if ( ! current_user_can( 'manage_tubebay' ) ) {
+			tubebay_log( 'ApiController: Update permission denied — user lacks manage_tubebay capability', 'error' );
 			return new WP_Error(
 				'rest_forbidden',
-				__('Sorry, you are not allowed to access this resource.', 'tubebay'),
-				array('status' => rest_authorization_required_code())
+				__( 'Sorry, you are not allowed to access this resource.', 'tubebay' ),
+				array( 'status' => rest_authorization_required_code() )
 			);
 		}
 
-		$nonce = $request->get_header('X-WP-Nonce');
+		$nonce = $request->get_header( 'X-WP-Nonce' );
 
-		if (!$nonce) {
-			$nonce = isset($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '';
+		if ( ! $nonce ) {
+			$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
 		}
 
-		if (!wp_verify_nonce($nonce, 'wp_rest')) {
-			tubebay_log('ApiController: Update permission denied — invalid or missing nonce', 'error');
+		if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+			tubebay_log( 'ApiController: Update permission denied — invalid or missing nonce', 'error' );
 			return new WP_Error(
 				'rest_invalid_nonce',
-				__('Invalid or missing nonce.', 'tubebay'),
-				array('status' => 403)
+				__( 'Invalid or missing nonce.', 'tubebay' ),
+				array( 'status' => 403 )
 			);
 		}
 

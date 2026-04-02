@@ -1,10 +1,19 @@
 <?php
+/**
+ * Cron class.
+ *
+ * Handles WP-Cron scheduling for automatic daily sync.
+ *
+ * @since      1.0.0
+ * @package    TubeBay
+ * @subpackage TubeBay/Core
+ */
 
 namespace TubeBay\Core;
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 use TubeBay\Helper\Settings;
@@ -17,106 +26,102 @@ use TubeBay\Data\Entities\Channel;
  * @package    TubeBay
  * @subpackage TubeBay/Core
  */
-class Cron
-{
-    /**
-     * The single instance of the class.
-     *
-     * @var Cron|null
-     * @since 1.0.0
-     */
-    private static $instance = null;
+class Cron {
 
-    /**
-     * Cron hook name.
-     *
-     * @var string
-     * @since 1.0.0
-     */
-    const HOOK_NAME = 'tubebay_daily_sync_event';
+	/**
+	 * The single instance of the class.
+	 *
+	 * @var Cron|null
+	 * @since 1.0.0
+	 */
+	private static $instance = null;
 
-    /**
-     * Gets an instance of this object.
-     *
-     * @return Cron
-     * @since 1.0.0
-     */
-    public static function get_instance()
-    {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
+	/**
+	 * Cron hook name.
+	 *
+	 * @var string
+	 * @since 1.0.0
+	 */
+	const HOOK_NAME = 'tubebay_daily_sync_event';
 
-    /**
-     * Initial hook registration.
-     *
-     * @param \TubeBay\Core\Plugin $plugin The plugin instance.
-     * @return void
-     * @since 1.0.0
-     */
-    public function run($plugin)
-    {
-        $loader = $plugin->get_loader();
+	/**
+	 * Gets an instance of this object.
+	 *
+	 * @return Cron
+	 * @since 1.0.0
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
-        // Register the action that actually performs the sync
-        $loader->add_action(self::HOOK_NAME, $this, 'do_daily_sync');
+	/**
+	 * Initial hook registration.
+	 *
+	 * @param \TubeBay\Core\Plugin $plugin The plugin instance.
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public function run( $plugin ) {
+		$loader = $plugin->get_loader();
 
-        // Check and schedule if needed on plugin load/admin init etc.
-        $loader->add_action('init', $this, 'check_and_schedule');
-    }
+		// Register the action that actually performs the sync.
+		$loader->add_action( self::HOOK_NAME, $this, 'do_daily_sync' );
 
-    /**
-     * Schedules the daily sync if auto_sync is enabled and not already scheduled.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function check_and_schedule()
-    {
-        $auto_sync = Settings::get('auto_sync', true);
+		// Check and schedule if needed on plugin load/admin init etc.
+		$loader->add_action( 'init', $this, 'check_and_schedule' );
+	}
 
-        if ($auto_sync) {
-            if (!wp_next_scheduled(self::HOOK_NAME)) {
-                tubebay_log('Scheduling daily sync event', 'debug');
-                // Schedule to start at 3:00 AM local time or soon after
-                $timestamp = strtotime('03:00:00');
+	/**
+	 * Schedules the daily sync if auto_sync is enabled and not already scheduled.
+	 *
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public function check_and_schedule() {
+		$auto_sync = Settings::get( 'auto_sync', true );
 
-                // If 3:00 AM today has already passed, start tomorrow
-                if ($timestamp < time()) {
-                    $timestamp += DAY_IN_SECONDS;
-                }
+		if ( $auto_sync ) {
+			if ( ! wp_next_scheduled( self::HOOK_NAME ) ) {
+				tubebay_log( 'Scheduling daily sync event', 'debug' );
+				// Schedule to start at 3:00 AM local time or soon after.
+				$timestamp = strtotime( '03:00:00' );
 
-                wp_schedule_event($timestamp, 'daily', self::HOOK_NAME);
-            }
-        } else {
-            // Unschedule if auto_sync is disabled
-            $timestamp = wp_next_scheduled(self::HOOK_NAME);
-            if ($timestamp) {
-                tubebay_log('Unscheduling daily sync event', 'debug');
-                wp_unschedule_event($timestamp, self::HOOK_NAME);
-            }
-        }
-    }
+				// If 3:00 AM today has already passed, start tomorrow.
+				if ( $timestamp < time() ) {
+					$timestamp += DAY_IN_SECONDS;
+				}
 
-    /**
-     * The callback function for the cron event.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function do_daily_sync()
-    {
-        tubebay_log('Running scheduled daily sync', 'info');
-        $channel = new Channel();
+				wp_schedule_event( $timestamp, 'daily', self::HOOK_NAME );
+			}
+		} else {
+			// Unschedule if auto_sync is disabled.
+			$timestamp = wp_next_scheduled( self::HOOK_NAME );
+			if ( $timestamp ) {
+				tubebay_log( 'Unscheduling daily sync event', 'debug' );
+				wp_unschedule_event( $timestamp, self::HOOK_NAME );
+			}
+		}
+	}
 
-        if (!$channel->is_configured()) {
-            tubebay_log('Scheduled daily sync failed: Channel not configured', 'error');
-            return;
-        }
+	/**
+	 * The callback function for the cron event.
+	 *
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public function do_daily_sync() {
+		tubebay_log( 'Running scheduled daily sync', 'info' );
+		$channel = new Channel();
 
-        // Force refresh from API
-        $channel->get_latest_videos(true);
-    }
+		if ( ! $channel->is_configured() ) {
+			tubebay_log( 'Scheduled daily sync failed: Channel not configured', 'error' );
+			return;
+		}
+
+		// Force refresh from API.
+		$channel->get_latest_videos( true );
+	}
 }
