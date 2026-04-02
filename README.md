@@ -1,118 +1,86 @@
-# TubeBay for WooCommerce
+=== TubeBay ===
+Contributors: sankarsan, wpanchorbay, forhadkhan, arifac
+Tags: woocommerce, youtube, video-product, video-gallery, lazy-load
+Requires at least: 6.8
+Tested up to: 6.9
+Requires PHP: 7.4
+Stable tag: 1.0.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-**Project Name:** TubeBay
-**Platform:** WordPress / WooCommerce Plugin
-**Objective:** To allow WooCommerce merchants to easily sync their YouTube channel to their store and embed videos on product pages without manually copying and pasting embed codes.
+Boost your WooCommerce conversions by replacing static product images with high-performance YouTube videos.
 
-## 1. Executive Summary & Context
+== Description ==
 
-TubeBay eliminates the friction of manual YouTube embeds. Store owners connect their channel, browse their video library directly inside the WooCommerce Product Edit screen, and inject a responsive video player into highly converting areas of the product page.
+**TubeBay** is the ultimate bridge between your YouTube channel and your WooCommerce store. Effortlessly enrich your product pages with engaging video content while maintaining peak performance.
 
-**Critical Context:** To bypass Google’s strict App Verification process, development is split into two phases. **Phase 1** uses manual API keys so the plugin can be built, tested, and recorded in a screencast. That video will be sent to Google for OAuth approval. Once approved, **Phase 2** will replace the API keys with a professional one-click OAuth Proxy connection.
+Unlike standard video plugins, TubeBay focuses on **Visual Excellence** and **Speed**. Our unique "Video Facade" technology ensures your site stays fast, protecting your SEO and User Experience.
 
----
+**Key Features:**
 
-## 2. Phase 1: The MVP (API Key Version)
+- **Native Gallery Integration**: Replace the main product image or seamlessly append YouTube videos to your WooCommerce gallery strip.
+- **Performance First (Video Facade)**: Only loads YouTube iframe scripts when the user clicks play, maintaining a fast Largest Contentful Paint (LCP) and high Core Web Vitals.
+- **Direct YouTube API Connection**: Securely authenticate, sync, and browse your entire YouTube channel right from the custom admin dashboard.
+- **Flexible Video Controls**: Adjust player behaviors globally or on a per-product basis, including toggling player controls and muted autoplay.
+- **Interactive React Dashboard**: A premium, ultra-responsive settings panel built with React and Tailwind CSS, providing an unmatched user experience.
+- **Universal Theme Compatibility**: Designed to hook into standard WooCommerce gallery filters, ensuring seamless integration with your chosen theme.
+- **Strict Security & Clean Up**: Developed strictly adhering to WordPress coding standards, complete data sanitization, and comprehensive uninstall cleanup routines.
 
-_This phase builds the core functionality of the plugin, UI, and frontend display._
+== External Services ==
 
-### A. Admin Settings Page
+This plugin relies on the official YouTube Data API v3 (provided by Google) to fetch and display YouTube videos, channels, and playlists within your WooCommerce store.
 
-- **Location:** A new submenu under WooCommerce $\rightarrow$ Settings (or a dedicated "TubeBay" menu).
-- **Fields Required:**
-  - `tubebay_api_key`: Text input for the Google Cloud API Key.
-  - `tubebay_channel_id`: Text input for the user's YouTube Channel ID.
-- **Functionality:** A "Save" button, and a "Test Connection" button that validates the API key.
+- **What the service does:** The YouTube API is used to retrieve video data (such as titles, thumbnails, and embed URLs) so that store administrators can easily browse their YouTube library and attach YouTube videos to their WooCommerce products.
+- **What data is sent and when:** This plugin makes API requests to the YouTube API only when the site administrator configures the plugin or syncs video data within the WordPress admin dashboard (e.g., fetching channel playlists, or syncing videos). The plugin sends the administrator's Google API Key and relevant queries (e.g., channel IDs, playlist IDs or video IDs) to Google's servers.
 
-### B. YouTube Data Fetching & Caching
+**Privacy Notice:** The plugin does not track visitors on the frontend. It only communicates with the YouTube API during administrative actions initiated by the store owner.
 
-- **Step 1:** Call `GET https://www.googleapis.com/youtube/v3/channels?id={CHANNEL_ID}&part=contentDetails&key={API_KEY}` to retrieve the `relatedPlaylists.uploads` ID.
-- **Step 2:** Call `GET https://www.googleapis.com/youtube/v3/playlistItems?playlistId={UPLOADS_ID}&part=snippet&maxResults=50&key={API_KEY}` to get the channel's videos.
-- **Optimization (Crucial):**
-  - Save the resulting video array into a **WordPress Transient** (`tubebay_videos_cache`) with a 12-hour expiration.
-  - Include a **"Sync Library"** button in the settings and product page to manually clear this transient and fetch fresh data.
+**Policies:**
+By using this plugin and its API connection, you agree to be bound by the YouTube Terms of Service and Google Privacy Policy.
 
-### C. WooCommerce Product Edit UI (The Meta Box)
+- YouTube Terms of Service: [https://www.youtube.com/t/terms](https://www.youtube.com/t/terms)
+- Google Privacy Policy: [https://policies.google.com/privacy](https://policies.google.com/privacy)
 
-- **Location:** Add a custom Meta Box to the side column of the WooCommerce Single Product Edit screen.
-- **Current State:** Show the currently selected video thumbnail, title, and placement location.
-- **Action:** An "Add/Edit YouTube Video" button.
-- **The Modal (Popup):**
-  - Opens a `wp.media`-style modal (or Thickbox) overlaying the screen.
-  - **Grid View:** Displays an AJAX-loaded grid of the synced YouTube video thumbnails + titles.
-  - **Search/Filter:** A real-time search bar to filter videos by title.
-  - **Placement Dropdown:** Let the user choose _where_ the video goes (see Section D).
-- **Data Storage:** When a user clicks "Insert", use AJAX to save two pieces of Post Meta:
-  - `_tubebay_video_id` (The YouTube video ID string).
-  - `_tubebay_placement` (The chosen placement location).
+== Installation ==
 
-### D. Frontend Display (Placement Hooks)
+1.  Upload the `tubebay` folder to the `/wp-content/plugins/` directory.
+2.  Activate the plugin through the 'Plugins' menu in WordPress.
+3.  Go to the **TubeBay** menu and connect your YouTube Channel.
+4.  Edit any product to assign a video from your library!
 
-The plugin will read `_tubebay_placement` and inject the video player into the specified WooCommerce location using the following hooks:
+== Frequently Asked Questions ==
 
-1. **Main Product Gallery:** Use filter `woocommerce_single_product_image_thumbnail_html`.
-2. **Below Product Gallery:** Use action `woocommerce_product_thumbnails`.
-3. **Below Add to Cart:** Use action `woocommerce_after_add_to_cart_button`.
-4. **Custom Product Tab:** Use filter `woocommerce_product_tabs` to create a "Video" tab.
+= Does it affect my page speed or LCP score? =
+TubeBay is built specifically to address the performance issues of most video plugins. Our "Video Facade" technology ensures that heavy YouTube iframes only load into the DOM when requested by the user, protecting your Largest Contentful Paint (LCP) and Core Web Vitals.
 
-**CSS Requirement:** The iframe must be wrapped in a responsive 16:9 container:
+= Can I put the video as the main product image? =
+Yes! You can use the "Replace Main Image" setting within the plugin dashboard to make your YouTube video the primary media for your product instead of a static image. You can also override this on individual products.
 
-```css
-.tubebay-video-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  height: 0;
-  overflow: hidden;
-  margin: 15px 0;
-}
-.tubebay-video-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-```
+= Do I need my own YouTube API key? =
+Yes. In order to sync your channel library securely, the plugin requires you to connect your YouTube Data API v3 credentials. We provide a step-by-step guide inside the setup wizard to easily obtain this key from the Google Cloud Console.
 
----
+= Will this work with my custom WooCommerce theme? =
+TubeBay hooks directly into standard WooCommerce gallery filters. It is designed to be highly compatible with modern WooCommerce themes right out of the box.
 
-## 3. Phase 2: OAuth Upgrade (Production Version)
+= Can I auto-play the video when the page loads? =
+To preserve the user experience, respect modern browser autoplay policies, and maintain ultra-fast page speed, TubeBay focuses on the click-to-play "Facade" model. However, when the user clicks the facade thumbnail, the video will automatically start playing. We also provide "Muted Autoplay" controls for when the actual iframe is embedded.
 
-_Once Google approves the Phase 1 screencast, developers will implement Phase 2._
+= Where is my video data stored? =
+Your YouTube videos remain hosted securely and entirely on Google's YouTube servers. TubeBay simply saves the video references (video ID, title, and thumbnail URL) in your local WordPress database as Post Meta, ensuring your database remains lightweight and fast.
 
-### A. The Authentication Proxy Server
+== Screenshots ==
 
-To prevent users from having to create their own Google Cloud Projects, we will use a custom OAuth Proxy Server.
+1.  Admin Dashboard - Manage your YouTube channel connection.
+2.  Product Metabox - Assign videos to products easily.
+3.  Frontend Gallery - High-performance video integrated into the WooCommerce product gallery.
 
-- **Host:** `tbac.wpanchorbay.com` (Node.js/Express or PHP).
-- **Endpoints required:**
-  - `/auth-start`: Redirects user to Google OAuth (`access_type=offline`, `prompt=consent`).
-  - `/callback`: Receives Auth Code, gets tokens, and displays a Base64 encoded JSON string to the user.
-  - `/refresh`: Secure endpoint that holds the Google Client Secret, takes a Refresh Token from the plugin, and returns a fresh Access Token.
+== Changelog ==
 
-### B. Plugin Settings Update
+= 1.0.0 =
 
-- **UI Change:** Hide the Phase 1 "API Key" and "Channel ID" fields.
-- **New Flow:** Provide a "Connect via TubeBay" button linking to `/auth-start`. Provide a text area for the user to paste the Base64 string generated by the Proxy.
-- **Data Storage:** Decode the string and save `tubebay_auth_data` (Access Token, Refresh Token, Expiration Time) in the `wp_options` table.
+- Initial release.
 
-### C. API Call Updates
+== Upgrade Notice ==
 
-- **Authentication:** Swap the `?key=API_KEY` URL parameter for an HTTP Header: `Authorization: Bearer {ACCESS_TOKEN}`.
-- **Auto-Refresh Logic:** Before any API call, check if the Access Token is expired. If so, `wp_remote_post` the Refresh Token to `tbac.wpanchorbay.com/refresh` to get a new one automatically in the background.
-- **Channel ID Fix:** Instead of typing a Channel ID, call `https://www.googleapis.com/youtube/v3/channels?mine=true` to automatically fetch the authenticated user's channel data.
-
----
-
-## 4. Development Standards & Requirements
-
-To ensure the plugin is approved by the WordPress.org Repository, the developer **must** follow these rules:
-
-1. **Prefixing:** Every function, class, variable, transient, option, and meta key must be prefixed with `tubebay_` or `_tubebay_`.
-2. **Security:**
-   - All AJAX calls must be secured with `wp_verify_nonce()`.
-   - All user inputs must be sanitized using `sanitize_text_field()`.
-   - All outputs must be escaped using `esc_html()`, `esc_attr()`, or `esc_url()`.
-3. **Localization:** All text strings must be translatable using `__( 'Text', 'tubebay' )` or `esc_html__( 'Text', 'tubebay' )`.
-4. **Performance:** Do not load CSS/JS on pages where they are not needed. Admin scripts should only load on the TubeBay settings page and the WooCommerce Product Edit screen.
+= 1.0.0 =
+This is the initial release. No upgrade necessary.

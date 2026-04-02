@@ -31,8 +31,6 @@ class Activator
 	{
 		tubebay_log('Running Activator sequence', 'info');
 
-		// Set up the default options if they don't exist.
-		/* Default Settings */
 		tubebay_log('Activator: Setting default plugin options', 'debug');
 		foreach (Settings::get_defaults() as $key => $value) {
 			if (get_option(Settings::PREFIX . $key) === false) {

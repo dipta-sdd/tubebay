@@ -16,6 +16,12 @@ npm run build
 echo "Running npm run build:legacy..."
 npm run build:legacy
 
+# 3. Run npm run makepot
+echo "Running npm run makepot..."
+npm run makepot
+
+
+
 # 3. Rename license file
 echo "Renaming license file..."
 if [ -f "build/admin-legacy.js.LICENSE.txt" ]; then

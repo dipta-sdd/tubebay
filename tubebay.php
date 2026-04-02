@@ -7,6 +7,8 @@
  * Description:       Boost your WooCommerce conversions by replacing static product images with high-performance YouTube videos.
  * Requires at least: 6.8
  * Requires PHP:      7.4
+ * Requires Plugins:  woocommerce
+ * WC requires at least: 6.1
  * Version:           1.0.0
  * Stable tag:        1.0.0
  * Author:            WPAnchorBay
@@ -65,7 +67,18 @@ tubebay_run();
 function tubebay_activate()
 {
 	tubebay_log('TubeBay plugin activated', 'info');
-	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+	/**
+	 * Only load when needed, and immediately use a function from that file
+	 * 
+	 * It will be needed to create custom tables at 
+	 * TubeBay\Core\Activator::activate() ->  create_custom_tables()
+	 */
+	if (!function_exists('dbDelta')) {
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+	}
+
+	// Calling the activation function
 	\TubeBay\Core\Activator::activate();
 }
 
