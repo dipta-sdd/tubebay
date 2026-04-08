@@ -45,6 +45,7 @@ export default function Settings() {
     refresh_token: settings.refresh_token || "",
     connection_method: (settings.connection_method as "oauth" | "api") || "oauth",
   });
+  console.log(tmpCredentials);
 
   // Separate temp state for other settings
   const [tmpOtherSettings, setTmpOtherSettings] = useState({
@@ -100,12 +101,12 @@ export default function Settings() {
     setConnectionFeedback(null);
     try {
       const isOAuth = tmpCredentials.connection_method === "oauth";
-      const path = isOAuth
-        ? "/tubebay/v1/auth/connect"
-        : "/tubebay/v1/settings";
 
       const data = isOAuth
-        ? { refresh_token: tmpCredentials.refresh_token }
+        ? {
+            refresh_token: tmpCredentials.refresh_token,
+            connection_method: "oauth",
+          }
         : {
             api_key: tmpCredentials.api_key,
             channel_id: tmpCredentials.channel_id,
@@ -117,7 +118,7 @@ export default function Settings() {
         message: string;
         data: SettingsData;
       }>({
-        path,
+        path: "/tubebay/v1/auth/connect",
         method: "POST",
         data,
       });

@@ -166,6 +166,16 @@ class Settings {
 	}
 
 	/**
+	 * Get the configured Connection Method.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	public static function get_connection_method() {
+		return self::get( 'connection_method' );
+	}
+
+	/**
 	 * Get the Channel Name.
 	 *
 	 * @return string

@@ -47,6 +47,8 @@ class Channel
 	 */
 	private $refresh_token;
 
+	private $method = 'oauth';
+
 	/**
 	 * Constructor.
 	 *
@@ -59,9 +61,25 @@ class Channel
 	 */
 	public function __construct($data = array())
 	{
-		$this->api_key = !empty($data['api_key']) ? $data['api_key'] : Settings::get_api_key();
-		$this->channel_id = !empty($data['channel_id']) ? $data['channel_id'] : Settings::get_channel_id();
-		$this->refresh_token = !empty($data['refresh_token']) ? $data['refresh_token'] : Settings::get_refresh_token();
+		if (empty($data)) {
+			$this->api_key = Settings::get_api_key();
+			$this->channel_id = Settings::get_channel_id();
+			$this->refresh_token = Settings::get_refresh_token();
+			$this->method = Settings::get_connection_method();
+			return;
+		}
+
+		$this->method = !empty($data['connection_method']) ? $data['connection_method'] : 'api';
+
+		if ($this->method === 'oauth') {
+			$this->refresh_token = !empty($data['refresh_token']) ? $data['refresh_token'] : '';
+			$this->channel_id = !empty($data['channel_id']) ? $data['channel_id'] : '';
+			$this->api_key = '';
+		} else {
+			$this->api_key = !empty($data['api_key']) ? $data['api_key'] : '';
+			$this->channel_id = !empty($data['channel_id']) ? $data['channel_id'] : '';
+			$this->refresh_token = '';
+		}
 	}
 
 	/**
@@ -71,13 +89,14 @@ class Channel
 	 */
 	public function is_configured()
 	{
-		// If we have a refresh token, we can auto-discover the channel ID using mine=true during tests.
-		// For actual API fetches, channel_id should be populated eventually by the successful test.
-		$has_auth = !empty($this->api_key) || !empty($this->refresh_token);
-		if (!empty($this->refresh_token)) {
-			return true;
+		if ($this->method === 'oauth') {
+			// OAuth mode strictly requires the refresh token for operation.
+			// channel_id is optional during discovery but usually required for fetching videos.
+			return !empty($this->refresh_token);
 		}
-		return $has_auth && !empty($this->channel_id);
+
+		// Manual API Mode requires both the key and the specific channel ID.
+		return !empty($this->api_key) && !empty($this->channel_id);
 	}
 
 	/**
@@ -222,9 +241,15 @@ class Channel
 		// 1. Get the uploads playlist ID.
 		tubebay_log('fetch_videos_from_api: Requesting channel details for uploads playlist', 'debug');
 		$args = array(
-			'id' => $this->channel_id,
 			'part' => 'snippet,contentDetails',
 		);
+
+		// If we don't have a channel ID yet but we are using OAuth, ask Google for "mine"
+		if (empty($this->channel_id) && $this->method === 'oauth') {
+			$args['mine'] = 'true';
+		} else {
+			$args['id'] = $this->channel_id;
+		}
 
 		if (empty($this->refresh_token) && !empty($this->api_key)) {
 			$args['key'] = $this->api_key;
@@ -529,14 +554,50 @@ class Channel
 	 */
 	public function test_connection()
 	{
+		error_log('channel->test_connection');
 		if (!$this->is_configured()) {
 			return new \WP_Error('not_configured', __('API Key or Channel ID is missing.', 'tubebay'));
 		}
 
+		if ($this->method === 'oauth')
+			return $this->test_oauth_connection();
+
+		error_log('connection method is not oauth');
 		$details = $this->get_channel_details();
 
 		if (is_wp_error($details)) {
 			return $details;
+		}
+
+		return $details;
+	}
+
+	/**
+	 * Test the OAuth connection using the refresh token.
+	 * 
+	 * @return array|\WP_Error
+	 */
+	public function test_oauth_connection()
+	{
+		tubebay_log('Testing OAuth connection...', 'info');
+
+		// 1. Force token generation/refresh to prove the proxy & token work
+		$token = $this->get_access_token();
+		if (!$token) {
+			return new \WP_Error('oauth_failed', __('Failed to validate OAuth connection. Could not generate access token.', 'tubebay'));
+		}
+
+		// 2. Fetch the channel details. 
+		// Since channel_id might be empty initially, get_channel_details() will safely use mine=true
+		$details = $this->get_channel_details();
+
+		if (is_wp_error($details)) {
+			return $details;
+		}
+
+		// 3. Populate the class instance with the newly discovered channel ID
+		if (empty($this->channel_id) && !empty($details['channel_id'])) {
+			$this->channel_id = $details['channel_id'];
 		}
 
 		return $details;

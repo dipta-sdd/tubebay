@@ -87,8 +87,27 @@ class SettingsController extends ApiController
 		// Add this to register_routes()
 		register_rest_route($namespace, '/auth/connect', array(
 			'methods' => 'POST',
-			'callback' => array($this, 'handle_oauth_connect'),
+			'callback' => array($this, 'handle_connect'),
 			'permission_callback' => array($this, 'update_item_permissions_check'),
+			'args'    => array(
+				'connection_method' => array(
+					'required' => true,
+					'type'     => 'string',
+					'enum'     => array('api', 'oauth'),
+				),
+				'api_key' => array(
+					'required' => false,
+					'type'     => 'string',
+				),
+				'channel_id' => array(
+					'required' => false,
+					'type'     => 'string',
+				),
+				'refresh_token' => array(
+					'required' => false,
+					'type'     => 'string',
+				),
+			),
 		));
 
 		register_rest_route(
@@ -107,53 +126,79 @@ class SettingsController extends ApiController
 
 
 	// The Callback Method
-	public function handle_oauth_connect($request)
+	/**
+	 * Handle request to connect a YouTube account (OAuth or API Key).
+	 *
+	 * @param \WP_REST_Request $request Full data about the request.
+	 * @return \WP_REST_Response|\WP_Error
+	 * @since 1.0.0
+	 */
+	public function handle_connect($request)
 	{
 		$params = $request->get_json_params();
+		$method = $params['connection_method'] ?? 'oauth';
 		$refresh_token = $params['refresh_token'] ?? '';
 
-		if (empty($refresh_token) && !empty($params['connection_string'])) {
-			$decoded = json_decode(base64_decode($params['connection_string']), true);
-			if ($decoded && isset($decoded['refresh_token'])) {
-				$refresh_token = $decoded['refresh_token'];
+		if ($method === 'oauth') {
+			if (empty($refresh_token) && !empty($params['connection_string'])) {
+				$decoded = json_decode(base64_decode($params['connection_string']), true);
+				if ($decoded && isset($decoded['refresh_token'])) {
+					$refresh_token = $decoded['refresh_token'];
+				}
 			}
+
+			if (empty($refresh_token)) {
+				return new \WP_Error('invalid_data', __('Refresh token is missing.', 'tubebay'));
+			}
+
+			// Clear API Key when switching to OAuth
+			Settings::set('api_key', '');
+			Settings::set('refresh_token', $refresh_token);
+		} else {
+			// Manual API Method
+			$api_key = $params['api_key'] ?? '';
+			$channel_id = $params['channel_id'] ?? '';
+
+			if (empty($api_key) || empty($channel_id)) {
+				return new \WP_Error('invalid_data', __('API Key and Channel ID are required for manual connection.', 'tubebay'));
+			}
+
+			// Clear OAuth when switching to API
+			Settings::set('refresh_token', '');
+			Settings::set('access_token', '');
+			Settings::set('token_expires', '');
+
+			Settings::set('api_key', $api_key);
+			Settings::set('channel_id', $channel_id);
 		}
 
-		if (empty($refresh_token)) {
-			return new \WP_Error('invalid_data', __('Refresh token is missing.', 'tubebay'));
-		}
+		Settings::set('connection_method', $method);
 
-		tubebay_log('handle_oauth_connect: Attempting to connect with refresh token', 'info');
-
-		// Temporarily set the refresh token so the Channel entity can use it for verification
-		Settings::set('refresh_token', $refresh_token);
-		Settings::set('connection_method', 'oauth');
+		tubebay_log("handle_connect: Attempting to connect via {$method}", 'info');
 
 		$channel = new Channel();
 		$result = $channel->test_connection();
 
 		if (is_wp_error($result)) {
-			tubebay_log('handle_oauth_connect: Connection test failed - ' . $result->get_error_message(), 'error');
-			// Clear on failure
-			Settings::set('refresh_token', '');
+			tubebay_log('handle_connect: Connection test failed - ' . $result->get_error_message(), 'error');
 			Settings::set('connection_status', 'failed');
 			return $result;
 		}
 
 		// Success! Save discovered metadata and final state
-		Settings::set('channel_id', $result['channel_id'] ?? '');
+		Settings::set('channel_id', $result['channel_id'] ?? Settings::get('channel_id'));
 		Settings::set('channel_name', $result['title'] ?? '');
 		Settings::set('thumbnails_default', $result['thumbnails_default'] ?? '');
 		Settings::set('thumbnails_medium', $result['thumbnails_medium'] ?? '');
 		Settings::set('connection_status', 'connected');
 		Settings::set('last_sync_time', time());
 
-		tubebay_log('handle_oauth_connect: Successfully connected to channel: ' . ($result['title'] ?? 'Unknown'), 'info');
+		tubebay_log('handle_connect: Successfully connected to channel: ' . ($result['title'] ?? 'Unknown'), 'info');
 
 		return new WP_REST_Response(
 			array(
 				'success' => true,
-				'message' => __('Connected successfully via OAuth!', 'tubebay'),
+				'message' => __('Connected successfully!', 'tubebay'),
 				'data'    => Settings::get_all_settings(),
 			),
 			200
