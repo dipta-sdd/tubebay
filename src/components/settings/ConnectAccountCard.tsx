@@ -4,6 +4,9 @@ import Card from "../common/Card";
 import { LinkIcon, YouTubeIcon, GoogleIcon } from "../common/Icons";
 import { PluginSettings } from "../../utils/types";
 import { CheckCircle, XCircle, Info } from "lucide-react";
+import { Tooltip } from "../common/ToolTip";
+// @ts-ignore
+import channelIdImg from "../../img/channel_id.png";
 
 export type FeedbackType = "success" | "error" | "info";
 
@@ -160,15 +163,48 @@ export default function ConnectAccountCard({
                 placeholder="UCxxxxxxxxxxxxxxx"
               />
               <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
-                Find your Channel ID in your{" "}
-                <a
-                  href="https://www.youtube.com/account_advanced"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
+                Find your Channel ID in your
+                <Tooltip
+                  content={
+                    <div className="tubebay-p-2 tubebay-max-w-[280px]">
+                      <p className="tubebay-font-bold tubebay-mb-2 tubebay-text-gray-800">
+                        How to find your Channel ID:
+                      </p>
+                      <ol className="tubebay-list-decimal tubebay-list-inside tubebay-space-y-1 tubebay-mb-3 tubebay-text-gray-600">
+                        <li>Sign in to your YouTube account</li>
+                        <li>
+                          Go to{" "}
+                          <span className="tubebay-font-semibold">
+                            Advanced settings
+                          </span>
+                        </li>
+                        <li>
+                          Copy the{" "}
+                          <span className="tubebay-font-semibold">
+                            Channel ID
+                          </span>
+                        </li>
+                      </ol>
+                      <img
+                        src={channelIdImg}
+                        alt="Channel ID Tutorial"
+                        className="tubebay-rounded tubebay-border tubebay-border-gray-200 tubebay-w-full"
+                      />
+                    </div>
+                  }
+                  color="light"
+                  position="bottom"
+                  className="!tubebay-max-w-[600px]"
                 >
-                  YouTube Advanced Settings
-                </a>
+                  <a
+                    href="https://www.youtube.com/account_advanced"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
+                  >
+                    YouTube Advanced Settings
+                  </a>
+                </Tooltip>
                 .
               </p>
             </div>
