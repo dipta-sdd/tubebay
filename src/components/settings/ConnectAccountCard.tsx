@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Input } from "../common/Input";
 import Button from "../common/Button";
 import Card from "../common/Card";
@@ -165,39 +166,7 @@ export default function ConnectAccountCard({
               <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
                 Find your Channel ID in your
                 <Tooltip
-                  content={
-                    <div className="tubebay-p-2 tubebay-max-w-full">
-                      <p className="tubebay-font-bold tubebay-mb-2 tubebay-text-gray-800">
-                        How to find your Channel ID:
-                      </p>
-                      <div className="tubebay-flex tubebay-items-start tubebay-gap-4">
-                        <div className="">
-                          <ol className="tubebay-list-decimal tubebay-list-inside tubebay-space-y-1 tubebay-text-gray-600">
-                            <li>Sign in to your YouTube account</li>
-                            <li>
-                              Go to{" "}
-                              <span className="tubebay-font-semibold">
-                                Advanced settings
-                              </span>
-                            </li>
-                            <li>
-                              Copy the{" "}
-                              <span className="tubebay-font-semibold">
-                                Channel ID
-                              </span>
-                            </li>
-                          </ol>
-                        </div>
-                        <div className="tubebay-flex-1">
-                          <img
-                            src={channelIdImg}
-                            alt="Channel ID Tutorial"
-                            className="tubebay-rounded tubebay-border tubebay-border-gray-200 tubebay-w-full"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  }
+                  content={<ChannelIdTooltip />}
                   color="light"
                   position="bottom"
                   className="!tubebay-max-w-[min(700px,90vw)]"
@@ -296,3 +265,47 @@ export default function ConnectAccountCard({
     </Card>
   );
 }
+
+const ChannelIdTooltip = () => {
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsZoomed(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="tubebay-p-2 tubebay-max-w-full tubebay-overflow-hidden">
+      <p className="tubebay-font-bold tubebay-mb-2 tubebay-text-gray-800">
+        How to find your Channel ID:
+      </p>
+      <div className="tubebay-flex tubebay-items-start tubebay-gap-4">
+        <div className="">
+          <ol className="tubebay-list-decimal tubebay-list-inside tubebay-space-y-1 tubebay-text-gray-600">
+            <li>Sign in to your YouTube account</li>
+            <li>
+              Go to{" "}
+              <span className="tubebay-font-semibold">Advanced settings</span>
+            </li>
+            <li>
+              Copy the <span className="tubebay-font-semibold">Channel ID</span>
+            </li>
+          </ol>
+        </div>
+        <div className="tubebay-flex-1 tubebay-overflow-hidden tubebay-rounded tubebay-border tubebay-border-gray-200">
+          <img
+            src={channelIdImg}
+            alt="Channel ID Tutorial"
+            className={`tubebay-w-full tubebay-transition-all tubebay-duration-1000 tubebay-ease-in-out ${
+              isZoomed
+                ? "tubebay-scale-[1.5] -tubebay-translate-x-[7%] -tubebay-translate-y-[18%]"
+                : "tubebay-scale-100 tubebay-translate-x-0 tubebay-translate-y-0"
+            }`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
