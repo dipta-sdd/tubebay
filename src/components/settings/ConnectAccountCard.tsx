@@ -18,8 +18,18 @@ export interface ConnectionFeedback {
 
 interface ConnectAccountCardProps {
   settings: PluginSettings;
-  tmpCredentials: { api_key: string; channel_id: string };
-  setTmpCredentials: (creds: { api_key: string; channel_id: string }) => void;
+  tmpCredentials: {
+    api_key: string;
+    channel_id: string;
+    refresh_token: string;
+    connection_method: "oauth" | "api";
+  };
+  setTmpCredentials: (creds: {
+    api_key: string;
+    channel_id: string;
+    refresh_token: string;
+    connection_method: "oauth" | "api";
+  }) => void;
   editingConnection: boolean;
   setEditingConnection: (editing: boolean) => void;
   saving: boolean;
@@ -69,6 +79,12 @@ export default function ConnectAccountCard({
   feedback,
   setFeedback,
 }: ConnectAccountCardProps) {
+  const method = tmpCredentials.connection_method;
+
+  const setMethod = (m: "oauth" | "api") => {
+    setTmpCredentials({ ...tmpCredentials, connection_method: m });
+  };
+
   return (
     <Card className="tubebay-flex tubebay-flex-col tubebay-items-center">
       <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-mb-[16px]">
@@ -150,66 +166,127 @@ export default function ConnectAccountCard({
         </div>
       ) : (
         <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-[12px]">
-          <div className="tubebay-w-full tubebay-flex tubebay-flex-row tubebay-gap-[12px]">
-            <div className="tubebay-w-full">
+          {/* Method Toggle */}
+          <div className="tubebay-flex tubebay-p-[4px] tubebay-bg-gray-100 tubebay-rounded-[12px] tubebay-mb-[8px] tubebay-w-full">
+            <button
+              onClick={() => setMethod("oauth")}
+              className={`tubebay-flex-1 tubebay-py-[8px] tubebay-text-[14px] tubebay-font-bold tubebay-rounded-[8px] tubebay-transition-all ${
+                method === "oauth"
+                  ? "tubebay-bg-white tubebay-text-blue-600 tubebay-shadow-sm"
+                  : "tubebay-text-gray-500 hover:tubebay-text-gray-700"
+              }`}
+            >
+              Google OAuth (Recommended)
+            </button>
+            <button
+              onClick={() => setMethod("api")}
+              className={`tubebay-flex-1 tubebay-py-[8px] tubebay-text-[14px] tubebay-font-bold tubebay-rounded-[8px] tubebay-transition-all ${
+                method === "api"
+                  ? "tubebay-bg-white tubebay-text-blue-600 tubebay-shadow-sm"
+                  : "tubebay-text-gray-500 hover:tubebay-text-gray-700"
+              }`}
+            >
+              Manual (Advanced)
+            </button>
+          </div>
+
+          {method === "oauth" ? (
+            <div className="tubebay-flex tubebay-flex-col tubebay-gap-[16px] tubebay-animate-fadeIn">
+              <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-p-[20px] tubebay-bg-blue-50/50 tubebay-border tubebay-border-blue-100 tubebay-rounded-[12px] tubebay-gap-[12px]">
+                <div className="tubebay-text-center">
+                  <h4 className="tubebay-text-[15px] tubebay-font-bold tubebay-text-blue-900 tubebay-mb-[4px]">
+                    Connect your YouTube Account
+                  </h4>
+                  <p className="tubebay-text-[13px] tubebay-text-blue-700">
+                    Grant permission and paste the refresh token below.
+                  </p>
+                </div>
+                <a
+                  href="https://tbac.wpanchorbay.com/oauth?action=connect"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tubebay-inline-flex tubebay-items-center tubebay-gap-[10px] tubebay-bg-white tubebay-text-gray-900 tubebay-px-[24px] tubebay-py-[10px] tubebay-rounded-[10px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-bg-gray-50 tubebay-transition-colors tubebay-font-bold tubebay-text-[14px]"
+                >
+                  <GoogleIcon size={18} />
+                  Authorize via Google
+                </a>
+              </div>
+
               <Input
-                label="YouTube Channel ID"
-                value={tmpCredentials.channel_id}
+                label="Refresh Token"
+                value={tmpCredentials.refresh_token}
                 onChange={(e) =>
                   setTmpCredentials({
                     ...tmpCredentials,
-                    channel_id: (e.target as HTMLInputElement).value,
+                    refresh_token: (e.target as HTMLInputElement).value,
                   })
                 }
-                placeholder="UCxxxxxxxxxxxxxxx"
+                placeholder="1//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
               />
-              <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
-                Find your Channel ID in your
-                <Tooltip
-                  content={<ChannelIdTooltip />}
-                  color="light"
-                  position="bottom"
-                  className="!tubebay-max-w-[min(700px,90vw)]"
-                >
+            </div>
+          ) : (
+            <div className="tubebay-w-full tubebay-flex tubebay-flex-row tubebay-gap-[12px] tubebay-animate-fadeIn">
+              <div className="tubebay-w-full">
+                <Input
+                  label="YouTube Channel ID"
+                  value={tmpCredentials.channel_id}
+                  onChange={(e) =>
+                    setTmpCredentials({
+                      ...tmpCredentials,
+                      channel_id: (e.target as HTMLInputElement).value,
+                    })
+                  }
+                  placeholder="UCxxxxxxxxxxxxxxx"
+                />
+                <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
+                  Find your Channel ID in your{" "}
+                  <Tooltip
+                    content={<ChannelIdTooltip />}
+                    color="light"
+                    position="bottom"
+                    className="!tubebay-max-w-[min(700px,90vw)]"
+                  >
+                    <a
+                      href="https://www.youtube.com/account_advanced"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
+                    >
+                      YouTube Advanced Settings
+                    </a>
+                  </Tooltip>
+                  .
+                </p>
+              </div>
+              <div className="tubebay-w-full">
+                <Input
+                  label="Google Cloud API Key"
+                  type="password"
+                  value={tmpCredentials.api_key}
+                  onChange={(e) =>
+                    setTmpCredentials({
+                      ...tmpCredentials,
+                      api_key: (e.target as HTMLInputElement).value,
+                    })
+                  }
+                  placeholder="AIzaSyB-xxxxxxxxxxxxxxx"
+                />
+                <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
+                  Generate an API Key in the{" "}
                   <a
-                    href="https://www.youtube.com/account_advanced"
+                    href="https://console.cloud.google.com/apis/api/youtube.googleapis.com/credentials"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
                   >
-                    YouTube Advanced Settings
+                    Google Cloud Console
                   </a>
-                </Tooltip>
-                .
-              </p>
+                  .
+                </p>
+              </div>
             </div>
-            <div className="tubebay-w-full">
-              <Input
-                label="Google Cloud API Key"
-                type="password"
-                value={tmpCredentials.api_key}
-                onChange={(e) =>
-                  setTmpCredentials({
-                    ...tmpCredentials,
-                    api_key: (e.target as HTMLInputElement).value,
-                  })
-                }
-                placeholder="AIzaSyB-xxxxxxxxxxxxxxx"
-              />
-              <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
-                Generate an API Key in the{" "}
-                <a
-                  href="https://console.cloud.google.com/apis/api/youtube.googleapis.com/credentials"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
-                >
-                  Google Cloud Console
-                </a>
-                .
-              </p>
-            </div>
-          </div>
+          )}
+
           {/* Inline Feedback Message */}
           {feedback && (
             <div
@@ -228,7 +305,10 @@ export default function ConnectAccountCard({
               disabled={
                 saving ||
                 (!credentialsChanged() &&
-                  settings.connection_status === "connected")
+                  settings.connection_status === "connected") ||
+                (method === "oauth" && !tmpCredentials.refresh_token) ||
+                (method === "api" &&
+                  (!tmpCredentials.api_key || !tmpCredentials.channel_id))
               }
               color="primary"
             >
@@ -237,7 +317,10 @@ export default function ConnectAccountCard({
             <Button
               onClick={handleTestConnection}
               disabled={
-                testing || !tmpCredentials.api_key || !tmpCredentials.channel_id
+                testing ||
+                (method === "oauth" && !tmpCredentials.refresh_token) ||
+                (method === "api" &&
+                  (!tmpCredentials.api_key || !tmpCredentials.channel_id))
               }
               color="secondary"
               variant="outline"

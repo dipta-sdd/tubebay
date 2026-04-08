@@ -42,6 +42,8 @@ export default function Settings() {
   const [tmpCredentials, setTmpCredentials] = useState({
     api_key: settings.api_key || "",
     channel_id: settings.channel_id || "",
+    refresh_token: settings.refresh_token || "",
+    connection_method: (settings.connection_method as "oauth" | "api") || "oauth",
   });
 
   // Separate temp state for other settings
@@ -69,6 +71,8 @@ export default function Settings() {
       const creds = {
         api_key: response.api_key || "",
         channel_id: response.channel_id || "",
+        refresh_token: response.refresh_token || "",
+        connection_method: (response.connection_method as "oauth" | "api") || "oauth",
       };
       const other = {
         auto_sync: response.auto_sync !== undefined ? response.auto_sync : true,
@@ -95,17 +99,27 @@ export default function Settings() {
     setSaving(true);
     setConnectionFeedback(null);
     try {
+      const isOAuth = tmpCredentials.connection_method === "oauth";
+      const path = isOAuth
+        ? "/tubebay/v1/auth/connect"
+        : "/tubebay/v1/settings";
+
+      const data = isOAuth
+        ? { refresh_token: tmpCredentials.refresh_token }
+        : {
+            api_key: tmpCredentials.api_key,
+            channel_id: tmpCredentials.channel_id,
+            connection_method: "api",
+          };
+
       const response = await apiFetch<{
         success: boolean;
         message: string;
         data: SettingsData;
       }>({
-        path: "/tubebay/v1/settings",
+        path,
         method: "POST",
-        data: {
-          api_key: tmpCredentials.api_key,
-          channel_id: tmpCredentials.channel_id,
-        },
+        data,
       });
 
       if (response.success) {
@@ -113,6 +127,8 @@ export default function Settings() {
         setTmpCredentials({
           api_key: response.data.api_key || "",
           channel_id: response.data.channel_id || "",
+          refresh_token: response.data.refresh_token || "",
+          connection_method: (response.data.connection_method as "oauth" | "api") || "oauth",
         });
 
         // Check if connection actually succeeded
@@ -123,7 +139,7 @@ export default function Settings() {
           setConnectionFeedback({
             type: "error",
             message:
-              "Could not verify the API key or Channel ID. Please double-check your credentials.",
+              "Could not verify the connection. Please double-check your credentials.",
           });
         } else {
           setConnectionFeedback({
@@ -206,6 +222,8 @@ export default function Settings() {
         data: {
           api_key: tmpCredentials.api_key,
           channel_id: tmpCredentials.channel_id,
+          refresh_token: tmpCredentials.refresh_token,
+          connection_method: tmpCredentials.connection_method,
         },
       });
 
@@ -262,7 +280,9 @@ export default function Settings() {
   const credentialsChanged = () => {
     return (
       tmpCredentials.api_key !== (settings.api_key || "") ||
-      tmpCredentials.channel_id !== (settings.channel_id || "")
+      tmpCredentials.channel_id !== (settings.channel_id || "") ||
+      tmpCredentials.refresh_token !== (settings.refresh_token || "") ||
+      tmpCredentials.connection_method !== (settings.connection_method || "oauth")
     );
   };
 

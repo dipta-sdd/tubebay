@@ -118,13 +118,18 @@ class YouTubeController extends ApiController {
 		$params     = $request->get_params();
 		$api_key    = $params['api_key'];
 		$channel_id = $params['channel_id'];
+		$refresh_token = $params['refresh_token'];
+		$connection_method = $params['connection_method'];
+
 
 		tubebay_log( "Testing connection for Channel ID: {$channel_id}", 'debug' );
 
 		$channel = new Channel(
 			array(
-				'api_key'    => $api_key ? $api_key : '--',
-				'channel_id' => $channel_id ? $channel_id : '--',
+				'api_key'           => $api_key,
+				'channel_id'        => $channel_id,
+				'refresh_token'     => $refresh_token,
+				'connection_method' => $connection_method ? $connection_method : 'api',
 			)
 		);
 

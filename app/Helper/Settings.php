@@ -60,6 +60,7 @@ class Settings {
 		'show_controls'                 => false,
 		'is_onboarding_completed'       => false,
 		'last_sync_time'                => 0,
+		'connection_method'             => 'oauth',
 
 
 		/*

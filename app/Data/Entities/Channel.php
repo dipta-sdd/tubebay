@@ -23,7 +23,8 @@ use TubeBay\Data\Entities\Video;
  * @package    TubeBay
  * @subpackage TubeBay/Data/Entities
  */
-class Channel {
+class Channel
+{
 
 	/**
 	 * YouTube API key.
@@ -40,6 +41,13 @@ class Channel {
 	private $channel_id;
 
 	/**
+	 * OAuth Refresh Token.
+	 *
+	 * @var string
+	 */
+	private $refresh_token;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $data {
@@ -49,9 +57,11 @@ class Channel {
 	 *     @type string $channel_id YouTube channel ID.
 	 * }
 	 */
-	public function __construct( $data = array() ) {
-		$this->api_key    = ! empty( $data['api_key'] ) ? $data['api_key'] : Settings::get_api_key();
-		$this->channel_id = ! empty( $data['channel_id'] ) ? $data['channel_id'] : Settings::get_channel_id();
+	public function __construct($data = array())
+	{
+		$this->api_key = !empty($data['api_key']) ? $data['api_key'] : Settings::get_api_key();
+		$this->channel_id = !empty($data['channel_id']) ? $data['channel_id'] : Settings::get_channel_id();
+		$this->refresh_token = !empty($data['refresh_token']) ? $data['refresh_token'] : Settings::get_refresh_token();
 	}
 
 	/**
@@ -59,8 +69,15 @@ class Channel {
 	 *
 	 * @return bool True if configured, false otherwise.
 	 */
-	public function is_configured() {
-		return ! empty( $this->api_key ) && ! empty( $this->channel_id );
+	public function is_configured()
+	{
+		// If we have a refresh token, we can auto-discover the channel ID using mine=true during tests.
+		// For actual API fetches, channel_id should be populated eventually by the successful test.
+		$has_auth = !empty($this->api_key) || !empty($this->refresh_token);
+		if (!empty($this->refresh_token)) {
+			return true;
+		}
+		return $has_auth && !empty($this->channel_id);
 	}
 
 	/**
@@ -70,44 +87,128 @@ class Channel {
 	 * @param bool $force_refresh Whether to force fresh data from the API.
 	 * @return Video[]|\WP_Error
 	 */
-	public function get_latest_videos( $force_refresh = false ) {
-		if ( ! $this->is_configured() ) {
-			return new \WP_Error( 'not_configured', __( 'TubeBay API Key or Channel ID is missing.', 'tubebay' ) );
+	public function get_latest_videos($force_refresh = false)
+	{
+		if (!$this->is_configured()) {
+			return new \WP_Error('not_configured', __('TubeBay API Key or Channel ID is missing.', 'tubebay'));
 		}
 
 		$transient_key = 'tubebay_videos_cache_' . $this->channel_id;
 
-		if ( ! $force_refresh ) {
-			$cached = get_transient( $transient_key );
-			if ( false !== $cached && is_array( $cached ) ) {
-				tubebay_log( 'get_latest_videos: Returning cached videos', 'debug' );
+		if (!$force_refresh) {
+			$cached = get_transient($transient_key);
+			if (false !== $cached && is_array($cached)) {
+				tubebay_log('get_latest_videos: Returning cached videos', 'debug');
 				$videos = array();
-				foreach ( $cached as $v ) {
-					$videos[] = new Video( $v );
+				foreach ($cached as $v) {
+					$videos[] = new Video($v);
 				}
 				return $videos;
 			}
 		}
 
-		tubebay_log( 'get_latest_videos: Fetching fresh videos from API', 'info' );
+		tubebay_log('get_latest_videos: Fetching fresh videos from API', 'info');
 		// Need to fetch fresh data.
 		$videos = $this->fetch_videos_from_api();
 
-		if ( is_wp_error( $videos ) ) {
-			tubebay_log( 'get_latest_videos: Failed to fetch videos - ' . $videos->get_error_message(), 'error' );
+		if (is_wp_error($videos)) {
+			tubebay_log('get_latest_videos: Failed to fetch videos - ' . $videos->get_error_message(), 'error');
 			return $videos;
 		}
 
 		// Cache the raw array format.
 		$to_cache = array();
-		foreach ( $videos as $video ) {
+		foreach ($videos as $video) {
 			$to_cache[] = $video->to_array();
 		}
 
-		set_transient( $transient_key, $to_cache, Settings::get_cache_duration() );
-		Settings::set_last_sync_time( time() );
+		set_transient($transient_key, $to_cache, Settings::get_cache_duration());
+		Settings::set_last_sync_time(time());
 
 		return $videos;
+	}
+
+	/**
+	 * Get a valid access token. Requests a new one from the connector if expired.
+	 *
+	 * @return string|false Valid access token or false on failure.
+	 */
+	private function get_access_token()
+	{
+		if (empty($this->refresh_token)) {
+			return false;
+		}
+
+		$access_token = Settings::get('access_token');
+		$token_expires = (int) Settings::get('token_expires');
+
+		// Add a 5-minute buffer to expiration check
+		if (!empty($access_token) && $token_expires > (time() + 300)) {
+			return $access_token;
+		}
+
+		tubebay_log('get_access_token: Token expired or missing, requesting new one from connector', 'info');
+
+		// Request new access token from the connector server
+		$connector_url = 'https://tbac.wpanchorbay.com/oauth';
+		$response = wp_remote_post(
+			$connector_url,
+			array(
+				'body' => array(
+					'action' => 'refresh',
+					'refresh_token' => $this->refresh_token,
+				),
+				'timeout' => 15,
+			)
+		);
+
+		if (is_wp_error($response)) {
+			tubebay_log('get_access_token: Connector request failed - ' . $response->get_error_message(), 'error');
+			return false;
+		}
+
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+
+		if (empty($body['success']) || empty($body['data']['access_token'])) {
+			tubebay_log('get_access_token: Connector returned error or invalid data - ' . wp_json_encode($body), 'error');
+			return false;
+		}
+
+		$new_access_token = $body['data']['access_token'];
+		// Default to 1 hour expiration if expires_in not provided
+		$expires_in = isset($body['data']['expires_in']) ? (int) $body['data']['expires_in'] : 3599;
+		$expires_at = time() + $expires_in;
+
+		Settings::set('access_token', $new_access_token);
+		Settings::set('token_expires', $expires_at);
+
+		tubebay_log('get_access_token: Successfully refreshed access token', 'info');
+
+		return $new_access_token;
+	}
+
+	/**
+	 * Build common YouTube API request arguments.
+	 * 
+	 * @return array
+	 */
+	private function get_api_request_args()
+	{
+		$args = array('headers' => array('Accept' => 'application/json'));
+
+		// IF WE HAVE A REFRESH TOKEN, USE OAUTH
+		if (!empty($this->refresh_token)) {
+			$access_token = $this->get_access_token();
+			if ($access_token) {
+				$args['headers']['Authorization'] = 'Bearer ' . $access_token;
+			}
+		}
+		// IF WE HAVE AN API KEY, USE THE KEY PARAMETER (Phase 1)
+		elseif (!empty($this->api_key)) {
+			// We will add the 'key' param in the URL later
+		}
+
+		return $args;
 	}
 
 	/**
@@ -116,106 +217,111 @@ class Channel {
 	 *
 	 * @return Video[]|\WP_Error Array of Video objects or a WP_Error on failure.
 	 */
-	private function fetch_videos_from_api() {
+	private function fetch_videos_from_api()
+	{
 		// 1. Get the uploads playlist ID.
-		tubebay_log( 'fetch_videos_from_api: Requesting channel details for uploads playlist', 'debug' );
-		$channel_url = add_query_arg(
-			array(
-				'id'   => $this->channel_id,
-				'part' => 'snippet,contentDetails',
-				'key'  => $this->api_key,
-			),
-			'https://www.googleapis.com/youtube/v3/channels'
+		tubebay_log('fetch_videos_from_api: Requesting channel details for uploads playlist', 'debug');
+		$args = array(
+			'id' => $this->channel_id,
+			'part' => 'snippet,contentDetails',
 		);
 
-		$channel_response = wp_remote_get( $channel_url );
+		if (empty($this->refresh_token) && !empty($this->api_key)) {
+			$args['key'] = $this->api_key;
+		}
 
-		if ( is_wp_error( $channel_response ) ) {
-			tubebay_log( 'fetch_videos_from_api: Network error fetching channel details - ' . $channel_response->get_error_message(), 'error' );
+		$channel_url = add_query_arg($args, 'https://www.googleapis.com/youtube/v3/channels');
+
+		$channel_response = wp_remote_get($channel_url, $this->get_api_request_args());
+
+		if (is_wp_error($channel_response)) {
+			tubebay_log('fetch_videos_from_api: Network error fetching channel details - ' . $channel_response->get_error_message(), 'error');
 			return $channel_response;
 		}
 
-		$channel_body = json_decode( wp_remote_retrieve_body( $channel_response ), true );
+		$channel_body = json_decode(wp_remote_retrieve_body($channel_response), true);
 
-		if ( isset( $channel_body['error'] ) ) {
-			tubebay_log( 'fetch_videos_from_api: API error fetching channel details - ' . ( $channel_body['error']['message'] ?? 'Unknown Error' ), 'error' );
-			return new \WP_Error( 'api_error', $channel_body['error']['message'] ?? 'Unknown API Error' );
+		if (isset($channel_body['error'])) {
+			tubebay_log('fetch_videos_from_api: API error fetching channel details - ' . ($channel_body['error']['message'] ?? 'Unknown Error'), 'error');
+			return new \WP_Error('api_error', $channel_body['error']['message'] ?? 'Unknown API Error');
 		}
 
-		if ( empty( $channel_body['items'][0]['contentDetails']['relatedPlaylists']['uploads'] ) ) {
-			tubebay_log( 'fetch_videos_from_api: No uploads playlist found', 'error' );
-			return new \WP_Error( 'no_uploads_playlist', __( 'Could not find the uploads playlist for this channel.', 'tubebay' ) );
+		if (empty($channel_body['items'][0]['contentDetails']['relatedPlaylists']['uploads'])) {
+			tubebay_log('fetch_videos_from_api: No uploads playlist found', 'error');
+			return new \WP_Error('no_uploads_playlist', __('Could not find the uploads playlist for this channel.', 'tubebay'));
 		}
 
-		$channel_data        = $channel_body['items'][0];
+		$channel_data = $channel_body['items'][0];
 		$uploads_playlist_id = $channel_data['contentDetails']['relatedPlaylists']['uploads'];
 
 		// Sync channel snippet info.
-		if ( ! empty( $channel_data['snippet'] ) ) {
+		if (!empty($channel_data['snippet'])) {
 			$snippet = $channel_data['snippet'];
-			Settings::set( 'channel_name', $snippet['title'] ?? '' );
-			Settings::set( 'thumbnails_default', $snippet['thumbnails']['default']['url'] ?? '' );
-			Settings::set( 'thumbnails_medium', $snippet['thumbnails']['medium']['url'] ?? '' );
-			tubebay_log( 'fetch_videos_from_api: Synced channel details: ' . ( $snippet['title'] ?? 'no title' ), 'debug' );
+			Settings::set('channel_name', $snippet['title'] ?? '');
+			Settings::set('thumbnails_default', $snippet['thumbnails']['default']['url'] ?? '');
+			Settings::set('thumbnails_medium', $snippet['thumbnails']['medium']['url'] ?? '');
+			tubebay_log('fetch_videos_from_api: Synced channel details: ' . ($snippet['title'] ?? 'no title'), 'debug');
 		}
 
 		// 2. Get up to 50 videos from the uploads playlist.
-		tubebay_log( "fetch_videos_from_api: Fetching videos from playlist {$uploads_playlist_id}", 'debug' );
-		$playlist_url = add_query_arg(
-			array(
-				'playlistId' => $uploads_playlist_id,
-				'part'       => 'snippet',
-				'maxResults' => 50,
-				'key'        => $this->api_key,
-			),
-			'https://www.googleapis.com/youtube/v3/playlistItems'
+		tubebay_log("fetch_videos_from_api: Fetching videos from playlist {$uploads_playlist_id}", 'debug');
+		$args = array(
+			'playlistId' => $uploads_playlist_id,
+			'part' => 'snippet',
+			'maxResults' => 50,
 		);
 
-		$playlist_response = wp_remote_get( $playlist_url );
+		if (empty($this->refresh_token) && !empty($this->api_key)) {
+			$args['key'] = $this->api_key;
+		}
 
-		if ( is_wp_error( $playlist_response ) ) {
-			tubebay_log( 'fetch_videos_from_api: Network error fetching playlist items - ' . $playlist_response->get_error_message(), 'error' );
+		$playlist_url = add_query_arg($args, 'https://www.googleapis.com/youtube/v3/playlistItems');
+
+		$playlist_response = wp_remote_get($playlist_url, $this->get_api_request_args());
+
+		if (is_wp_error($playlist_response)) {
+			tubebay_log('fetch_videos_from_api: Network error fetching playlist items - ' . $playlist_response->get_error_message(), 'error');
 			return $playlist_response;
 		}
 
-		$playlist_body = json_decode( wp_remote_retrieve_body( $playlist_response ), true );
+		$playlist_body = json_decode(wp_remote_retrieve_body($playlist_response), true);
 
-		if ( isset( $playlist_body['error'] ) ) {
-			tubebay_log( 'fetch_videos_from_api: API error fetching playlist items - ' . ( $playlist_body['error']['message'] ?? 'Unknown Error' ), 'error' );
-			return new \WP_Error( 'api_error', $playlist_body['error']['message'] ?? 'Unknown API Error' );
+		if (isset($playlist_body['error'])) {
+			tubebay_log('fetch_videos_from_api: API error fetching playlist items - ' . ($playlist_body['error']['message'] ?? 'Unknown Error'), 'error');
+			return new \WP_Error('api_error', $playlist_body['error']['message'] ?? 'Unknown API Error');
 		}
 
-		if ( empty( $playlist_body['items'] ) ) {
-			tubebay_log( 'fetch_videos_from_api: Playlist is empty', 'info' );
+		if (empty($playlist_body['items'])) {
+			tubebay_log('fetch_videos_from_api: Playlist is empty', 'info');
 			return array();
 		}
 
 		// 3. Map to Entity.
 		$videos = array();
-		foreach ( $playlist_body['items'] as $item ) {
+		foreach ($playlist_body['items'] as $item) {
 			$snippet = $item['snippet'];
 
 			// Thumbnail selection.
 			$thumbnails = $snippet['thumbnails'] ?? array();
-			$thumb_url  = '';
-			if ( isset( $thumbnails['maxres']['url'] ) ) {
+			$thumb_url = '';
+			if (isset($thumbnails['maxres']['url'])) {
 				$thumb_url = $thumbnails['maxres']['url'];
-			} elseif ( isset( $thumbnails['high']['url'] ) ) {
+			} elseif (isset($thumbnails['high']['url'])) {
 				$thumb_url = $thumbnails['high']['url'];
-			} elseif ( isset( $thumbnails['medium']['url'] ) ) {
+			} elseif (isset($thumbnails['medium']['url'])) {
 				$thumb_url = $thumbnails['medium']['url'];
-			} elseif ( isset( $thumbnails['default']['url'] ) ) {
+			} elseif (isset($thumbnails['default']['url'])) {
 				$thumb_url = $thumbnails['default']['url'];
 			}
 
 			// Real video ID is stored in snippet.resourceId.videoId for playlistItems.
 			$videos[] = new Video(
 				array(
-					'id'            => $snippet['resourceId']['videoId'] ?? '',
-					'title'         => $snippet['title'] ?? '',
+					'id' => $snippet['resourceId']['videoId'] ?? '',
+					'title' => $snippet['title'] ?? '',
 					'thumbnail_url' => $thumb_url,
-					'published_at'  => $snippet['publishedAt'] ?? '',
-					'description'   => $snippet['description'] ?? '',
+					'published_at' => $snippet['publishedAt'] ?? '',
+					'description' => $snippet['description'] ?? '',
 				)
 			);
 		}
@@ -233,14 +339,15 @@ class Channel {
 	 * @param int    $limit       Max results per request (1-50).
 	 * @return array|\WP_Error    Array with 'videos' (Video[]) and 'next_page_token' (string|null).
 	 */
-	public function search_videos( $query = '', $sort = 'date_desc', $page_token = '', $limit = 50 ) {
-		if ( ! $this->is_configured() ) {
-			return new \WP_Error( 'not_configured', __( 'TubeBay API Key or Channel ID is missing.', 'tubebay' ) );
+	public function search_videos($query = '', $sort = 'date_desc', $page_token = '', $limit = 50)
+	{
+		if (!$this->is_configured()) {
+			return new \WP_Error('not_configured', __('TubeBay API Key or Channel ID is missing.', 'tubebay'));
 		}
 
 		// Map our internal sort keys to YouTube API 'order'.
 		$order = 'date'; // Default: Resources are sorted in reverse chronological order.
-		switch ( $sort ) {
+		switch ($sort) {
 			case 'date_desc':
 			case 'date_asc': // YouTube Search API doesn't support proper chronological ascending, so we fallback.
 				$order = 'date';
@@ -258,70 +365,73 @@ class Channel {
 		}
 
 		$args = array(
-			'channelId'  => $this->channel_id,
-			'part'       => 'snippet',
-			'type'       => 'video', // Limit to videos only.
-			'maxResults' => max( 1, min( (int) $limit, 50 ) ),
-			'order'      => $order,
-			'key'        => $this->api_key,
+			'channelId' => $this->channel_id,
+			'part' => 'snippet',
+			'type' => 'video', // Limit to videos only.
+			'maxResults' => max(1, min((int) $limit, 50)),
+			'order' => $order,
 		);
 
-		if ( ! empty( $query ) ) {
-			$args['q'] = sanitize_text_field( $query );
+		if (empty($this->refresh_token) && !empty($this->api_key)) {
+			$args['key'] = $this->api_key;
 		}
 
-		if ( ! empty( $page_token ) ) {
-			$args['pageToken'] = sanitize_text_field( $page_token );
+		if (!empty($query)) {
+			$args['q'] = sanitize_text_field($query);
 		}
 
-		$search_url = add_query_arg( $args, 'https://www.googleapis.com/youtube/v3/search' );
+		if (!empty($page_token)) {
+			$args['pageToken'] = sanitize_text_field($page_token);
+		}
 
-		tubebay_log( 'search_videos: Querying YouTube search API. URL params: ' . wp_json_encode( $args ), 'debug' );
+		$search_url = add_query_arg($args, 'https://www.googleapis.com/youtube/v3/search');
 
-		$response = wp_remote_get( $search_url );
+		tubebay_log('search_videos: Querying YouTube search API. URL params: ' . wp_json_encode($args), 'debug');
 
-		if ( is_wp_error( $response ) ) {
-			tubebay_log( 'search_videos: Network error - ' . $response->get_error_message(), 'error' );
+		$response = wp_remote_get($search_url, $this->get_api_request_args());
+
+		if (is_wp_error($response)) {
+			tubebay_log('search_videos: Network error - ' . $response->get_error_message(), 'error');
 			return $response;
 		}
 
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$body = json_decode(wp_remote_retrieve_body($response), true);
 
-		if ( isset( $body['error'] ) ) {
-			tubebay_log( 'search_videos: API error - ' . ( $body['error']['message'] ?? 'Unknown Error' ), 'error' );
-			return new \WP_Error( 'api_error', $body['error']['message'] ?? 'Unknown API Error' );
+		if (isset($body['error'])) {
+			tubebay_log('search_videos: API error - ' . ($body['error']['message'] ?? 'Unknown Error'), 'error');
+			return new \WP_Error('api_error', $body['error']['message'] ?? 'Unknown API Error');
 		}
 
 		$videos = array();
-		if ( ! empty( $body['items'] ) ) {
-			foreach ( $body['items'] as $item ) {
+		if (!empty($body['items'])) {
+			foreach ($body['items'] as $item) {
 				$snippet = $item['snippet'];
 
 				// Thumbnail selection.
 				$thumbnails = $snippet['thumbnails'] ?? array();
-				$thumb_url  = '';
-				if ( isset( $thumbnails['high']['url'] ) ) {
+				$thumb_url = '';
+				if (isset($thumbnails['high']['url'])) {
 					$thumb_url = $thumbnails['high']['url'];
-				} elseif ( isset( $thumbnails['medium']['url'] ) ) {
+				} elseif (isset($thumbnails['medium']['url'])) {
 					$thumb_url = $thumbnails['medium']['url'];
-				} elseif ( isset( $thumbnails['default']['url'] ) ) {
+				} elseif (isset($thumbnails['default']['url'])) {
 					$thumb_url = $thumbnails['default']['url'];
 				}
 
 				// In Search API, ID is in id.videoId.
 				$video_id = $item['id']['videoId'] ?? '';
 
-				if ( empty( $video_id ) ) {
+				if (empty($video_id)) {
 					continue; // Skip rare cases where it's not a video.
 				}
 
 				$videos[] = new Video(
 					array(
-						'id'            => $video_id,
-						'title'         => $snippet['title'] ?? '',
+						'id' => $video_id,
+						'title' => $snippet['title'] ?? '',
 						'thumbnail_url' => $thumb_url,
-						'published_at'  => $snippet['publishedAt'] ?? '',
-						'description'   => $snippet['description'] ?? '',
+						'published_at' => $snippet['publishedAt'] ?? '',
+						'description' => $snippet['description'] ?? '',
 					)
 				);
 			}
@@ -330,14 +440,14 @@ class Channel {
 		// Search API reverse sort fix
 		// YouTube API doesn't support reverse sorts for title or date ascending natively.
 		// We'll flip the array manually for the specific page if requested.
-		if ( 'date_asc' === $sort || 'title_desc' === $sort ) {
-			$videos = array_reverse( $videos );
+		if ('date_asc' === $sort || 'title_desc' === $sort) {
+			$videos = array_reverse($videos);
 		}
 
 		$next_page_token = $body['nextPageToken'] ?? null;
 
 		return array(
-			'videos'          => $videos,
+			'videos' => $videos,
 			'next_page_token' => $next_page_token,
 		);
 	}
@@ -348,53 +458,64 @@ class Channel {
 	 *
 	 * @return array|\WP_Error
 	 */
-	public function get_channel_details() {
-		if ( ! $this->is_configured() ) {
-			return new \WP_Error( 'not_configured', __( 'TubeBay API Key or Channel ID is missing.', 'tubebay' ) );
+	public function get_channel_details()
+	{
+		if (!$this->is_configured()) {
+			return new \WP_Error('not_configured', __('TubeBay API Key or Channel ID is missing.', 'tubebay'));
 		}
 
-		tubebay_log( 'get_channel_details: Fetching fresh details from API', 'info' );
-		$channel_url = add_query_arg(
-			array(
-				'id'   => $this->channel_id,
-				'part' => 'snippet',
-				'key'  => $this->api_key,
-			),
-			'https://www.googleapis.com/youtube/v3/channels'
+		tubebay_log('get_channel_details: Fetching fresh details from API', 'info');
+
+		$args = array(
+			'part' => 'snippet',
 		);
 
-		$channel_response = wp_remote_get( $channel_url );
+		if (empty($this->channel_id) && !empty($this->refresh_token)) {
+			$args['mine'] = 'true';
+		} else {
+			$args['id'] = $this->channel_id;
+		}
 
-		if ( is_wp_error( $channel_response ) ) {
-			tubebay_log( 'get_channel_details: Network error fetching details - ' . $channel_response->get_error_message(), 'error' );
+		if (empty($this->refresh_token) && !empty($this->api_key)) {
+			$args['key'] = $this->api_key;
+		}
+
+		$channel_url = add_query_arg($args, 'https://www.googleapis.com/youtube/v3/channels');
+
+		$channel_response = wp_remote_get($channel_url, $this->get_api_request_args());
+
+		if (is_wp_error($channel_response)) {
+			tubebay_log('get_channel_details: Network error fetching details - ' . $channel_response->get_error_message(), 'error');
 			return $channel_response;
 		}
 
-		$channel_body = json_decode( wp_remote_retrieve_body( $channel_response ), true );
+		$channel_body = json_decode(wp_remote_retrieve_body($channel_response), true);
 
-		if ( isset( $channel_body['error'] ) ) {
-			tubebay_log( 'get_channel_details: API error - ' . ( $channel_body['error']['message'] ?? 'Unknown API Error' ), 'error' );
-			return new \WP_Error( 'api_error', $channel_body['error']['message'] ?? 'Unknown API Error' );
+		if (isset($channel_body['error'])) {
+			tubebay_log('get_channel_details: API error - ' . ($channel_body['error']['message'] ?? 'Unknown API Error'), 'error');
+			return new \WP_Error('api_error', $channel_body['error']['message'] ?? 'Unknown API Error');
 		}
 
-		if ( empty( $channel_body['items'][0]['snippet'] ) ) {
-			tubebay_log( 'get_channel_details: Could not find channel snippet', 'error' );
-			return new \WP_Error( 'api_error', __( 'Could not fetch channel details.', 'tubebay' ) );
+		if (empty($channel_body['items'][0]['snippet'])) {
+			tubebay_log('get_channel_details: Could not find channel snippet', 'error');
+			return new \WP_Error('api_error', __('Could not fetch channel details.', 'tubebay'));
 		}
 
 		$snippet = $channel_body['items'][0]['snippet'];
+		$channel_id = $channel_body['items'][0]['id'] ?? $this->channel_id;
 
-		tubebay_log( 'get_channel_details: Channel details fetched successfully', 'debug' );
-		tubebay_log( 'get_channel_details: Channel details - ' . wp_json_encode( $snippet ), 'debug' );
+		tubebay_log('get_channel_details: Channel details fetched successfully', 'debug');
+		tubebay_log('get_channel_details: Channel details - ' . wp_json_encode($snippet), 'debug');
 
 		$details = array(
-			'title'              => $snippet['title'] ?? '',
-			'description'        => $snippet['description'] ?? '',
+			'channel_id' => $channel_id,
+			'title' => $snippet['title'] ?? '',
+			'description' => $snippet['description'] ?? '',
 			'thumbnails_default' => $snippet['thumbnails']['default']['url'] ?? '',
-			'thumbnails_medium'  => $snippet['thumbnails']['medium']['url'] ?? '',
+			'thumbnails_medium' => $snippet['thumbnails']['medium']['url'] ?? '',
 		);
 
-		tubebay_log( 'get_channel_details: Success, setting transient cache', 'debug' );
+		tubebay_log('get_channel_details: Success, setting transient cache', 'debug');
 		// Results are not cached locally for now.
 
 		return $details;
@@ -406,14 +527,15 @@ class Channel {
 	 *
 	 * @return array|\WP_Error  Channel details array on success, WP_Error on failure.
 	 */
-	public function test_connection() {
-		if ( ! $this->is_configured() ) {
-			return new \WP_Error( 'not_configured', __( 'API Key or Channel ID is missing.', 'tubebay' ) );
+	public function test_connection()
+	{
+		if (!$this->is_configured()) {
+			return new \WP_Error('not_configured', __('API Key or Channel ID is missing.', 'tubebay'));
 		}
 
 		$details = $this->get_channel_details();
 
-		if ( is_wp_error( $details ) ) {
+		if (is_wp_error($details)) {
 			return $details;
 		}
 
@@ -425,9 +547,10 @@ class Channel {
 	 *
 	 * @return true|\WP_Error
 	 */
-	public function reconnect() {
-		Settings::set( 'api_key', $this->api_key );
-		Settings::set( 'channel_id', $this->channel_id );
+	public function reconnect()
+	{
+		Settings::set('api_key', $this->api_key);
+		Settings::set('channel_id', $this->channel_id);
 
 		return $this->test_connection();
 	}
@@ -437,8 +560,9 @@ class Channel {
 	 *
 	 * @return void
 	 */
-	public function disconnect() {
-		Settings::set( 'connection_status', 'disconnected' );
-		Settings::set( 'channel_name', '' );
+	public function disconnect()
+	{
+		Settings::set('connection_status', 'disconnected');
+		Settings::set('channel_name', '');
 	}
 }
