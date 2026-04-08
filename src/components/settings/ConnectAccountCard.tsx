@@ -166,35 +166,41 @@ export default function ConnectAccountCard({
                 Find your Channel ID in your
                 <Tooltip
                   content={
-                    <div className="tubebay-p-2 tubebay-max-w-[280px]">
+                    <div className="tubebay-p-2 tubebay-max-w-full">
                       <p className="tubebay-font-bold tubebay-mb-2 tubebay-text-gray-800">
                         How to find your Channel ID:
                       </p>
-                      <ol className="tubebay-list-decimal tubebay-list-inside tubebay-space-y-1 tubebay-mb-3 tubebay-text-gray-600">
-                        <li>Sign in to your YouTube account</li>
-                        <li>
-                          Go to{" "}
-                          <span className="tubebay-font-semibold">
-                            Advanced settings
-                          </span>
-                        </li>
-                        <li>
-                          Copy the{" "}
-                          <span className="tubebay-font-semibold">
-                            Channel ID
-                          </span>
-                        </li>
-                      </ol>
-                      <img
-                        src={channelIdImg}
-                        alt="Channel ID Tutorial"
-                        className="tubebay-rounded tubebay-border tubebay-border-gray-200 tubebay-w-full"
-                      />
+                      <div className="tubebay-flex tubebay-items-start tubebay-gap-4">
+                        <div className="">
+                          <ol className="tubebay-list-decimal tubebay-list-inside tubebay-space-y-1 tubebay-text-gray-600">
+                            <li>Sign in to your YouTube account</li>
+                            <li>
+                              Go to{" "}
+                              <span className="tubebay-font-semibold">
+                                Advanced settings
+                              </span>
+                            </li>
+                            <li>
+                              Copy the{" "}
+                              <span className="tubebay-font-semibold">
+                                Channel ID
+                              </span>
+                            </li>
+                          </ol>
+                        </div>
+                        <div className="tubebay-flex-1">
+                          <img
+                            src={channelIdImg}
+                            alt="Channel ID Tutorial"
+                            className="tubebay-rounded tubebay-border tubebay-border-gray-200 tubebay-w-full"
+                          />
+                        </div>
+                      </div>
                     </div>
                   }
                   color="light"
                   position="bottom"
-                  className="!tubebay-max-w-[600px]"
+                  className="!tubebay-max-w-[min(700px,90vw)]"
                 >
                   <a
                     href="https://www.youtube.com/account_advanced"
