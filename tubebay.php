@@ -76,17 +76,6 @@ tubebay_run();
  */
 function tubebay_activate() {
 	tubebay_log( 'TubeBay plugin activated', 'info' );
-
-	/**
-	 * Only load when needed, and immediately use a function from that file
-	 *
-	 * It will be needed to create custom tables at
-	 * TubeBay\Core\Activator::activate() ->  create_custom_tables()
-	 */
-	if ( ! function_exists( 'dbDelta' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	}
-
 	// Calling the activation function.
 	\TubeBay\Core\Activator::activate();
 }
