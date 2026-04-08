@@ -42,6 +42,7 @@ export default function Settings() {
   const [tmpCredentials, setTmpCredentials] = useState({
     api_key: settings.api_key || "",
     channel_id: settings.channel_id || "",
+    refresh_token: settings.refresh_token || "",
   });
 
   // Separate temp state for other settings
@@ -69,6 +70,7 @@ export default function Settings() {
       const creds = {
         api_key: response.api_key || "",
         channel_id: response.channel_id || "",
+        refresh_token: response.refresh_token || "",
       };
       const other = {
         auto_sync: response.auto_sync !== undefined ? response.auto_sync : true,
@@ -105,6 +107,7 @@ export default function Settings() {
         data: {
           api_key: tmpCredentials.api_key,
           channel_id: tmpCredentials.channel_id,
+          refresh_token: tmpCredentials.refresh_token,
         },
       });
 
@@ -113,6 +116,7 @@ export default function Settings() {
         setTmpCredentials({
           api_key: response.data.api_key || "",
           channel_id: response.data.channel_id || "",
+          refresh_token: response.data.refresh_token || "",
         });
 
         // Check if connection actually succeeded
@@ -206,6 +210,7 @@ export default function Settings() {
         data: {
           api_key: tmpCredentials.api_key,
           channel_id: tmpCredentials.channel_id,
+          refresh_token: tmpCredentials.refresh_token,
         },
       });
 
@@ -262,7 +267,8 @@ export default function Settings() {
   const credentialsChanged = () => {
     return (
       tmpCredentials.api_key !== (settings.api_key || "") ||
-      tmpCredentials.channel_id !== (settings.channel_id || "")
+      tmpCredentials.channel_id !== (settings.channel_id || "") ||
+      tmpCredentials.refresh_token !== (settings.refresh_token || "")
     );
   };
 

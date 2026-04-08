@@ -57,6 +57,7 @@ const Onboarding: FC = () => {
   const [tmpCredentials, setTmpCredentials] = useState({
     api_key: settings.api_key || "",
     channel_id: settings.channel_id || "",
+    refresh_token: settings.refresh_token || "",
   });
 
   const [tmpOtherSettings, setTmpOtherSettings] = useState({
@@ -99,6 +100,7 @@ const Onboarding: FC = () => {
         data: {
           api_key: tmpCredentials.api_key,
           channel_id: tmpCredentials.channel_id,
+          refresh_token: tmpCredentials.refresh_token,
         },
       });
 
@@ -107,6 +109,7 @@ const Onboarding: FC = () => {
         setTmpCredentials({
           api_key: response.data.api_key || "",
           channel_id: response.data.channel_id || "",
+          refresh_token: response.data.refresh_token || "",
         });
 
         if (
@@ -154,6 +157,7 @@ const Onboarding: FC = () => {
         data: {
           api_key: tmpCredentials.api_key,
           channel_id: tmpCredentials.channel_id,
+          refresh_token: tmpCredentials.refresh_token,
         },
       });
 
@@ -250,7 +254,8 @@ const Onboarding: FC = () => {
   const credentialsChanged = () => {
     return (
       tmpCredentials.api_key !== (settings.api_key || "") ||
-      tmpCredentials.channel_id !== (settings.channel_id || "")
+      tmpCredentials.channel_id !== (settings.channel_id || "") ||
+      tmpCredentials.refresh_token !== (settings.refresh_token || "")
     );
   };
 

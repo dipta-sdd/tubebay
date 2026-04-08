@@ -136,6 +136,18 @@ class SettingsController extends ApiController {
 			}
 		}
 
+		if ( isset( $body['refresh_token'] ) ) {
+			$old = Settings::get( 'refresh_token' );
+			$new = sanitize_text_field( $body['refresh_token'] );
+			if ( $old !== $new ) {
+				Settings::set( 'refresh_token', $new );
+				// Also clear the access token so it is forced to refresh
+				Settings::set( 'access_token', '' );
+				Settings::set( 'token_expires', 0 );
+				$creds_changed = true;
+			}
+		}
+
 		if ( $creds_changed ) {
 			// Credentials changed — verify the new connection.
 			$channel = new Channel();
@@ -146,6 +158,11 @@ class SettingsController extends ApiController {
 				if ( ! is_wp_error( $result ) ) {
 					tubebay_log( 'Connection successful, updating settings', 'info' );
 					tubebay_log( 'Connection result: ' . wp_json_encode( $result ), 'info' );
+					
+					if ( ! empty( $result['channel_id'] ) ) {
+						Settings::set( 'channel_id', sanitize_text_field( $result['channel_id'] ) );
+					}
+					
 					Settings::set( 'channel_name', $result['title'] ?? '' );
 					Settings::set( 'thumbnails_default', $result['thumbnails_default'] ?? '' );
 					Settings::set( 'thumbnails_medium', $result['thumbnails_medium'] ?? '' );

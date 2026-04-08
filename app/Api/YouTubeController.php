@@ -115,29 +115,27 @@ class YouTubeController extends ApiController {
 	 * @since 1.0.0
 	 */
 	public function test_connection( $request ) {
-		$params     = $request->get_params();
-		$api_key    = $params['api_key'];
-		$channel_id = $params['channel_id'];
+		$params        = $request->get_params();
+		$api_key       = $params['api_key'] ?? '';
+		$channel_id    = $params['channel_id'] ?? '';
+		$refresh_token = $params['refresh_token'] ?? '';
 
 		tubebay_log( "Testing connection for Channel ID: {$channel_id}", 'debug' );
 
 		$channel = new Channel(
 			array(
-				'api_key'    => $api_key ? $api_key : '--',
-				'channel_id' => $channel_id ? $channel_id : '--',
+				'api_key'       => $api_key ? $api_key : '',
+				'channel_id'    => $channel_id ? $channel_id : '',
+				'refresh_token' => $refresh_token,
 			)
 		);
-
-		if ( ! $channel->is_configured() ) {
-			tubebay_log( 'Connection test failed: API Key or Channel ID missing', 'error' );
-			return new \WP_Error( 'not_configured', __( 'API Key or Channel ID missing.', 'tubebay' ), array( 'status' => 400 ) );
-		}
 
 		$result = $channel->test_connection();
 
 		if ( is_wp_error( $result ) ) {
 			tubebay_log( 'Connection test failed: ' . $result->get_error_message(), 'error' );
-			return new \WP_Error( 'connection_failed', $result->get_error_message(), array( 'status' => 400 ) );
+
+			return new \WP_Error( 'connection_failed', $result->get_error_message(), array( 'status' => 400, $result ) );
 		}
 
 		tubebay_log( 'Connection test successful for channel: ' . ( $result['title'] ?? 'Unknown' ), 'info' );

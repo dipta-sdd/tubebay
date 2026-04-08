@@ -44,6 +44,8 @@ export interface PluginSettings {
     muted_autoplay: boolean;
     show_controls: boolean;
     is_onboarding_completed: boolean;
+    refresh_token?: string;
+    access_token?: string;
 }
 
 export interface SyncPlacementSettings {

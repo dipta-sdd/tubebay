@@ -18,8 +18,16 @@ export interface ConnectionFeedback {
 
 interface ConnectAccountCardProps {
   settings: PluginSettings;
-  tmpCredentials: { api_key: string; channel_id: string };
-  setTmpCredentials: (creds: { api_key: string; channel_id: string }) => void;
+  tmpCredentials: {
+    api_key: string;
+    channel_id: string;
+    refresh_token: string;
+  };
+  setTmpCredentials: (creds: {
+    api_key: string;
+    channel_id: string;
+    refresh_token: string;
+  }) => void;
   editingConnection: boolean;
   setEditingConnection: (editing: boolean) => void;
   saving: boolean;
@@ -69,6 +77,10 @@ export default function ConnectAccountCard({
   feedback,
   setFeedback,
 }: ConnectAccountCardProps) {
+  const [connectionMode, setConnectionMode] = useState<"oauth" | "manual">(
+    "oauth",
+  );
+
   return (
     <Card className="tubebay-flex tubebay-flex-col tubebay-items-center">
       <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-mb-[16px]">
@@ -149,66 +161,136 @@ export default function ConnectAccountCard({
           </div>
         </div>
       ) : (
-        <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-[12px]">
-          <div className="tubebay-w-full tubebay-flex tubebay-flex-row tubebay-gap-[12px]">
-            <div className="tubebay-w-full">
-              <Input
-                label="YouTube Channel ID"
-                value={tmpCredentials.channel_id}
-                onChange={(e) =>
-                  setTmpCredentials({
-                    ...tmpCredentials,
-                    channel_id: (e.target as HTMLInputElement).value,
-                  })
-                }
-                placeholder="UCxxxxxxxxxxxxxxx"
-              />
-              <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
-                Find your Channel ID in your
-                <Tooltip
-                  content={<ChannelIdTooltip />}
-                  color="light"
-                  position="bottom"
-                  className="!tubebay-max-w-[min(700px,90vw)]"
-                >
+        <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-[16px]">
+          <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-[16px] tubebay-bg-gray-50 tubebay-p-4 tubebay-rounded-xl tubebay-border">
+            <h3 className="tubebay-font-bold tubebay-text-gray-800">
+              Connection Method
+            </h3>
+
+            <div className="tubebay-flex tubebay-items-center tubebay-gap-[16px] tubebay-border-b tubebay-border-gray-200 tubebay-pb-4">
+              <label className="tubebay-flex tubebay-items-center tubebay-gap-2 tubebay-cursor-pointer">
+                <input
+                  type="radio"
+                  name="connectionMode"
+                  value="oauth"
+                  checked={connectionMode === "oauth"}
+                  onChange={() => setConnectionMode("oauth")}
+                  className="tubebay-accent-blue-600"
+                />
+                <span className="tubebay-text-sm tubebay-font-medium tubebay-text-gray-700">
+                  OAuth (Recommended)
+                </span>
+              </label>
+              <label className="tubebay-flex tubebay-items-center tubebay-gap-2 tubebay-cursor-pointer">
+                <input
+                  type="radio"
+                  name="connectionMode"
+                  value="manual"
+                  checked={connectionMode === "manual"}
+                  onChange={() => setConnectionMode("manual")}
+                  className="tubebay-accent-blue-600"
+                />
+                <span className="tubebay-text-sm tubebay-font-medium tubebay-text-gray-700">
+                  Manual (API Key + Channel ID)
+                </span>
+              </label>
+            </div>
+
+            {connectionMode === "oauth" ? (
+              <div className="tubebay-flex tubebay-flex-col tubebay-gap-[12px]">
+                <p className="tubebay-text-sm tubebay-text-gray-600">
+                  Click the button below to authorize TubeBay securely with
+                  Google. You will be provided with a token to paste here.
+                </p>
+                <div>
                   <a
-                    href="https://www.youtube.com/account_advanced"
+                    href="https://tbac.wpanchorbay.com/oauth?action=connect"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
+                    className="tubebay-inline-flex tubebay-items-center tubebay-gap-2 tubebay-bg-white tubebay-border tubebay-border-gray-300 hover:tubebay-bg-gray-50 tubebay-text-gray-700 tubebay-px-4 tubebay-py-2 tubebay-rounded-lg tubebay-font-medium tubebay-transition-colors"
                   >
-                    YouTube Advanced Settings
+                    <GoogleIcon size={18} />
+                    Authorize with Google
                   </a>
-                </Tooltip>
-                .
-              </p>
-            </div>
-            <div className="tubebay-w-full">
-              <Input
-                label="Google Cloud API Key"
-                type="password"
-                value={tmpCredentials.api_key}
-                onChange={(e) =>
-                  setTmpCredentials({
-                    ...tmpCredentials,
-                    api_key: (e.target as HTMLInputElement).value,
-                  })
-                }
-                placeholder="AIzaSyB-xxxxxxxxxxxxxxx"
-              />
-              <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
-                Generate an API Key in the{" "}
-                <a
-                  href="https://console.cloud.google.com/apis/api/youtube.googleapis.com/credentials"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
-                >
-                  Google Cloud Console
-                </a>
-                .
-              </p>
-            </div>
+                </div>
+
+                <div className="tubebay-mt-2">
+                  <Input
+                    label="Refresh Token"
+                    type="password"
+                    value={tmpCredentials.refresh_token || ""}
+                    onChange={(e) =>
+                      setTmpCredentials({
+                        ...tmpCredentials,
+                        refresh_token: (e.target as HTMLInputElement).value,
+                      })
+                    }
+                    placeholder="Paste your token here..."
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-4">
+                <div>
+                  <Input
+                    label="Google Cloud API Key"
+                    type="password"
+                    value={tmpCredentials.api_key}
+                    onChange={(e) =>
+                      setTmpCredentials({
+                        ...tmpCredentials,
+                        api_key: (e.target as HTMLInputElement).value,
+                      })
+                    }
+                    placeholder="AIzaSyB-xxxxxxxxxxxxxxx"
+                  />
+                  <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
+                    Generate an API Key in the{" "}
+                    <a
+                      href="https://console.cloud.google.com/apis/api/youtube.googleapis.com/credentials"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800"
+                    >
+                      Google Cloud Console
+                    </a>
+                    .
+                  </p>
+                </div>
+                <div>
+                  <Input
+                    label="YouTube Channel ID"
+                    value={tmpCredentials.channel_id}
+                    onChange={(e) =>
+                      setTmpCredentials({
+                        ...tmpCredentials,
+                        channel_id: (e.target as HTMLInputElement).value,
+                      })
+                    }
+                    placeholder="UCxxxxxxxxxxxxxxx"
+                  />
+                  <p className="tubebay-text-[12px] tubebay-text-gray-500 tubebay-mt-[4px]">
+                    Find your Channel ID in your
+                    <Tooltip
+                      content={<ChannelIdTooltip />}
+                      color="light"
+                      position="bottom"
+                      className="!tubebay-max-w-[min(700px,90vw)]"
+                    >
+                      <a
+                        href="https://www.youtube.com/account_advanced"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tubebay-text-blue-600 tubebay-underline hover:tubebay-text-blue-800 tubebay-ml-1"
+                      >
+                        YouTube Advanced Settings
+                      </a>
+                    </Tooltip>
+                    .
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           {/* Inline Feedback Message */}
           {feedback && (
@@ -228,7 +310,9 @@ export default function ConnectAccountCard({
               disabled={
                 saving ||
                 (!credentialsChanged() &&
-                  settings.connection_status === "connected")
+                  settings.connection_status === "connected") ||
+                (!tmpCredentials.refresh_token &&
+                  (!tmpCredentials.api_key || !tmpCredentials.channel_id))
               }
               color="primary"
             >
@@ -237,7 +321,9 @@ export default function ConnectAccountCard({
             <Button
               onClick={handleTestConnection}
               disabled={
-                testing || !tmpCredentials.api_key || !tmpCredentials.channel_id
+                testing ||
+                (!tmpCredentials.refresh_token &&
+                  (!tmpCredentials.api_key || !tmpCredentials.channel_id))
               }
               color="secondary"
               variant="outline"
