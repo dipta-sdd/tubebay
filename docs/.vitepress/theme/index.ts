@@ -9,8 +9,8 @@ export default {
 	Layout: () => {
 		return h(DefaultTheme.Layout, null, {
 			'nav-bar-title-after': () =>
-				h('span', { class: 'productbay-site-title' }, [
-					h('span', { class: 'product-bold' }, 'Product'),
+				h('span', { class: 'tubebay-site-title' }, [
+					h('span', { class: 'tube-bold' }, 'Tube'),
 					'Bay',
 				]),
 		});
