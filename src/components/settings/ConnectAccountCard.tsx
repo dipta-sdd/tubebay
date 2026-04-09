@@ -207,7 +207,7 @@ export default function ConnectAccountCard({
                 </p>
                 <div className="tubebay-mt-2">
                   <a
-                    href="https://wpanchorbay.com/oauth?action=connect"
+                    href="https://wpanchorbay.com/oauth/index.php?action=connect"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setShowTokenInput(true)}
