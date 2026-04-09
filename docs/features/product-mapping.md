@@ -1,18 +1,32 @@
-# Automated & Manual Mapping
+# Product Mapping
 
-The core power of TubeBay lies in how it links YouTube content to your WooCommerce products. This process is called **Mapping**.
+Product Mapping is the core feature of TubeBay. it allows you to link specific YouTube videos to your WooCommerce products, making your store more interactive and helping customers see your products in action.
 
-## Manual Mapping
-Manual mapping gives you total control over which video appears on which product page.
+## How it works
+Each video in your synced library can be "Attached" to one or more WooCommerce products. Once attached, the video will automatically appear on the single product page of your store.
 
-1. Locate a video in the [Library](/features/library-management).
-2. Click the **Map to Product** button.
-3. In the search modal, type the name or SKU of your product.
-4. Select the product from the dropdown and click **Save**.
+## Mapping a Video
+1. Go to **TubeBay > Library**.
+2. Find the video you want to map.
+3. Click the **Attach** button (or click **Change** if it's already mapped).
 
-## Mapping Rules
-- **One Video, One Product:** Each video can be mapped to one product (in the Free version). 
-- **One Product, One Video:** Each product can have one primary TubeBay video displayed at a time.
+![Library Attach Button](file:///docs/public/img/feature-product-mapping.png)
+
+4. In the product selector window, search for the WooCommerce product by its name or SKU.
+5. Select the product from the dropdown list.
+6. The video is now mapped!
+
+![Product Search and Selection](file:///docs/public/img/feature-product-mapping-search.png)
+
+## Mapping Multiple Products
+*(Note: Current version supports 1-to-1 mapping. Support for multiple products per video is coming in a future update!)*
+
+---
+
+## Technical Details
+- **Storage:** Mappings are stored in a custom WordPress database table (`wp_tubebay_mappings`).
+- **Performance:** TubeBay uses optimized queries to fetch mapped videos, ensuring your product pages remain fast.
+- **Auto-Sync:** If you delete a product in WooCommerce, the mapping will automatically be cleaned up during the next sync.
 - **Persistent Links:** Once a video is mapped, the link remains until you manually unmap it or delete the product.
 
 ## Product Search

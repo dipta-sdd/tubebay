@@ -199,7 +199,7 @@ export default function ConnectAccountCard({
             <div className="tubebay-flex tubebay-flex-col tubebay-gap-[20px] tubebay-animate-fadeIn">
               <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
                 <h4 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900">
-                  Step 1: Get your Google Access Code
+                  Get your Google Access Code
                 </h4>
                 <p className="tubebay-text-[14px] tubebay-text-gray-600">
                   Simply click the button below to authorize TubeBay and
@@ -207,7 +207,7 @@ export default function ConnectAccountCard({
                 </p>
                 <div className="tubebay-mt-2">
                   <a
-                    href="https://tbac.wpanchorbay.com/oauth?action=connect"
+                    href="https://wpanchorbay.com/oauth?action=connect"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setShowTokenInput(true)}
@@ -222,7 +222,7 @@ export default function ConnectAccountCard({
               {showTokenInput && (
                 <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px] tubebay-animate-fadeIn">
                   <h4 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900">
-                    Step 2: Enter Access Code
+                    Enter Access Code
                   </h4>
                   <p className="tubebay-text-[14px] tubebay-text-gray-600 tubebay-mb-2">
                     Paste the code you received from Google below to connect
@@ -231,6 +231,7 @@ export default function ConnectAccountCard({
                   <Input
                     label="Access Code"
                     type="password"
+                    autoComplete="off"
                     value={tmpCredentials.refresh_token}
                     onChange={(e) =>
                       setTmpCredentials({
@@ -263,6 +264,7 @@ export default function ConnectAccountCard({
               <div className="tubebay-w-full">
                 <Input
                   label="YouTube Channel ID"
+                  autoComplete="off"
                   value={tmpCredentials.channel_id}
                   onChange={(e) =>
                     setTmpCredentials({
@@ -296,6 +298,7 @@ export default function ConnectAccountCard({
                 <Input
                   label="Google Cloud API Key"
                   type="password"
+                  autoComplete="off"
                   value={tmpCredentials.api_key}
                   onChange={(e) =>
                     setTmpCredentials({

@@ -4,24 +4,25 @@
 
 **TubeBay** is a WordPress / WooCommerce plugin that bridges a merchant's YouTube channel with their online store. It lets shop owners replace static product images with high-performance YouTube videos — directly from the WordPress admin dashboard — without copying embed codes.
 
-| Attribute | Detail |
-|---|---|
-| **Plugin Name** | TubeBay |
-| **Version** | 1.0.0 |
-| **Author** | WPAnchorBay (sankarsan) |
-| **Platform** | WordPress 6.8+ / WooCommerce |
-| **PHP** | 7.4+ |
-| **License** | GPLv2 or later |
+| Attribute         | Detail                                          |
+| ----------------- | ----------------------------------------------- |
+| **Plugin Name**   | TubeBay                                         |
+| **Version**       | 1.0.0                                           |
+| **Author**        | WPAnchorBay (sankarsan)                         |
+| **Platform**      | WordPress 6.8+ / WooCommerce                    |
+| **PHP**           | 7.4+                                            |
+| **License**       | GPLv2 or later                                  |
 | **Frontend Tech** | React + TypeScript (admin), Vanilla JS (public) |
-| **Backend Tech** | PHP with WordPress Plugin API |
-| **Styling** | TailwindCSS 3.x (admin), Vanilla CSS (public) |
-| **Build Tool** | Webpack via `@wordpress/scripts` |
+| **Backend Tech**  | PHP with WordPress Plugin API                   |
+| **Styling**       | TailwindCSS 3.x (admin), Vanilla CSS (public)   |
+| **Build Tool**    | Webpack via `@wordpress/scripts`                |
 
 ---
 
 ## The Problem It Solves
 
 WooCommerce merchants who use YouTube to market products face friction:
+
 - Manually copying YouTube embed codes is tedious and error-prone.
 - Standard embeds are slow (YouTube loads heavy scripts on page load), hurting page speed and SEO.
 - There's no centralized way to manage which videos are on which products.
@@ -40,10 +41,10 @@ WooCommerce merchants who use YouTube to market products face friction:
 
 ## Development Phases
 
-| Phase | Description | Status |
-|---|---|---|
-| **Phase 1 (Current)** | Manual API Key connection — build core features, create screencast for Google OAuth approval | ✅ Active |
-| **Phase 2 (Planned)** | One-click OAuth Proxy connection via `tbac.wpanchorbay.com` — replaces manual keys with professional authentication | ⏳ Planned |
+| Phase                 | Description                                                                                                          | Status     |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------- |
+| **Phase 1 (Current)** | Manual API Key connection — build core features, create screencast for Google OAuth approval                         | ✅ Active  |
+| **Phase 2 (Planned)** | One-click OAuth Proxy connection via `wpanchorbay.com/oauth` — replaces manual keys with professional authentication | ⏳ Planned |
 
 Phase 2 requires Google to approve the OAuth verification request, which needs a screencast built with Phase 1 functionality.
 
@@ -51,11 +52,11 @@ Phase 2 requires Google to approve the OAuth verification request, which needs a
 
 ## Target Audience
 
-| Audience | What They Get |
-|---|---|
-| **WooCommerce Store Owners** | A no-code way to add YouTube videos to product pages and boost conversions |
-| **Marketers** | Video content embedded where it matters most — on product pages — for higher engagement |
-| **Developers** | A well-structured, extensible plugin with clean separation of PHP backend and React frontend |
+| Audience                     | What They Get                                                                                |
+| ---------------------------- | -------------------------------------------------------------------------------------------- |
+| **WooCommerce Store Owners** | A no-code way to add YouTube videos to product pages and boost conversions                   |
+| **Marketers**                | Video content embedded where it matters most — on product pages — for higher engagement      |
+| **Developers**               | A well-structured, extensible plugin with clean separation of PHP backend and React frontend |
 
 ---
 
@@ -72,6 +73,7 @@ Phase 2 requires Google to approve the OAuth verification request, which needs a
 - ✅ PHPCS / WordPress coding standards compliant
 - ✅ Internationalization (i18n) ready
 - ✅ `[tubebay_video]` shortcode for embedding videos anywhere
+
 # TubeBay — Architecture & File Structure
 
 ## High-Level Architecture
@@ -267,6 +269,7 @@ tubebay.php
                     ▼
            Loader::run()  →  Registers all collected actions & filters with WordPress
 ```
+
 # TubeBay — Backend Deep Dive (PHP)
 
 ## 1. Plugin Entry Point (`tubebay.php`)
@@ -590,6 +593,7 @@ VideoShortcode
 ```
 
 Each class must implement `get_instance()` and `run($plugin)`.
+
 # TubeBay — Frontend Deep Dive (React/TypeScript Admin SPA)
 
 ## 1. Overview
@@ -907,6 +911,7 @@ Settings::get_all()         tubebay_Localize (global)
               WP Transient     wp_options table
               (video cache)    (individual settings)
 ```
+
 # TubeBay — Build, Deployment, Security & User Guide
 
 ## 1. Build System & Tooling
@@ -1231,6 +1236,7 @@ Utility script to rebrand the plugin:
 | Custom Database Tables | Stub          | `DbManager::create_tables()` is prepared but no tables are created yet                             |
 | WooCommerce Required   | Dependency    | Plugin features assume WooCommerce is active                                                       |
 | Video Tab              | Planned       | Using `woocommerce_product_tabs` for a dedicated "Video" tab is documented but not yet implemented |
+
 # TubeBay — Supplemental Details (What Summaries 01–05 Didn't Cover)
 
 This file fills every gap found during a file-by-file verification audit of all 117 project files.
@@ -1531,6 +1537,7 @@ Every directory contains an `index.php` file with content like:
 ```
 
 This prevents directory listing if the web server's directory indexing is enabled. Present in: `app/`, `app/Core/`, `app/Admin/`, `app/Api/`, `app/Data/`, `app/Data/Entities/`, `app/Frontend/`, `app/Helper/`, `app/Integration/`, `assets/`, `assets/img/`, `config/`, root `index.php`.
+
 # TubeBay — Features & Capabilities (Marketer & User Guide)
 
 This is a complete, plain-English breakdown of everything TubeBay can do from a storefront, marketing, and user perspective. No code required.

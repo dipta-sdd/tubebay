@@ -3,38 +3,37 @@
 While TubeBay handles video placement automatically based on your settings, you often need more control for specific page layouts or landing pages. Our shortcodes allow you to embed videos anywhere that supports WordPress shortcodes.
 
 ## The Global Video Shortcode
-Use this shortcode within a single product page to display the video mapped to that specific product.
+TubeBay includes a powerful shortcode system that allows you to embed your YouTube videos anywhere on your WordPress site, not just on product pages.
 
-```text
-[tubebay_video]
-```
+## Basic Usage
+To embed a video, use the following shortcode structure:
 
-- **How it works:** This shortcode automatically detects the current product ID and renders the linked video.
-- **Attributes:** It inherits the global player settings (autoplay, controls, etc.).
+`[tubebay_video id="YOUTUBE_VIDEO_ID"]`
 
-## The Specific Video Shortcode
-Use this to embed a specific YouTube video anywhere on your site, regardless of product mapping.
+### How to get the Video ID?
+You can find the ID for any of your synced videos in the **TubeBay > Library** tab.
 
-```text
-[tubebay_video id="YOUTUBE_VIDEO_ID"]
-```
+![Getting Video ID from Library](file:///docs/public/img/feature-shortcode-id.png)
 
-### Attributes:
-- `id`: (Required) The 11-character YouTube video ID.
-- `width`: (Optional) The width of the player (e.g., `100%` or `600px`).
-- `autoplay`: (Optional) `yes` or `no`.
-- `mute`: (Optional) `yes` or `no`.
+## Customizing the Player
+You can pass various parameters to the shortcode to customize the look and feel of the player:
 
-## Shortcode with Product ID
-Display the video mapped to a specific product on any page (like a "Video of the Day" on your homepage).
+- **width**: Set the width of the player (e.g., `800px` or `100%`).
+- **autoplay**: Set to `true` to start the video immediately (Note: Browser policies may apply).
+- **controls**: Set to `false` to hide YouTube player controls.
 
-```text
-[tubebay_video product_id="123"]
-```
+**Example with parameters:**
+`[tubebay_video id="your_id" width="100%" autoplay="false"]`
 
-## Using in Page Builders
-TubeBay shortcodes are compatible with all major page builders:
-- **Elementor:** Use the Shortcode widget.
-- **Divi:** Use the Code or Text module.
+## Front-end Preview
+When you place a shortcode in a page or post, it will render as a responsive, high-quality video player.
+
+![Shortcode Front-end Rendering](file:///docs/public/img/feature-shortcode-preview.png)
+
+---
+
+## Technical Performance
+- **Zero Impact on Page Speed:** TubeBay uses lazy-loading for iframe elements. The actual YouTube player only loads when the user interacts with the thumbnail.
+- **Theme Independent:** The shortcodes are designed to inherit your theme's container width while staying perfectly responsive.
 - **Gutenberg:** Use the Shortcode or Custom HTML block.
 - **Beaver Builder:** Use the HTML or Text module.

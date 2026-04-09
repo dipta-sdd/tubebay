@@ -1,27 +1,39 @@
-# Quick Start Guide
+# Getting Started
 
-This guide will walk you through setting up TubeBay and mapping your first YouTube video to a WooCommerce product in less than two minutes.
+Welcome to **TubeBay**! This guide will help you install, connect, and start showcasing your YouTube content on your WooCommerce store in minutes.
 
-## Step 1: Connect your YouTube Account
-The first time you visit the TubeBay menu, you'll see the **Welcome Screen**.
+## 1. Installation
+First, ensure you have the plugin installed and activated. You can find TubeBay under the **Plugins** section of your WordPress dashboard.
 
-1. Click **Start Setup Wizard**.
-2. Choose **Google OAuth** (Recommended).
-3. Follow the prompts to authorize your account.
-4. Paste your **Refresh Token** and click **Connect**.
+![Installing TubeBay](file:///docs/public/img/installation-step.png)
 
-::: tip Already have an API Key?
-You can also connect manually via the **Manual API** tab if you prefer to use your own Google Cloud project credentials.
+## 2. Connect Your Account
+Once activated, navigate to **TubeBay** in your sidebar. The first thing you'll see is the connection wizard.
+
+![The Connection Dashboard](file:///docs/public/img/dashboard-main.png)
+
+Choose your preferred connection method:
+- **Google OAuth**: Fast, secure, and recommended for most users.
+- **Manual Setup**: For users who prefer to use their own Google Cloud API credentials.
+
+::: tip Detailed Guide
+For a step-by-step walkthrough on connecting, see our [Connection Guide](./connection.md).
 :::
 
-## Step 2: Sync Your Video Library
-Once connected, TubeBay needs to pull your videos from YouTube.
+## 3. Sync Your Library
+After connecting, TubeBay will automatically fetch your video library. You can monitor the progress on the dashboard.
 
-1. Click **Sync Library** in the wizard (or go to the **Library** tab).
-2. TubeBay will fetch your latest uploads.
-3. You should see a list of your videos with thumbnails and titles appearing in the dashboard.
+![Syncing in progress](file:///docs/public/img/library-sync-progress.png)
 
-## Step 3: Map a Video to a Product
+## 4. Map Videos to Products
+Now the fun part! Go to **TubeBay > Library** to see all your cached videos. You can "Attach" any video to an existing WooCommerce product with a single click.
+
+![Product Mapping UI](file:///docs/public/img/feature-product-mapping.png)
+
+## 5. Showcase on Your Site
+Once a video is mapped, it will automatically appear on the product page (depending on your [Placement Settings](../features/placement.md)). You can also use **Shortcodes** to place videos anywhere else on your site!
+
+![Product Page Preview](file:///docs/public/img/feature-shortcode.png)
 Now that your videos are synced, you can link them to your WooCommerce products.
 
 1. In the **Library** tab, find a video you want to use.

@@ -169,7 +169,7 @@ class Channel
 		tubebay_log('get_access_token: Token expired or missing, requesting new one from connector', 'info');
 
 		// Request new access token from the connector server
-		$connector_url = 'https://tbac.wpanchorbay.com/oauth';
+		$connector_url = 'https://wpanchorbay.com/oauth';
 		$response = wp_remote_post(
 			$connector_url,
 			array(
