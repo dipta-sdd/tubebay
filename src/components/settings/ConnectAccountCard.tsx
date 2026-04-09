@@ -85,10 +85,14 @@ export default function ConnectAccountCard({
     setTmpCredentials({ ...tmpCredentials, connection_method: m });
   };
 
+  const [showTokenInput, setShowTokenInput] = useState(
+    !!tmpCredentials.refresh_token,
+  );
+
   return (
     <Card className="tubebay-flex tubebay-flex-col">
       {/* Header Section */}
-      <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-mb-[20px] tubebay-border-b tubebay-border-gray-50 tubebay-pb-4">
+      <div className="tubebay-flex tubebay-items-center tubebay-gap-[8px] tubebay-mb-[5px] tubebay-pb-4">
         <LinkIcon size={24} className="tubebay-text-[#3858e9]" />
         <h2 className="tubebay-text-[22px] tubebay-font-bold tubebay-text-[#111827]">
           Connect Account
@@ -168,10 +172,10 @@ export default function ConnectAccountCard({
       ) : (
         <div className="tubebay-w-full tubebay-flex tubebay-flex-col tubebay-gap-[12px]">
           {/* Method Toggle - Pill Shaped Container */}
-          <div className="tubebay-flex tubebay-p-[4px] tubebay-bg-gray-100 tubebay-rounded-full tubebay-mb-[12px] tubebay-w-full">
+          <div className="tubebay-flex tubebay-p-[4px] tubebay-bg-gray-100 tubebay-rounded-[12px] tubebay-mb-[12px] tubebay-w-full">
             <button
               onClick={() => setMethod("oauth")}
-              className={`tubebay-flex-1 tubebay-py-[10px] tubebay-text-[14px] tubebay-font-bold tubebay-rounded-full tubebay-transition-all ${
+              className={`tubebay-flex-1 tubebay-py-[10px] tubebay-text-[14px] tubebay-font-bold tubebay-rounded-[9px] tubebay-transition-all ${
                 method === "oauth"
                   ? "tubebay-bg-white tubebay-text-blue-600 tubebay-shadow-sm"
                   : "tubebay-text-gray-500 hover:tubebay-text-gray-700"
@@ -181,7 +185,7 @@ export default function ConnectAccountCard({
             </button>
             <button
               onClick={() => setMethod("api")}
-              className={`tubebay-flex-1 tubebay-py-[10px] tubebay-text-[14px] tubebay-font-bold tubebay-rounded-full tubebay-transition-all ${
+              className={`tubebay-flex-1 tubebay-py-[10px] tubebay-text-[14px] tubebay-font-bold tubebay-rounded-[9px] tubebay-transition-all ${
                 method === "api"
                   ? "tubebay-bg-white tubebay-text-blue-600 tubebay-shadow-sm"
                   : "tubebay-text-gray-500 hover:tubebay-text-gray-700"
@@ -198,13 +202,15 @@ export default function ConnectAccountCard({
                   Step 1: Get your Google Access Code
                 </h4>
                 <p className="tubebay-text-[14px] tubebay-text-gray-600">
-                  Simply click the button below to authorize TubeBay and instantly receive your access code.
+                  Simply click the button below to authorize TubeBay and
+                  instantly receive your access code.
                 </p>
                 <div className="tubebay-mt-2">
                   <a
                     href="https://tbac.wpanchorbay.com/oauth?action=connect"
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => setShowTokenInput(true)}
                     className="tubebay-inline-flex tubebay-items-center tubebay-gap-[12px] tubebay-bg-white tubebay-text-gray-700 tubebay-px-[24px] tubebay-py-[12px] tubebay-rounded-[12px] tubebay-border tubebay-border-gray-200 tubebay-shadow-sm hover:tubebay-shadow-md tubebay-transition-all tubebay-font-bold tubebay-text-[15px]"
                   >
                     <GoogleIcon size={20} />
@@ -213,32 +219,42 @@ export default function ConnectAccountCard({
                 </div>
               </div>
 
-              <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px]">
-                <h4 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900">
-                  Step 2: Enter Access Code
-                </h4>
-                <p className="tubebay-text-[14px] tubebay-text-gray-600 tubebay-mb-2">
-                  Paste the code you received from Google below to connect your store.
-                </p>
-                <Input
-                  label="Access Code"
-                  type="password"
-                  value={tmpCredentials.refresh_token}
-                  onChange={(e) =>
-                    setTmpCredentials({
-                      ...tmpCredentials,
-                      refresh_token: (e.target as HTMLInputElement).value,
-                    })
-                  }
-                  placeholder="Paste your access code here..."
-                  className="tubebay-w-full"
-                />
-              </div>
+              {showTokenInput && (
+                <div className="tubebay-flex tubebay-flex-col tubebay-gap-[4px] tubebay-animate-fadeIn">
+                  <h4 className="tubebay-text-[16px] tubebay-font-bold tubebay-text-gray-900">
+                    Step 2: Enter Access Code
+                  </h4>
+                  <p className="tubebay-text-[14px] tubebay-text-gray-600 tubebay-mb-2">
+                    Paste the code you received from Google below to connect
+                    your store.
+                  </p>
+                  <Input
+                    label="Access Code"
+                    type="password"
+                    value={tmpCredentials.refresh_token}
+                    onChange={(e) =>
+                      setTmpCredentials({
+                        ...tmpCredentials,
+                        refresh_token: (e.target as HTMLInputElement).value,
+                      })
+                    }
+                    placeholder="Paste your access code here..."
+                    className="tubebay-w-full"
+                  />
+                </div>
+              )}
 
               <div className="tubebay-bg-blue-50 tubebay-border tubebay-border-blue-100 tubebay-rounded-[12px] tubebay-p-[16px] tubebay-flex tubebay-gap-[12px]">
-                <Info size={20} className="tubebay-text-blue-600 tubebay-flex-shrink-0 tubebay-mt-[2px]" />
+                <Info
+                  size={20}
+                  className="tubebay-text-blue-600 tubebay-flex-shrink-0 tubebay-mt-[2px]"
+                />
                 <p className="tubebay-text-[13px] tubebay-text-blue-800 tubebay-leading-[20px]">
-                  <strong>Note:</strong> TubeBay requires "read-only" access to your YouTube account to sync your video library. Our plugin only reads your public video data (titles, thumbnails, IDs). We will never upload, edit, or write to your YouTube channel in any way.
+                  <strong>Note:</strong> TubeBay requires "read-only" access to
+                  your YouTube account to sync your video library. Our plugin
+                  only reads your public video data (titles, thumbnails, IDs).
+                  We will never upload, edit, or write to your YouTube channel
+                  in any way.
                 </p>
               </div>
             </div>
@@ -331,22 +347,27 @@ export default function ConnectAccountCard({
               color="primary"
               className="tubebay-h-[48px] tubebay-px-8"
             >
-              {saving ? "Connecting..." : (method === "oauth" ? "Connect Account" : "Save & Connect")}
+              {saving
+                ? "Connecting..."
+                : method === "oauth"
+                ? "Connect Account"
+                : "Save & Connect"}
             </Button>
-            
-            {(settings.connection_status === "connected" && !editingConnection) && (
-              <Button
-                onClick={handleTestConnection}
-                disabled={testing}
-                color="secondary"
-                variant="outline"
-                className="tubebay-h-[48px]"
-              >
-                {testing ? "Testing..." : "Test Connection"}
-              </Button>
-            )}
 
-            {(settings.channel_name && editingConnection) && (
+            {settings.connection_status === "connected" &&
+              !editingConnection && (
+                <Button
+                  onClick={handleTestConnection}
+                  disabled={testing}
+                  color="secondary"
+                  variant="outline"
+                  className="tubebay-h-[48px]"
+                >
+                  {testing ? "Testing..." : "Test Connection"}
+                </Button>
+              )}
+
+            {settings.channel_name && editingConnection && (
               <Button
                 onClick={() => {
                   setFeedback(null);
@@ -378,9 +399,19 @@ export default function ConnectAccountCard({
           </a>
         </div>
         <div className="tubebay-text-[13px] tubebay-text-gray-400 tubebay-flex tubebay-gap-3">
-          <a href="#" className="hover:tubebay-text-gray-600 hover:tubebay-underline">Terms & Conditions</a>
+          <a
+            href="#"
+            className="hover:tubebay-text-gray-600 hover:tubebay-underline"
+          >
+            Terms & Conditions
+          </a>
           <span className="tubebay-text-gray-200">|</span>
-          <a href="#" className="hover:tubebay-text-gray-600 hover:tubebay-underline">Privacy Policy</a>
+          <a
+            href="#"
+            className="hover:tubebay-text-gray-600 hover:tubebay-underline"
+          >
+            Privacy Policy
+          </a>
         </div>
       </div>
     </Card>

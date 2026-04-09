@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Eye, EyeOff } from "lucide-react";
 import {
   borderClasses,
@@ -30,7 +32,7 @@ export const Input: React.FC<InputProps> = ({
   showToggle = true,
   ...props
 }) => {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const isPassword = type === "password";
   const displayType = isPassword && showPassword ? "text" : type;
