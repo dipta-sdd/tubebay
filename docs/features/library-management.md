@@ -23,5 +23,5 @@ To help you find the right content quickly, you can sort your library using the 
 - **Title (A-Z/Z-A):** Sort alphabetically by video title.
 - **Most Viewed:** Prioritize videos with the highest view counts on YouTube.
 
-![Library Sorting Options](/public/img/library-sorting.png)
+<!-- ![Library Sorting Options](/public/img/library-sorting.png) -->
 
