@@ -13,9 +13,6 @@ hero:
       text: Get Started
       link: /guide/introduction
     - theme: alt
-      text: Pro Version
-      link: https://wpanchorbay.com/plugins/tubebay/
-    - theme: alt
       text: Free Download
       link: https://wordpress.org/plugins/tubebay/
 

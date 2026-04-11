@@ -49,10 +49,3 @@ The mapping search bar utilizes the WooCommerce product search API, allowing you
 - SKU
 - ID
 
-## Automated Suggestions (Pro)
-
-The Pro version of TubeBay includes smart mapping features that can automatically suggest or link videos to products based on:
-
-- Matching YouTube video titles to WooCommerce product names.
-- Extracting SKUs from video descriptions.
-- Mapping entire YouTube playlists to specific WooCommerce categories.
