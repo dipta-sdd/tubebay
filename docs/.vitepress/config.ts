@@ -62,96 +62,65 @@ export default defineConfig({
 			},
 		],
 
-		sidebar: {
-			'/guide/': [
-				{
-					text: 'Getting Started',
-					items: [
-						{ text: 'Introduction', link: '/guide/introduction' },
-						{ text: 'Requirements', link: '/guide/requirements' },
-						{ text: 'Installation', link: '/guide/installation' },
-						{ text: 'Quick Start', link: '/guide/getting-started' },
-					],
-				},
-				{
-					text: 'Configuration',
-					items: [
-						{ text: 'Connection Guide', link: '/guide/connection' },
-						{
-							text: 'Sync Library',
-							link: '/guide/sync-library',
-						},
-						{
-							text: 'Uninstallation',
-							link: '/guide/uninstallation',
-						},
-					],
-				},
-			],
-			'/features/': [
-				{
-					text: 'Core Features',
-					items: [
-						{
-							text: 'Account Connection',
-							link: '/features/connection',
-						},
-						{
-							text: 'Library Management',
-							link: '/features/library-management',
-						},
-						{
-							text: 'Automated Mapping',
-							link: '/features/product-mapping',
-						},
-					],
-				},
-				{
-					text: 'Video Player',
-					items: [
-						{
-							text: 'Embedded Player',
-							link: '/features/embedded-player',
-						},
-						{
-							text: 'Visual Placement',
-							link: '/features/placement',
-						},
-					],
-				},
-				{
-					text: 'Settings',
-					collapsed: false,
-					items: [
-						{
-							text: 'Global Settings',
-							link: '/features/global-settings',
-						},
-						{
-							text: 'Shortcodes',
-							link: '/features/shortcodes',
-						},
-					],
-				},
-			],
-			'/developer/': [
-				{
-					text: 'Developer Reference',
-					items: [
-						{
-							text: 'Architecture',
-							link: '/developer/architecture',
-						},
-						{ text: 'REST API', link: '/developer/rest-api' },
-						{ text: 'Hooks & Filters', link: '/developer/hooks' },
-						{
-							text: 'Contributing',
-							link: '/developer/contributing',
-						},
-					],
-				},
-			],
-		},
+		sidebar: [
+			{
+				text: 'Getting Started',
+				collapsed: false,
+				items: [
+					{ text: 'Introduction', link: '/guide/introduction' },
+					{ text: 'Requirements', link: '/guide/requirements' },
+					{ text: 'Installation', link: '/guide/installation' },
+					{ text: 'Quick Start', link: '/guide/getting-started' },
+				],
+			},
+			{
+				text: 'Configuration',
+				collapsed: false,
+				items: [
+					{ text: 'Connection Guide', link: '/guide/connection' },
+					{ text: 'Sync Library', link: '/guide/sync-library' },
+					{ text: 'Uninstallation', link: '/guide/uninstallation' },
+				],
+			},
+			{
+				text: 'Core Features',
+				collapsed: false,
+				items: [
+					{ text: 'Account Connection', link: '/features/connection' },
+					{ text: 'Library Management', link: '/features/library-management' },
+					{ text: 'Product Mapping', link: '/features/product-mapping' },
+					{ text: 'Embedded Player', link: '/features/embedded-player' },
+					{ text: 'Visual Placement', link: '/features/placement' },
+				],
+			},
+			{
+				text: 'Settings',
+				collapsed: false,
+				items: [
+					{ text: 'Global Settings', link: '/features/global-settings' },
+					{ text: 'Shortcodes', link: '/features/shortcodes' },
+				],
+			},
+			{
+				text: 'Developer Reference',
+				collapsed: true,
+				items: [
+					{ text: 'Architecture', link: '/developer/architecture' },
+					{ text: 'REST API', link: '/developer/rest-api' },
+					{ text: 'Hooks & Filters', link: '/developer/hooks' },
+					{ text: 'Contributing', link: '/developer/contributing' },
+				],
+			},
+			{
+				text: 'Resources',
+				collapsed: true,
+				items: [
+					{ text: 'FAQ', link: '/faq' },
+					{ text: 'Changelog', link: '/changelog' },
+					{ text: 'Feature Request', link: '/feature-request' },
+				],
+			},
+		],
 
 		socialLinks: [
 			{

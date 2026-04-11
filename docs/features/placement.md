@@ -10,7 +10,6 @@ In **Settings > Video Player**, you can choose from several predefined locations
 | **Above Product Gallery** | `woocommerce_before_single_product_summary` (priority 5) | Places the video at the very top of the product image area. |
 | **Below Product Gallery** | `woocommerce_product_thumbnails` (priority 20) | Displays the video underneath the main product images. |
 | **After Product Summary** | `woocommerce_after_single_product_summary` | Inserts the player after the short description and add-to-cart area. |
-| **In a New Tab** | `woocommerce_product_tabs` | Creates a dedicated "Video" tab alongside Description and Reviews. |
 
 ## Shortcodes (Manual Placement)
 If you need to place a video in a custom location (like within the product description or a page builder layout), you can use our [Shortcode system](/features/shortcodes).
