@@ -403,15 +403,17 @@ export default function ConnectAccountCard({
         </div>
         <div className="tubebay-text-[13px] tubebay-text-gray-400 tubebay-flex tubebay-gap-3">
           <a
-            href="#"
+            href="https://wpanchorbay.com/terms-and-conditions/"
             className="hover:tubebay-text-gray-600 hover:tubebay-underline"
+            target="_blank"
           >
             Terms & Conditions
           </a>
           <span className="tubebay-text-gray-200">|</span>
           <a
-            href="#"
+            href="https://wpanchorbay.com/privacy-policy/"
             className="hover:tubebay-text-gray-600 hover:tubebay-underline"
+            target="_blank"
           >
             Privacy Policy
           </a>
