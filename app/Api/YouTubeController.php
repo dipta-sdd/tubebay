@@ -371,6 +371,7 @@ class YouTubeController extends ApiController
 			'thumbnails_default',
 			'thumbnails_medium',
 			'connection_status',
+			'connection_method',
 			'last_sync_time',
 			'access_token',
 			'refresh_token',
@@ -380,6 +381,8 @@ class YouTubeController extends ApiController
 		foreach ($settings_to_clear as $setting) {
 			if ($setting === 'connection_status') {
 				\TubeBay\Helper\Settings::set($setting, 'inactive');
+			} elseif ($setting === 'connection_method') {
+				\TubeBay\Helper\Settings::set($setting, 'oauth');
 			} elseif ($setting === 'last_sync_time' || $setting === 'token_expires') {
 				\TubeBay\Helper\Settings::set($setting, 0);
 			} else {

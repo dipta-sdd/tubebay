@@ -47,7 +47,9 @@ export default function Settings() {
     api_key: settings.api_key || "",
     channel_id: settings.channel_id || "",
     refresh_token: settings.refresh_token || "",
-    connection_method: (settings.connection_method as "oauth" | "api") || "oauth",
+    connection_method: settings.connection_status === "connected" 
+      ? (settings.connection_method as "oauth" | "api") || "oauth"
+      : "oauth",
   });
   console.log(tmpCredentials);
 
@@ -77,7 +79,9 @@ export default function Settings() {
         api_key: response.api_key || "",
         channel_id: response.channel_id || "",
         refresh_token: response.refresh_token || "",
-        connection_method: (response.connection_method as "oauth" | "api") || "oauth",
+        connection_method: response.connection_status === "connected"
+          ? (response.connection_method as "oauth" | "api") || "oauth"
+          : "oauth",
       };
       const other = {
         auto_sync: response.auto_sync !== undefined ? response.auto_sync : true,
