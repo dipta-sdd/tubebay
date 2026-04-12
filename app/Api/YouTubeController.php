@@ -115,6 +115,18 @@ class YouTubeController extends ApiController
 				),
 			)
 		);
+		// Route to disconnect the YouTube account.
+		register_rest_route(
+			$namespace,
+			'/youtube/disconnect',
+			array(
+				array(
+					'methods' => WP_REST_Server::DELETABLE,
+					'callback' => array($this, 'disconnect'),
+					'permission_callback' => array($this, 'get_item_permissions_check'),
+				),
+			)
+		);
 	}
 
 	/**
@@ -321,6 +333,58 @@ class YouTubeController extends ApiController
 				'success' => true,
 				'videos' => $response_videos,
 				'next_page_token' => $next_page_token ?? null,
+			),
+			200
+		);
+	}
+
+	/**
+	 * Disconnect the YouTube account.
+	 * 
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return \WP_REST_Response|\WP_Error The REST response or error.
+	 */
+	public function disconnect($request)
+	{
+		tubebay_log('Disconnect request received', 'info');
+
+		$channel_id = \TubeBay\Helper\Settings::get_channel_id();
+
+		// List of settings to clear.
+		$settings_to_clear = array(
+			'api_key',
+			'channel_id',
+			'channel_name',
+			'thumbnails_default',
+			'thumbnails_medium',
+			'connection_status',
+			'last_sync_time',
+			'access_token',
+			'refresh_token',
+			'token_expires',
+		);
+
+		foreach ($settings_to_clear as $setting) {
+			if ($setting === 'connection_status') {
+				\TubeBay\Helper\Settings::set($setting, 'inactive');
+			} elseif ($setting === 'last_sync_time' || $setting === 'token_expires') {
+				\TubeBay\Helper\Settings::set($setting, 0);
+			} else {
+				\TubeBay\Helper\Settings::set($setting, '');
+			}
+		}
+
+		// Clear transient cache for this channel.
+		if (!empty($channel_id)) {
+			delete_transient('tubebay_videos_cache_' . $channel_id);
+		}
+
+		tubebay_log('YouTube account disconnected and credentials cleared.', 'info');
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'message' => __('Account disconnected successfully.', 'tubebay'),
 			),
 			200
 		);

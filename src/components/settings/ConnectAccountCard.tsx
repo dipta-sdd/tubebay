@@ -4,7 +4,7 @@ import Button from "../common/Button";
 import Card from "../common/Card";
 import { LinkIcon, YouTubeIcon, GoogleIcon } from "../common/Icons";
 import { PluginSettings } from "../../utils/types";
-import { CheckCircle, XCircle, Info } from "lucide-react";
+import { CheckCircle, XCircle, Info, Trash2 } from "lucide-react";
 import { Tooltip } from "../common/ToolTip";
 // @ts-ignore
 import channelIdImg from "../../img/channel_id.png";
@@ -40,6 +40,7 @@ interface ConnectAccountCardProps {
   connectYouTube: () => void;
   feedback: ConnectionFeedback | null;
   setFeedback: (feedback: ConnectionFeedback | null) => void;
+  handleDisconnect: () => void;
 }
 
 const feedbackStyles: Record<FeedbackType, string> = {
@@ -78,6 +79,7 @@ export default function ConnectAccountCard({
   connectYouTube,
   feedback,
   setFeedback,
+  handleDisconnect,
 }: ConnectAccountCardProps) {
   const method = tmpCredentials.connection_method;
 
@@ -167,6 +169,18 @@ export default function ConnectAccountCard({
               <GoogleIcon size={20} />
               Change Credentials
             </Button>
+          </div>
+
+          {/* Remove Account Section */}
+          <div className="tubebay-w-full tubebay-flex tubebay-justify-center tubebay-pt-2">
+            <button
+              onClick={handleDisconnect}
+              disabled={saving}
+              className="tubebay-text-[#4b5563] hover:tubebay-text-red-600 tubebay-text-[13px] tubebay-font-medium tubebay-flex tubebay-items-center tubebay-gap-1.5 tubebay-transition-colors"
+            >
+              <Trash2 size={14} />
+              Remove Account & Clear Credentials
+            </button>
           </div>
         </div>
       ) : (

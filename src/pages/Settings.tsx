@@ -12,6 +12,8 @@ import ConnectAccountCard, {
 import SyncCard from "../components/settings/SyncCard";
 import PlacementSettingsCard from "../components/settings/PlacementSettingsCard";
 import AdvancedSettingsCard from "../components/settings/AdvancedSettingsCard";
+import { ConfirmationModal } from "../components/common/ConfirmationModal";
+import Loader from "../components/common/Loader";
 import { PageSkeleton } from "../components/loading/PageSkeleton";
 
 type SettingsData = Partial<PluginSettings>;
@@ -26,6 +28,8 @@ export default function Settings() {
   const [editingConnection, setEditingConnection] = useState(false);
   const [connectionFeedback, setConnectionFeedback] =
     useState<ConnectionFeedback | null>(null);
+  const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   const { plugin_settings: settings } = useWpabStore();
   const { updateStore } = useWpabStoreActions();
@@ -274,7 +278,34 @@ export default function Settings() {
     } catch (error) {
       addToast(`Sync Failed: ${(error as any).message}`, "error");
     } finally {
-      setSyncing(false);
+      setSaving(false);
+    }
+  };
+
+  const onConfirmDisconnect = async () => {
+    setIsDisconnectModalOpen(false);
+    await handleDisconnect();
+  };
+
+  const handleDisconnect = async () => {
+    setIsDisconnecting(true);
+    try {
+      const response = await apiFetch<{
+        success: boolean;
+        message: string;
+      }>({
+        path: "/tubebay/v1/youtube/disconnect",
+        method: "DELETE",
+      });
+
+      if (response.success) {
+        addToast(response.message, "success");
+        window.location.reload();
+      }
+    } catch (error) {
+      addToast(`Error disconnecting: ${(error as Error).message}`, "error");
+    } finally {
+      setIsDisconnecting(false);
     }
   };
 
@@ -334,6 +365,7 @@ export default function Settings() {
         connectYouTube={connectYouTube}
         feedback={connectionFeedback}
         setFeedback={setConnectionFeedback}
+        handleDisconnect={() => setIsDisconnectModalOpen(true)}
       />
 
       {/* Placement & Player Settings Card */}
@@ -366,6 +398,32 @@ export default function Settings() {
           {savingSettings ? "Saving..." : "Save Settings"}
         </Button>
       </div>
+
+      {isDisconnecting && (
+        <div className="tubebay-fixed tubebay-inset-0 tubebay-z-[99999] tubebay-flex tubebay-items-center tubebay-justify-center tubebay-bg-black/60 tubebay-backdrop-blur-[2px]">
+          <div className="tubebay-flex tubebay-flex-col tubebay-items-center tubebay-gap-4">
+            <Loader />
+            <span className="tubebay-text-white tubebay-font-bold tubebay-text-[18px]">
+              Disconnecting...
+            </span>
+          </div>
+        </div>
+      )}
+
+      <ConfirmationModal
+        isOpen={isDisconnectModalOpen}
+        title="Disconnect Account?"
+        message="Are you sure you want to disconnect your YouTube account? This will clear all connection credentials."
+        confirmLabel="Disconnect Now"
+        cancelLabel="Keep Connected"
+        onConfirm={onConfirmDisconnect}
+        onCancel={() => setIsDisconnectModalOpen(false)}
+        classNames={{
+          button: {
+            confirmColor: "danger" as any,
+          },
+        }}
+      />
     </Page>
   );
 }
