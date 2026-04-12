@@ -127,6 +127,19 @@ class YouTubeController extends ApiController
 				),
 			)
 		);
+		// Route to redirect user to OAuth Proxy with domain tracking.
+		register_rest_route(
+			$namespace,
+			'/youtube/oauth-connect',
+			array(
+				array(
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array($this, 'oauth_connect'),
+					'permission_callback' => function (){ return true;
+					},
+				),
+			)
+		);
 	}
 
 	/**
@@ -388,5 +401,31 @@ class YouTubeController extends ApiController
 			),
 			200
 		);
+	}
+
+	/**
+	 * Redirect the user to the YouTube OAuth proxy.
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return void
+	 */
+	public function oauth_connect($request)
+	{
+		tubebay_log("+++++++++++++++++++++++++++++++++++++++++");
+		$domain = home_url();
+		$proxy_url = 'https://wpanchorbay.com/oauth/index.php';
+
+		$redirect_url = add_query_arg(
+			array(
+				'action' => 'connect',
+				'domain' => $domain,
+			),
+			$proxy_url
+		);
+
+		tubebay_log('Redirecting user to OAuth proxy: ' . $redirect_url);
+		tubebay_log('_______________', $redirect_url);
+		wp_redirect($redirect_url);
+		exit;
 	}
 }

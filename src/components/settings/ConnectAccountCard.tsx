@@ -8,6 +8,7 @@ import { CheckCircle, XCircle, Info, Trash2 } from "lucide-react";
 import { Tooltip } from "../common/ToolTip";
 // @ts-ignore
 import channelIdImg from "../../img/channel_id.png";
+import { useWpabStore } from "../../store/wpabStore";
 
 export type FeedbackType = "success" | "error" | "info";
 
@@ -81,6 +82,7 @@ export default function ConnectAccountCard({
   setFeedback,
   handleDisconnect,
 }: ConnectAccountCardProps) {
+  const { rest_url } = useWpabStore();
   const method = tmpCredentials.connection_method;
 
   const setMethod = (m: "oauth" | "api") => {
@@ -221,7 +223,7 @@ export default function ConnectAccountCard({
                 </p>
                 <div className="tubebay-mt-2">
                   <a
-                    href="https://wpanchorbay.com/oauth/index.php?action=connect"
+                    href={`${rest_url}tubebay/v1/youtube/oauth-connect`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setShowTokenInput(true)}
