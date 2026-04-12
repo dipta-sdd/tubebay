@@ -267,11 +267,24 @@ export default function ConnectAccountCard({
                   className="tubebay-text-blue-600 tubebay-flex-shrink-0 tubebay-mt-[2px]"
                 />
                 <p className="tubebay-text-[13px] tubebay-text-blue-800 tubebay-leading-[20px]">
-                  <strong>Note:</strong> TubeBay requires "read-only" access to
-                  your YouTube account to sync your video library. Our plugin
-                  only reads your public video data (titles, thumbnails, IDs).
-                  We will never upload, edit, or write to your YouTube channel
-                  in any way.
+                  <strong>Read-only access:</strong> TubeBay only reads your
+                  public video data (titles, thumbnails, and IDs) to sync your
+                  library. We will never upload, edit, or modify your YouTube
+                  channel in any way.
+                  <br />
+                  <br />
+                  <strong>Why does it say "WPAnchorBay"?</strong> TubeBay is
+                  developed and published by{" "}
+                  <a
+                    href="https://wpanchorbay.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tubebay-underline"
+                  >
+                    WPAnchorBay
+                  </a>
+                  . You will see this name on the Google authorization screen —
+                  this is expected and your connection is fully secure.
                 </p>
               </div>
             </div>
